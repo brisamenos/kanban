@@ -45,6 +45,15 @@
                     </button>
                 </template>
             </nav>
+            <div class="p-6 border-t border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-xs text-white">IB</div>
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-xs font-bold truncate text-white">Igor Borges</p>
+                        <p class="text-[9px] text-emerald-500 font-black uppercase tracking-widest">Admin Online</p>
+                    </div>
+                </div>
+            </div>
         </aside>
 
         <main class="flex-1 flex flex-col relative w-full h-full pb-20 md:pb-0">
@@ -90,8 +99,27 @@
                     </template>
                 </div>
 
-                <div x-show="screen === 'bot'" x-cloak class="space-y-6">
-                    <div class="bg-slate-900 p-6 rounded-[2rem]">
+                <div x-show="screen === 'biblioteca'" x-cloak class="space-y-6">
+                    <label class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-2xl flex items-center justify-center gap-2 font-black text-xs uppercase cursor-pointer shadow-lg shadow-indigo-500/20 active:scale-95 transition-all">
+                        <i data-lucide="upload-cloud" class="w-5 h-5"></i> Subir Novo Arquivo Local
+                        <input type="file" class="hidden" @change="addToLibrary($el)">
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <template x-for="(file, index) in myLibrary" :key="index">
+                            <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl relative">
+                                <button @click="removeFromLibrary(index)" class="absolute top-4 right-4 text-slate-600 hover:text-red-500 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                                <div class="w-12 h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-400 mb-3">
+                                    <i :data-lucide="file.type.includes('image') ? 'image' : 'file-text'"></i>
+                                </div>
+                                <p class="font-bold text-sm text-white truncate" x-text="file.name"></p>
+                                <button @click="sendFromLibrary(file)" class="w-full mt-4 bg-slate-800 hover:bg-indigo-600 text-[10px] font-black text-white py-3 rounded-xl transition-all uppercase">Disparar p/ Lead Atual</button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <div x-show="screen === 'bot'" x-cloak class="space-y-6 max-w-4xl mx-auto">
+                    <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-[2rem] shadow-lg">
                         <input x-model="newRule.trigger" type="text" placeholder="Gatilho (ex: solar, trafego, oi)..." class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white mb-3 focus:border-indigo-500 outline-none transition-colors">
                         <textarea x-model="newRule.response" placeholder="Resposta automática do robô..." rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white mb-3 focus:border-indigo-500 outline-none transition-colors"></textarea>
                         <button @click="saveBotRule()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs py-4 rounded-2xl uppercase shadow-lg shadow-indigo-500/20 active:scale-95 transition-all">Salvar Regra</button>
@@ -146,7 +174,14 @@
                 <template x-for="msg in messages" :key="msg.id">
                     <div :class="msg.from_me ? 'justify-end' : 'justify-start'" class="flex w-full">
                         <div :class="msg.from_me ? 'bg-indigo-600 text-white rounded-l-2xl rounded-tr-2xl' : 'bg-slate-800 text-slate-200 rounded-r-2xl rounded-tl-2xl'" class="p-3.5 max-w-[85%] shadow-md relative">
-                            <p class="text-[15px] leading-relaxed break-words" x-text="msg.content"></p>
+                            <template x-if="msg.content.includes('http') && (msg.content.includes('chat_media') || msg.content.includes('[Áudio]') || msg.content.includes('[Imagem]') || msg.content.includes('[Documento]'))">
+                                <a :href="msg.content.split(' ').pop()" target="_blank" class="text-indigo-200 underline break-all text-sm flex items-center gap-1">
+                                    <i data-lucide="external-link" class="w-3 h-3"></i> Abrir Arquivo
+                                </a>
+                            </template>
+                            <template x-if="!msg.content.includes('chat_media')">
+                                <p class="text-[15px] leading-relaxed break-words" x-text="msg.content"></p>
+                            </template>
                             
                             <div class="flex items-center justify-end gap-1 mt-1 opacity-50">
                                 <span class="text-[9px] font-bold" x-text="new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></span>
@@ -159,9 +194,9 @@
 
             <footer class="bg-slate-900 border-t border-slate-800 flex flex-col z-10 pb-safe shrink-0">
                 <div class="flex gap-2 overflow-x-auto p-3 no-scrollbar border-b border-slate-800/50">
-                    <button @click="msgInput = 'Olá! Sou o Igor, como posso ajudar?'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300">👋 Saudação</button>
-                    <button @click="msgInput = 'Vou enviar os detalhes do tráfego pago para alavancar suas vendas.'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300">📈 Tráfego</button>
-                    <button @click="msgInput = 'A energia solar reduz seus custos significativamente. Qual seu gasto médio?'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300">☀️ Solar</button>
+                    <button @click="msgInput = 'Olá! Tudo bem? Sou o Igor, como posso ajudar?'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300 transition-colors hover:bg-indigo-600">👋 Saudação</button>
+                    <button @click="msgInput = 'Vou enviar os detalhes das campanhas de tráfego pago para o seu negócio.'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300 transition-colors hover:bg-indigo-600">📈 Tráfego</button>
+                    <button @click="msgInput = 'Qual o seu custo médio mensal com a conta de luz? A energia solar reduz isso drasticamente.'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300 transition-colors hover:bg-indigo-600">☀️ Solar</button>
                 </div>
                 
                 <input type="file" x-ref="imageInput" accept="image/*" class="hidden" @change="uploadAndSend($event, 'image')">
@@ -196,10 +231,11 @@
     <script>
         function crmApp() {
             return {
-                screen: 'dash', isChatOpen: false, selectedLead: null, selectedLeadStatus: '', msgInput: '', leads: [], messages: [], botRules: [], newRule: { trigger: '', response: '' },
+                screen: 'dash', isChatOpen: false, selectedLead: null, selectedLeadStatus: '', msgInput: '', leads: [], messages: [], myLibrary: [], botRules: [], newRule: { trigger: '', response: '' },
                 navItems: [
                     { id: 'dash', label: 'Dash', icon: 'pie-chart' },
                     { id: 'kanban', label: 'Funil', icon: 'columns' },
+                    { id: 'biblioteca', label: 'Mídias', icon: 'folder' },
                     { id: 'bot', label: 'Robô', icon: 'bot' }
                 ],
                 columns: [
@@ -217,6 +253,12 @@
                     await this.loadBotRules();
                     this.setupRealtime();
                     setTimeout(() => lucide.createIcons(), 100);
+                },
+
+                // FUNÇÃO DE ÁUDIO PARA NOTIFICAÇÕES
+                playSound() {
+                    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+                    audio.play().catch(e => console.log("Áudio silenciado até primeira interação do usuário."));
                 },
 
                 async loadLeads() {
@@ -243,20 +285,37 @@
                     setTimeout(() => lucide.createIcons(), 50);
                 },
 
+                // ATUALIZADO: ENVIA E SALVA A MENSAGEM NO BANCO DE DADOS
                 async sendMsg() {
                     if(!this.msgInput || !this.selectedLead) return;
                     const text = this.msgInput;
                     this.msgInput = '';
+                    
+                    // Coloca na tela imediatamente
                     this.messages.push({ id: Date.now(), content: text, from_me: true, timestamp: new Date().toISOString() });
                     this.scrollToBottom();
-                    await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', {
-                        method: 'POST',
-                        headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ "number": this.selectedLead.numero, "text": text })
-                    });
+
+                    try {
+                        // 1. Envia via Evolution API
+                        await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', {
+                            method: 'POST',
+                            headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ "number": this.selectedLead.numero, "text": text })
+                        });
+
+                        // 2. Salva no Supabase para manter o histórico
+                        await this.client.from('messages').insert({
+                            lead_id: this.selectedLead.id,
+                            content: text,
+                            from_me: true,
+                            type: 'text'
+                        });
+                    } catch (e) {
+                        console.error("Erro ao enviar ou salvar:", e);
+                    }
                 },
 
-                // === FUNÇÃO DE UPLOAD CORRIGIDA COM TRATAMENTO DE ERROS ===
+                // FUNÇÃO DE UPLOAD COM TRATAMENTO DE ERROS
                 async uploadAndSend(event, type) {
                     const file = event.target.files[0];
                     if (!file) return;
@@ -277,30 +336,29 @@
                     this.scrollToBottom();
 
                     try {
-                        // Limpa o nome do arquivo para evitar erro de URL no Supabase
+                        // Limpa o nome do arquivo
                         const fileExt = file.name.split('.').pop();
                         const safeName = file.name.replace(/[^a-zA-Z0-9.\-]/g, '_');
                         const fileName = `${Date.now()}-${safeName}`;
                         const filePath = `${this.selectedLead.numero}/${fileName}`;
 
-                        // 1. Upload para o Supabase
+                        // Upload Supabase
                         const { data: uploadData, error: uploadError } = await this.client.storage
                             .from('chat_media')
                             .upload(filePath, file, { upsert: false });
 
                         if (uploadError) {
                             console.error("Erro Supabase:", uploadError);
-                            throw new Error(`Ocorreu um erro ao salvar o arquivo no Supabase: ${uploadError.message}`);
+                            throw new Error(`Erro ao salvar no Supabase: ${uploadError.message}`);
                         }
 
-                        // 2. Pega URL Pública
+                        // Pegar URL
                         const { data: urlData } = this.client.storage.from('chat_media').getPublicUrl(filePath);
                         const publicMediaUrl = urlData.publicUrl;
 
-                        // Atualiza a mensagem no chat para dar feedback
-                        this.messages.find(m => m.id === tempMsgId).content = `⏳ Disparando arquivo pelo WhatsApp...`;
+                        this.messages.find(m => m.id === tempMsgId).content = `⏳ Disparando pelo WhatsApp...`;
 
-                        // 3. Prepara envio para Evolution API
+                        // Enviar Evolution API
                         const EVO_URL = 'https://projeto-evolution-api.xtknqq.easypanel.host';
                         const API_KEY = '773C15E29974-4BA2-B003-3F697EC279AE';
                         let endpoint = 'sendDocument';
@@ -318,7 +376,6 @@
                             bodyData.fileName = file.name;
                         }
 
-                        // 4. Dispara a requisição
                         const evoResponse = await fetch(`${EVO_URL}/message/${endpoint}/igor`, {
                             method: 'POST',
                             headers: { 'apikey': API_KEY, 'Content-Type': 'application/json' },
@@ -326,13 +383,18 @@
                         });
 
                         if (!evoResponse.ok) {
-                            const errorDetails = await evoResponse.text();
-                            console.error("Erro Evolution:", errorDetails);
-                            throw new Error("A API do WhatsApp rejeitou o arquivo. Verifique os logs.");
+                            throw new Error("A API do WhatsApp rejeitou o arquivo.");
                         }
 
-                        // Sucesso
-                        this.messages.find(m => m.id === tempMsgId).content = `✅ Arquivo enviado com sucesso!`;
+                        // Atualiza interface e salva link no banco de dados para histórico
+                        this.messages.find(m => m.id === tempMsgId).content = `✅ Arquivo enviado: ${publicMediaUrl}`;
+                        await this.client.from('messages').insert({
+                            lead_id: this.selectedLead.id,
+                            content: `[${type.toUpperCase()}] ${publicMediaUrl}`,
+                            from_me: true,
+                            type: type
+                        });
+
                         event.target.value = '';
 
                     } catch (e) {
@@ -343,28 +405,44 @@
                     }
                 },
 
-                // === FUNÇÃO DO ROBÔ CORRIGIDA COM TRATAMENTO DE ERROS ===
+                addToLibrary(input) {
+                    const file = input.files[0]; if (!file) return;
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => {
+                        this.myLibrary.push({ name: file.name, type: file.type, base64: reader.result.split(',')[1] });
+                        setTimeout(() => lucide.createIcons(), 50);
+                    };
+                },
+                removeFromLibrary(index) { this.myLibrary.splice(index, 1); },
+                async sendFromLibrary(file) {
+                    if (!this.selectedLead) { alert("Abra o chat de um cliente primeiro!"); return; }
+                    let endpoint = file.type.includes('image') ? 'sendImage' : file.type.includes('video') ? 'sendVideo' : 'sendDocument';
+                    await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, {
+                        method: 'POST',
+                        headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ "number": this.selectedLead.numero, "media": file.base64, "fileName": file.name })
+                    });
+                    alert(`Arquivo disparado!`);
+                },
+
+                // FUNÇÃO DO ROBÔ COM TRATAMENTO DE ERROS
                 async saveBotRule() {
                     if(!this.newRule.trigger || !this.newRule.response) {
-                        alert("⚠️ Por favor, preencha o gatilho e a resposta do robô.");
+                        alert("⚠️ Preencha o gatilho e a resposta.");
                         return;
                     }
                     try {
-                        const { data, error } = await this.client.from('chatbot_rules').insert({
+                        const { error } = await this.client.from('chatbot_rules').insert({
                             trigger_text: this.newRule.trigger.toLowerCase().trim(),
                             response_text: this.newRule.response.trim()
                         });
-
-                        if (error) {
-                            console.error("Erro no Banco de Dados (Robô):", error);
-                            throw new Error(`Permissão negada ou erro de banco: ${error.message}`);
-                        }
-
-                        alert("✅ Regra do robô salva com sucesso!");
+                        if (error) throw new Error(`Erro: ${error.message}`);
+                        alert("✅ Regra salva com sucesso!");
                         this.newRule = { trigger: '', response: '' };
                         this.loadBotRules();
                     } catch (err) {
-                        alert(`❌ Erro ao salvar a regra: ${err.message}\nVerifique as políticas RLS do Supabase para a tabela 'chatbot_rules'.`);
+                        alert(`❌ Falha: ${err.message}\nVerifique as políticas (RLS) no Supabase.`);
                     }
                 },
 
@@ -377,14 +455,31 @@
                 },
 
                 async deleteBotRule(id) {
-                    if(!confirm("Tem certeza que deseja apagar essa regra?")) return;
+                    if(!confirm("Apagar essa regra?")) return;
                     await this.client.from('chatbot_rules').delete().eq('id', id);
                     this.loadBotRules();
                 },
 
+                // ATUALIZADO: REALTIME AGORA TOCA O SOM
                 setupRealtime() {
-                    this.client.channel('any').on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => this.loadLeads()).subscribe();
-                    this.client.channel('msgs').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+                    // Escuta novos leads
+                    this.client.channel('leads_channel').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'leads' }, payload => {
+                        this.playSound();
+                        this.loadLeads();
+                    }).subscribe();
+
+                    // Escuta atualizações de leads
+                    this.client.channel('leads_update').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'leads' }, payload => {
+                        this.loadLeads();
+                    }).subscribe();
+
+                    // Escuta novas mensagens
+                    this.client.channel('msgs_channel').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+                        // Toca som se o cliente enviou
+                        if (!payload.new.from_me) {
+                            this.playSound();
+                        }
+                        
                         if (this.isChatOpen && payload.new.lead_id === this.selectedLead?.id) {
                             if(!this.messages.find(m => m.id === payload.new.id)) {
                                 this.messages.push(payload.new);
