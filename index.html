@@ -207,22 +207,21 @@
                     </template>
                     
                     <div class="kanban-col flex flex-col gap-3 p-3 rounded-[2.5rem] border-2 border-dashed border-gray-300 dark:border-slate-700/50 justify-center items-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors opacity-70 hover:opacity-100" @click="addColumn()">
-                        <div class="w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-sm text-indigo-500 mb-2">
-                            <i data-lucide="plus" class="w-6 h-6"></i>
-                        </div>
+                        <div class="w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-sm text-indigo-500 mb-2"><i data-lucide="plus" class="w-6 h-6"></i></div>
                         <span class="text-xs font-black uppercase text-slate-500">+ Adicionar Etapa</span>
                     </div>
-
                 </div>
 
                 <div x-show="screen === 'bot'" x-cloak class="max-w-3xl mx-auto space-y-6 pb-10">
                     <div class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm transition-all">
                         <div class="flex justify-between items-center mb-2"><h3 class="font-black text-2xl dark:text-white flex items-center gap-2" x-text="editingRuleId ? '✏️ Editar Fluxo' : '✨ Criar Fluxo'"></h3></div>
                         <p class="text-sm text-slate-500 mb-6" x-text="editingRuleId ? 'Modifique os passos abaixo.' : 'Crie um funil de mensagens, áudios e pausas.'"></p>
+                        
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                             <div><label class="text-[10px] font-black uppercase text-slate-400 mb-2 block ml-1">Nome do Fluxo <span class="text-red-500">*</span></label><input x-model="flowBuilder.name" type="text" placeholder="Ex: Venda de Chip" class="w-full bg-indigo-50/50 dark:bg-slate-950 border border-indigo-100 dark:border-slate-700 rounded-xl p-4 font-bold outline-none dark:text-white focus:ring-2 focus:ring-indigo-500 transition-all"></div>
                             <div><label class="text-[10px] font-black uppercase text-slate-400 mb-2 block ml-1">Gatilho (Opcional)</label><input x-model="flowBuilder.trigger" type="text" placeholder="Palavra chave: chip..." class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-700 rounded-xl p-4 font-bold outline-none dark:text-white focus:ring-2 focus:ring-indigo-500 transition-all"></div>
                         </div>
+
                         <div class="space-y-4 relative mb-6">
                             <template x-for="(step, index) in flowBuilder.steps" :key="index">
                                 <div class="relative flow-item pb-2">
@@ -246,7 +245,7 @@
                             <button @click="addStep('document')" class="flex-1 min-w-[70px] flex flex-col items-center gap-1 p-2 bg-orange-50 dark:bg-orange-900/20 text-orange-600 rounded-xl active:scale-95 border border-orange-100 dark:border-orange-900/30"><i data-lucide="file-text" class="w-4 h-4"></i><span class="text-[9px] font-bold">Arquivo</span></button>
                             <button @click="addStep('delay')" class="flex-1 min-w-[70px] flex flex-col items-center gap-1 p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl active:scale-95 border border-gray-200 dark:border-slate-700"><i data-lucide="clock" class="w-4 h-4"></i><span class="text-[9px] font-bold">Pausa</span></button>
                         </div>
-                        <div class="flex gap-2"><button @click="saveFlow()" :disabled="isSavingFlow" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl shadow-md flex justify-center items-center gap-2 transition-all"><span x-show="!isSavingFlow"><i data-lucide="save" class="w-4 h-4 inline"></i> <span x-text="editingRuleId ? 'Atualizar Fluxo' : 'Salvar Novo Fluxo'"></span></span><span x-show="isSavingFlow" class="animate-pulse">⏳ Salvando...</span></button><button x-show="editingRuleId" @click="cancelEdit()" class="bg-gray-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-4 px-6 rounded-xl shadow-md transition-all">Cancelar</button></div>
+                        <div class="flex gap-2"><button @click="saveFlow()" :disabled="isSavingFlow" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl shadow-md flex justify-center items-center gap-2 transition-all"><span x-show="!isSavingFlow"><i data-lucide="save" class="w-4 h-4 inline"></i> <span x-text="editingRuleId ? 'Atualizar Fluxo' : 'Salvar Novo Fluxo'"></span></span><span x-show="isSavingFlow" class="animate-pulse">⏳ Salvando arquivos...</span></button><button x-show="editingRuleId" @click="cancelEdit()" class="bg-gray-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-4 px-6 rounded-xl shadow-md transition-all">Cancelar</button></div>
                     </div>
                     <div class="mt-8">
                         <div class="flex items-center gap-2 mb-4 ml-2"><i data-lucide="folder" class="w-5 h-5 text-indigo-500"></i><h4 class="font-black text-lg dark:text-white tracking-tight">Meus Fluxos Salvos</h4></div>
@@ -269,11 +268,12 @@
                     <div class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm">
                         <h3 class="font-black text-2xl mb-2 dark:text-white flex items-center gap-2"><i data-lucide="calendar" class="text-indigo-500"></i> Agendar Mensagens</h3>
                         <p class="text-sm text-slate-500 mb-6">Programe um texto simples ou ative um Funil inteiro no dia e hora exatos.</p>
+
                         <div class="space-y-5">
                             <div>
                                 <label class="text-[10px] font-black uppercase text-slate-500 mb-2 block ml-1">Para quem enviar?</label>
                                 <select x-model="agendaTarget" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-sm font-bold dark:text-white outline-none mb-3 cursor-pointer"><option value="manual">✅ Selecionar Leads do CRM</option><option value="avulso">📱 Digitar Número Manualmente</option><option value="todos">👥 Disparar para Todos do CRM</option><option value="funil">🎯 Disparar por Etapa do Funil</option></select>
-                                <div x-show="agendaTarget === 'avulso'" class="mb-3" x-transition><input type="text" x-model="agendaForm.numeroAvulso" placeholder="Ex: 5588981841517 (Com DDI e DDD)" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-sm dark:text-white outline-none focus:border-indigo-500 transition-colors"><p class="text-[10px] text-slate-500 mt-1 ml-1">O número será salvo automaticamente.</p></div>
+                                <div x-show="agendaTarget === 'avulso'" class="mb-3" x-transition><input type="text" x-model="agendaForm.numeroAvulso" placeholder="Ex: 5588981841517 (Com DDI e DDD)" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-sm dark:text-white outline-none focus:border-indigo-500 transition-colors"><p class="text-[10px] text-slate-500 mt-1 ml-1">O número será salvo automaticamente no seu painel.</p></div>
                                 <div x-show="agendaTarget === 'funil'" class="mb-3" x-transition><select x-model="agendaFunil" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-sm dark:text-white outline-none cursor-pointer"><template x-for="col in columns" :key="col.id"><option :value="col.id" x-text="'Somente leads em: ' + col.name"></option></template></select></div>
                                 <div x-show="agendaTarget === 'manual'" x-transition class="bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-4">
                                     <div class="relative mb-3"><i data-lucide="search" class="absolute left-3 top-3 w-4 h-4 text-slate-400"></i><input type="text" x-model="agendaSearch" placeholder="Pesquisar por nome ou número..." class="w-full bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl py-2.5 pl-9 pr-4 text-sm dark:text-white outline-none focus:border-indigo-500 transition-colors"></div>
@@ -295,7 +295,7 @@
                     </div>
                     <div class="mt-8">
                         <div class="flex gap-4 mb-4 border-b border-gray-200 dark:border-slate-800 pb-2">
-                            <button @click="agendaTab = 'pendentes'; setTimeout(() => lucide.createIcons(), 50);" :class="agendaTab === 'pendentes' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'" class="px-2 py-2 font-black text-sm uppercase tracking-widest transition-all">Aguardando <span class="bg-indigo-100 text-indigo-600 text-[9px] px-2 py-1 rounded-full ml-1" x-text="agendamentos.filter(a => !a.sent).length"></span></button>
+                            <button @click="agendaTab = 'pendentes'; setTimeout(() => lucide.createIcons(), 50);" :class="agendaTab === 'pendentes' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'" class="px-2 py-2 font-black text-sm uppercase tracking-widest transition-all">Aguardando Envio <span class="bg-indigo-100 text-indigo-600 text-[9px] px-2 py-1 rounded-full ml-1" x-text="agendamentos.filter(a => !a.sent).length"></span></button>
                             <button @click="agendaTab = 'historico'; setTimeout(() => lucide.createIcons(), 50);" :class="agendaTab === 'historico' ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'" class="px-2 py-2 font-black text-sm uppercase tracking-widest transition-all">Histórico <span class="bg-emerald-100 text-emerald-600 text-[9px] px-2 py-1 rounded-full ml-1" x-text="agendamentos.filter(a => a.sent).length"></span></button>
                         </div>
                         <div x-show="agendaTab === 'pendentes'" class="space-y-3" x-transition><template x-for="item in agendamentos.filter(a => !a.sent)" :key="item.id"><div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm flex justify-between items-center group hover:border-indigo-300 transition-colors"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 flex items-center justify-center shrink-0"><i data-lucide="clock" class="w-4 h-4"></i></div><div><p class="font-bold text-sm dark:text-white" x-text="leads.find(l => l.id === item.leadId)?.nome || item.avulsoName || 'Lead'"></p><p class="text-[11px] text-indigo-500 font-black mt-0.5" x-text="'Agendado: ' + new Date(item.dataHora).toLocaleString('pt-BR', {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:'2-digit'})"></p><p class="text-[10px] text-slate-500 mt-1 uppercase font-bold" x-text="item.tipo === 'fluxo' ? '👉 Fluxo de Automação' : '👉 Mensagem Simples'"></p></div></div><button @click="cancelarAgendamento(item.id)" class="p-3 bg-red-50 text-red-500 rounded-xl dark:bg-red-900/20 hover:bg-red-500 hover:text-white transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></template></div>
@@ -361,10 +361,13 @@
                             <template x-if="(msg.type === 'document' || msg.content.includes('http')) && !msg.content.includes('ogg') && !msg.content.includes('jpg') && !msg.content.includes('mp4') && msg.type !== 'image' && msg.type !== 'audio' && msg.type !== 'video'"><a :href="extractUrl(msg.content)" target="_blank" class="underline text-xs font-bold flex items-center gap-1 text-blue-600 dark:text-indigo-100"><i data-lucide="external-link" class="w-3.5 h-3.5"></i> Arquivo</a></template>
                             <template x-if="msg.type === 'text' || (!msg.content.includes('http') && msg.type !== 'audio' && msg.type !== 'image' && msg.type !== 'video' && msg.type !== 'document')"><p class="leading-relaxed break-words whitespace-pre-wrap" x-text="formatText(msg.content)"></p></template>
                             
-                            <div class="flex justify-end items-center mt-1 gap-1 opacity-80">
-                                <span class="text-[10px] text-wa-sub-light dark:text-wa-sub-dark" x-text="new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></span>
+                            <div class="flex justify-end items-center mt-1 gap-1">
+                                <span class="text-[10px] text-wa-sub-light dark:text-wa-sub-dark opacity-80" x-text="new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></span>
                                 <template x-if="msg.from_me">
-                                    <i data-lucide="check-check" class="w-[14px] h-[14px] text-[#53bdeb]"></i>
+                                    <span class="inline-flex items-center">
+                                        <i x-show="msg.status === 'read' || msg.status === 'READ' || msg.status == 3 || msg.status == 4" data-lucide="check-check" class="w-[14px] h-[14px] text-[#53bdeb]"></i>
+                                        <i x-show="!msg.status || msg.status === 'sent' || msg.status === 'delivered' || msg.status == 1 || msg.status == 2" data-lucide="check-check" class="w-[14px] h-[14px] text-wa-sub-light dark:text-wa-sub-dark opacity-70"></i>
+                                    </span>
                                 </template>
                             </div>
                         </div>
@@ -387,20 +390,21 @@
                 </div>
             </div>
 
-            <footer class="bg-wa-header-light dark:bg-wa-header-dark border-t border-gray-200 dark:border-slate-800 p-3 z-20 pb-safe shrink-0 relative">
-                <div class="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar mb-1">
-                    <button @click="msgInput = 'Olá! Tudo bem?'; sendMsg();" class="shrink-0 bg-white dark:bg-slate-800 text-[10px] font-bold px-3 py-1.5 rounded-full dark:text-white shadow-sm border border-gray-200 dark:border-slate-700">👋 Oi</button>
+            <footer class="bg-wa-header-light dark:bg-wa-header-dark border-t border-gray-200 dark:border-slate-800 p-3 z-20 pb-safe shrink-0 relative flex flex-col gap-2">
+                
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar w-full">
+                    <button @click="msgInput += (msgInput.length ? '\n' : '') + 'Olá! Tudo bem?'" class="shrink-0 bg-white dark:bg-slate-800 text-[10px] font-bold px-3 py-1.5 rounded-full dark:text-white shadow-sm border border-gray-200 dark:border-slate-700 hover:bg-gray-50 transition-colors">👋 Oi</button>
                     <div class="w-px h-5 bg-gray-300 dark:bg-slate-700 shrink-0 mx-1"></div>
                     <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest shrink-0">Atalhos:</span>
                     <template x-for="rule in botRules" :key="rule.id">
-                        <button @click="triggerBotRuleManual(rule)" class="shrink-0 bg-white dark:bg-indigo-900/40 text-[10px] font-bold px-3 py-1.5 rounded-full text-[#00a884] dark:text-indigo-300 border border-gray-200 dark:border-indigo-800 shadow-sm active:scale-95 transition-transform flex items-center gap-1">
+                        <button @click="triggerBotRuleManual(rule)" class="shrink-0 bg-white dark:bg-indigo-900/40 text-[10px] font-bold px-3 py-1.5 rounded-full text-[#00a884] dark:text-indigo-300 border border-gray-200 dark:border-indigo-800 shadow-sm active:scale-95 transition-transform flex items-center gap-1 hover:bg-gray-50">
                             🚀 <span x-text="rule.nome || rule.trigger_text || 'Fluxo'"></span>
                         </button>
                     </template>
                 </div>
 
-                <div class="flex items-end gap-1.5 mt-1">
-                    <div class="flex items-center gap-0.5 pb-1" x-show="!isRecording">
+                <div class="flex items-end gap-1.5 w-full">
+                    <div class="flex items-center gap-0.5 pb-1.5" x-show="!isRecording">
                         <input type="file" x-ref="iI" class="hidden" @change="uploadAndSend($event, 'image')">
                         <input type="file" x-ref="aI" class="hidden" @change="uploadAndSend($event, 'audio')">
                         <input type="file" x-ref="dI" class="hidden" @change="uploadAndSend($event, 'document')">
@@ -416,10 +420,7 @@
                     </div>
 
                     <div class="flex-1 bg-white dark:bg-[#2a3942] rounded-xl flex items-center justify-between px-4 shadow-sm py-3.5 mb-1" x-show="isRecording" x-cloak>
-                        <div class="flex items-center gap-2 text-red-500 animate-pulse">
-                            <div class="w-2.5 h-2.5 bg-red-500 rounded-full"></div>
-                            <span class="font-bold text-sm" x-text="formatTime(recordingTimer)">00:00</span>
-                        </div>
+                        <div class="flex items-center gap-2 text-red-500 animate-pulse"><div class="w-2.5 h-2.5 bg-red-500 rounded-full"></div><span class="font-bold text-sm" x-text="formatTime(recordingTimer)">00:00</span></div>
                         <button @click="cancelRecording()" class="text-slate-400 hover:text-red-500 transition-colors" title="Cancelar Gravação"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                     </div>
 
@@ -460,7 +461,6 @@
                 agendaForm: { leadIds: [], numeroAvulso: '', tipo: 'simples', flowId: '', texto: '', dataHora: '' },
                 agendamentos: [],
 
-                // GRAVADOR DE ÁUDIO
                 isRecording: false, recordingTimer: 0, recordingInterval: null, mediaRecorder: null, audioChunks: [],
 
                 navItems: [
@@ -473,7 +473,6 @@
                     { id: 'biblioteca', label: 'Mídias', icon: 'folder' }
                 ],
                 
-                // COLUNAS PADRÕES INICIAIS
                 columns: [{ id: 'novo_lead', name: 'Triagem' }, { id: 'atendimento', name: 'Negócio' }, { id: 'proposta', name: 'Proposta' }, { id: 'fechado', name: 'Venda' }],
                 
                 async init() {
@@ -481,32 +480,25 @@
                     const SB_KEY = 'sb_publishable_3PAly_BCdvoldAzm1Y7SxQ_S3rp2QhQ';
                     this.client = supabase.createClient(SB_URL, SB_KEY);
                     
-                    // NOVO: CARREGA COLUNAS PERSONALIZADAS DO FUNIL
                     const savedCols = localStorage.getItem('evo_columns');
                     if(savedCols) { this.columns = JSON.parse(savedCols); }
 
-                    await this.loadLeads();
-                    await this.loadBotRules();
-                    this.loadAgendamentos();
-                    this.setupRealtime();
+                    await this.loadLeads(); await this.loadBotRules(); this.loadAgendamentos(); this.setupRealtime();
                     setTimeout(() => lucide.createIcons(), 100);
-
                     setInterval(() => { this.checkAgendamentos(); }, 15000);
                 },
 
-                // NOVO: FUNÇÃO PARA ADICIONAR ETAPAS NO FUNIL KANBAN
                 addColumn() {
-                    const name = prompt("Digite o nome da nova etapa do funil (ex: Aguardando Pagamento):");
+                    const name = prompt("Digite o nome da nova etapa do funil (ex: Retorno 24h):");
                     if(name && name.trim() !== '') {
                         const id = name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
                         this.columns.push({ id: id, name: name.trim() });
                         localStorage.setItem('evo_columns', JSON.stringify(this.columns));
-                        this.addNotification('Etapa Criada', `A coluna "${name}" foi adicionada.`, 'success');
+                        this.addNotification('Etapa Criada', `A coluna "${name}" foi adicionada ao funil.`, 'success');
                         setTimeout(() => lucide.createIcons(), 50);
                     }
                 },
 
-                // GRAVADOR DE ÁUDIO
                 formatTime(seconds) { const m = Math.floor(seconds / 60).toString().padStart(2, '0'); const s = (seconds % 60).toString().padStart(2, '0'); return `${m}:${s}`; },
                 async startRecording() {
                     try {
@@ -525,18 +517,21 @@
                             this.isRecording = false; setTimeout(() => lucide.createIcons(), 50);
                         };
                         this.mediaRecorder.start(); setTimeout(() => lucide.createIcons(), 50);
-                    } catch (err) { alert("Permissão de microfone negada. Certifique-se de estar usando HTTPS."); }
+                    } catch (err) { alert("Permissão de microfone negada. Teste em ambiente com HTTPS ativado."); }
                 },
                 cancelRecording() { this.isRecording = false; if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') { this.mediaRecorder.stop(); } clearInterval(this.recordingInterval); setTimeout(() => lucide.createIcons(), 50); },
                 sendRecording() { if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') { this.mediaRecorder.stop(); } },
 
                 openObsModal(lead) { this.activeLeadForObs = lead; this.obsInput = lead.observacao || ''; this.isObsModalOpen = true; setTimeout(() => lucide.createIcons(), 50); },
                 async saveObs() { if (!this.activeLeadForObs) return; try { const { error } = await this.client.from('leads').update({ observacao: this.obsInput.trim() }).eq('id', this.activeLeadForObs.id); if(error) throw error; this.activeLeadForObs.observacao = this.obsInput.trim(); const idx = this.leads.findIndex(l => l.id === this.activeLeadForObs.id); if (idx !== -1) this.leads[idx].observacao = this.obsInput.trim(); this.isObsModalOpen = false; this.addNotification('Tag Salva', 'Observação atualizada.', 'success'); } catch(e) { alert("Erro ao salvar observação."); } },
+                
                 loadAgendamentos() { const salvos = localStorage.getItem('evo_agendamentos'); if (salvos) this.agendamentos = JSON.parse(salvos); },
                 async salvarAgendamento() { if (!this.agendaForm.dataHora) return alert('Escolha a data e a hora.'); if (this.agendaForm.tipo === 'simples' && !this.agendaForm.texto) return alert('Escreva a mensagem.'); if (this.agendaForm.tipo === 'fluxo' && !this.agendaForm.flowId) return alert('Selecione um Fluxo.'); let alvos = []; if (this.agendaTarget === 'avulso') { if (!this.agendaForm.numeroAvulso) return alert('Digite o número.'); let numAvulso = this.agendaForm.numeroAvulso.replace(/\D/g, ''); const { data: novoLead } = await this.client.from('leads').upsert({ numero: numAvulso, nome: 'Lead Avulso' }, { onConflict: 'numero' }).select().single(); alvos.push(novoLead); await this.loadLeads(); } else if (this.agendaTarget === 'todos') { alvos = this.leads; } else if (this.agendaTarget === 'funil') { alvos = this.leads.filter(l => l.status === this.agendaFunil); } else { alvos = this.leads.filter(l => this.agendaForm.leadIds.includes(l.id)); } if(alvos.length === 0) return alert('Selecione pelo menos 1 lead.'); alvos.forEach((leadAlvo, index) => { this.agendamentos.push({ id: Date.now() + index, leadId: leadAlvo.id, tipo: this.agendaForm.tipo, flowId: this.agendaForm.flowId, texto: this.agendaForm.texto, dataHora: this.agendaForm.dataHora, sent: false }); }); localStorage.setItem('evo_agendamentos', JSON.stringify(this.agendamentos)); this.agendaForm.leadIds = []; this.agendaForm.numeroAvulso = ''; this.agendaForm.texto = ''; if(this.$refs.dataHoraInput._flatpickr) this.$refs.dataHoraInput._flatpickr.clear(); this.agendaForm.dataHora = ''; this.agendaSearch = ''; this.addNotification('Agendado!', `Para ${alvos.length} lead(s).`, 'success'); setTimeout(() => lucide.createIcons(), 50); },
                 cancelarAgendamento(id) { this.agendamentos = this.agendamentos.filter(a => a.id !== id); localStorage.setItem('evo_agendamentos', JSON.stringify(this.agendamentos)); },
                 async checkAgendamentos() { const now = new Date(); let alterou = false; for (let ag of this.agendamentos) { if (!ag.sent && new Date(ag.dataHora) <= now) { const leadAlvo = this.leads.find(l => l.id === ag.leadId); if (leadAlvo) { if (ag.tipo === 'simples') { const msgPronta = this.processSpintax(ag.texto, leadAlvo); await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: leadAlvo.numero, text: msgPronta }) }); await this.client.from('messages').insert({ lead_id: leadAlvo.id, content: msgPronta, from_me: true, type: 'text' }); } else if (ag.tipo === 'fluxo') { const rule = this.botRules.find(r => r.id === ag.flowId); if (rule) await this.triggerBotRuleManual(rule, leadAlvo); } this.addNotification('Agendamento Concluído!', `Enviado para ${leadAlvo.nome}`, 'success'); } ag.sent = true; alterou = true; } } if (alterou) localStorage.setItem('evo_agendamentos', JSON.stringify(this.agendamentos)); },
+                
                 addNotification(title, message, type = 'info') { const id = Date.now(); this.notifications.push({ id, title, message, type }); setTimeout(() => { this.notifications = this.notifications.filter(n => n.id !== id); }, 5000); setTimeout(() => lucide.createIcons(), 50); if (type === 'success') { new Audio('https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3').play().catch(() => {}); } else { this.playSound(); } },
+                
                 async forceUpdateProfilePic(lead) { if(!lead || this.isUpdatingPic) return; this.isUpdatingPic = true; try { const res = await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/chat/fetchProfilePictureUrl/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ "number": lead.numero }) }); const data = await res.json(); const picUrl = data.picture || data.profilePictureUrl || data.url || null; if(picUrl) { await this.client.from('leads').update({ foto_url: picUrl }).eq('id', lead.id); this.leads = this.leads.map(l => l.id === lead.id ? {...l, foto_url: picUrl} : l); if (this.selectedLead && this.selectedLead.id === lead.id) { this.selectedLead.foto_url = picUrl; } } } catch(e) {} this.isUpdatingPic = false; },
                 editRule(rule) { this.editingRuleId = rule.id; this.flowBuilder.name = rule.nome || rule.trigger_text || ''; this.flowBuilder.trigger = rule.trigger_text || ''; if (rule.flow_steps && rule.flow_steps.length > 0) { this.flowBuilder.steps = JSON.parse(JSON.stringify(rule.flow_steps)); } else { this.flowBuilder.steps = []; if (rule.media_url) this.flowBuilder.steps.push({ type: rule.media_type || 'document', content: rule.media_url, fileName: 'Mídia no BD' }); if (rule.response_text && !rule.response_text.includes('"isFlow":true')) this.flowBuilder.steps.push({ type: 'text', content: rule.response_text }); } document.getElementById('main-content').scrollTo({ top: 0, behavior: 'smooth' }); setTimeout(() => lucide.createIcons(), 50); },
                 cancelEdit() { this.editingRuleId = null; this.flowBuilder = { name: '', trigger: '', steps: [] }; },
@@ -549,30 +544,33 @@
                 async loadBotRules() { const { data } = await this.client.from('chatbot_rules').select('*').order('created_at', { ascending: false }); if(data) { this.botRules = data.map(rule => { try { const parsed = JSON.parse(rule.response_text); if (parsed && parsed.isFlow) { rule.nome = parsed.name; rule.flow_steps = parsed.steps; } } catch(e) {} return rule; }); setTimeout(() => lucide.createIcons(), 50); } },
                 async deleteBotRule(id) { if(!confirm("Apagar esse fluxo?")) return; await this.client.from('chatbot_rules').delete().eq('id', id); this.loadBotRules(); },
 
-                async triggerBotRuleManual(rule, targetLead = null) { const leadFinal = targetLead || this.selectedLead; if(!leadFinal) return; if(rule.flow_steps && rule.flow_steps.length > 0) { for(const step of rule.flow_steps) { if (step.type === 'delay') { await new Promise(r => setTimeout(r, parseInt(step.content)||2000)); } else if (step.type === 'text') { await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: leadFinal.numero, text: step.content }) }); await this.client.from('messages').insert({ lead_id: leadFinal.id, content: step.content, from_me: true, type: 'text' }); } else { let endpoint = 'sendDocument'; let bodyMedia = { number: leadFinal.numero }; if (step.type === 'audio') { endpoint = 'sendWhatsAppAudio'; bodyMedia.audio = step.content; } else if (step.type === 'image') { endpoint = 'sendImage'; bodyMedia.media = step.content; } else if (step.type === 'video') { endpoint = 'sendVideo'; bodyMedia.media = step.content; } else { bodyMedia.media = step.content; bodyMedia.fileName = "Documento"; } await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(bodyMedia) }); await this.client.from('messages').insert({ lead_id: leadFinal.id, content: step.content, from_me: true, type: step.type }); } if(step.type !== 'delay') await new Promise(r => setTimeout(r, 1000)); } } else if (rule.media_url || (rule.response_text && !rule.response_text.includes('"isFlow":true'))) { if(rule.media_url) { let endpoint = 'sendDocument'; let body = { number: leadFinal.numero }; if(rule.media_type === 'audio') { endpoint = 'sendWhatsAppAudio'; body.audio = rule.media_url; } else if(rule.media_type === 'image') { endpoint = 'sendImage'; body.media = rule.media_url; } else { body.media = rule.media_url; body.fileName = "Documento"; } await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); await this.client.from('messages').insert({ lead_id: leadFinal.id, content: rule.media_url, from_me: true, type: rule.media_type || 'document' }); } if(rule.response_text) { await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: leadFinal.numero, text: rule.response_text }) }); await this.client.from('messages').insert({ lead_id: leadFinal.id, content: rule.response_text, from_me: true, type: 'text' }); } } },
+                async triggerBotRuleManual(rule, targetLead = null) { const leadFinal = targetLead || this.selectedLead; if(!leadFinal) return; if(rule.flow_steps && rule.flow_steps.length > 0) { for(const step of rule.flow_steps) { if (step.type === 'delay') { await new Promise(r => setTimeout(r, parseInt(step.content)||2000)); } else if (step.type === 'text') { await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: leadFinal.numero, text: step.content }) }); await this.client.from('messages').insert({ lead_id: leadFinal.id, content: step.content, from_me: true, type: 'text', status: 'sent' }); } else { let endpoint = 'sendDocument'; let bodyMedia = { number: leadFinal.numero }; if (step.type === 'audio') { endpoint = 'sendWhatsAppAudio'; bodyMedia.audio = step.content; } else if (step.type === 'image') { endpoint = 'sendImage'; bodyMedia.media = step.content; } else if (step.type === 'video') { endpoint = 'sendVideo'; bodyMedia.media = step.content; } else { bodyMedia.media = step.content; bodyMedia.fileName = "Documento"; } await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(bodyMedia) }); await this.client.from('messages').insert({ lead_id: leadFinal.id, content: step.content, from_me: true, type: step.type, status: 'sent' }); } if(step.type !== 'delay') await new Promise(r => setTimeout(r, 1000)); } } else if (rule.media_url || (rule.response_text && !rule.response_text.includes('"isFlow":true'))) { if(rule.media_url) { let endpoint = 'sendDocument'; let body = { number: leadFinal.numero }; if(rule.media_type === 'audio') { endpoint = 'sendWhatsAppAudio'; body.audio = rule.media_url; } else if(rule.media_type === 'image') { endpoint = 'sendImage'; body.media = rule.media_url; } else { body.media = rule.media_url; body.fileName = "Documento"; } await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); await this.client.from('messages').insert({ lead_id: leadFinal.id, content: rule.media_url, from_me: true, type: rule.media_type || 'document', status: 'sent' }); } if(rule.response_text) { await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: leadFinal.numero, text: rule.response_text }) }); await this.client.from('messages').insert({ lead_id: leadFinal.id, content: rule.response_text, from_me: true, type: 'text', status: 'sent' }); } } },
+
                 extractUrl(text) { if (!text) return ''; const match = text.match(/https?:\/\/[^\s]+/); return match ? match[0] : text; },
                 formatText(text) { if (!text) return ''; return text.replace(/\[(IMAGE|AUDIO|VIDEO|DOCUMENT|image|audio|video|document)\]/gi, '').trim(); },
                 toggleTheme() { this.isDarkMode = !this.isDarkMode; localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light'); setTimeout(() => lucide.createIcons(), 50); },
                 playSound() { new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3').play().catch(() => {}); },
+
                 async loadLeads() { const { data } = await this.client.from('leads').select('*').order('created_at', { ascending: false }); if (data) this.leads = data; setTimeout(() => lucide.createIcons(), 50); },
                 async openChat(lead) { this.selectedLead = lead; this.selectedLeadStatus = lead.status; this.isChatOpen = true; this.messages = []; const { data } = await this.client.from('messages').select('*').eq('lead_id', lead.id).order('timestamp', { ascending: true }); this.messages = data || []; this.scrollToBottom(); setTimeout(() => lucide.createIcons(), 50); },
 
-                // NOVO: ENVIO COM TEXTAREA (LIMPA E REDUZ A CAIXA APÓS ENVIO)
+                // ENVIO CORRIGIDO (Reduz a altura da caixa e garante o Status)
                 async sendMsg() {
                     if(!this.msgInput.trim() || !this.selectedLead) return; 
                     const text = this.msgInput.trim(); 
                     this.msgInput = '';
                     if(this.$refs.msgTextarea) this.$refs.msgTextarea.style.height = '48px'; 
                     await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ "number": this.selectedLead.numero, "text": text }) });
-                    await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: text, from_me: true, type: 'text' });
+                    // Adiciona o status "sent" como padrão para o check azul funcionar
+                    await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: text, from_me: true, type: 'text', status: 'sent' });
                 },
 
-                async uploadAndSend(event, type) { const file = event.target.files[0]; if (!file || !this.selectedLead) return; const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9]/g, '')}.${file.name.split('.').pop()}`; await this.client.storage.from('chat_media').upload(`${this.selectedLead.numero}/${fileName}`, file); const { data } = this.client.storage.from('chat_media').getPublicUrl(`${this.selectedLead.numero}/${fileName}`); let endpoint = 'sendDocument'; let body = { number: this.selectedLead.numero }; if (type === 'audio') { endpoint = 'sendWhatsAppAudio'; body.audio = data.publicUrl; } else if (type === 'image') { endpoint = 'sendImage'; body.media = data.publicUrl; } else if (type === 'video') { endpoint = 'sendVideo'; body.media = data.publicUrl; } else { endpoint = 'sendDocument'; body.media = data.publicUrl; body.fileName = file.name; } await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: data.publicUrl, from_me: true, type: type }); },
+                async uploadAndSend(event, type) { const file = event.target.files[0]; if (!file || !this.selectedLead) return; const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9]/g, '')}.${file.name.split('.').pop()}`; await this.client.storage.from('chat_media').upload(`${this.selectedLead.numero}/${fileName}`, file); const { data } = this.client.storage.from('chat_media').getPublicUrl(`${this.selectedLead.numero}/${fileName}`); let endpoint = 'sendDocument'; let body = { number: this.selectedLead.numero }; if (type === 'audio') { endpoint = 'sendWhatsAppAudio'; body.audio = data.publicUrl; } else if (type === 'image') { endpoint = 'sendImage'; body.media = data.publicUrl; } else if (type === 'video') { endpoint = 'sendVideo'; body.media = data.publicUrl; } else { endpoint = 'sendDocument'; body.media = data.publicUrl; body.fileName = file.name; } await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: data.publicUrl, from_me: true, type: type, status: 'sent' }); },
                 addToLibrary(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = () => { this.myLibrary.push({ name: file.name, type: file.type, base64: reader.result.split(',')[1] }); setTimeout(() => lucide.createIcons(), 50); }; },
                 removeFromLibrary(index) { this.myLibrary.splice(index, 1); },
                 async sendFromLibrary(file) { if (!this.selectedLead) return alert('Abra um chat primeiro.'); let endpoint = file.type.includes('image') ? 'sendImage' : 'sendDocument'; await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ "number": this.selectedLead.numero, [file.type.includes('image') ? 'media' : 'media']: file.base64, "fileName": file.name }) }); },
                 processSpintax(text, lead) { if(!text) return ""; let msg = text.replace(/{nome}/g, lead.nome ? lead.nome.split(' ')[0] : 'Cliente'); return msg.replace(/{([^{}]+)}/g, function(match, options) { const words = options.split('|'); return words[Math.floor(Math.random() * words.length)]; }); },
-                async iniciarDisparo() { if (this.disparoConfig.isRunning) return; let alvos = []; if (this.disparoConfig.status === 'importados') { if(!this.disparoConfig.numerosImportados) return alert('Cole os números para importar.'); const numeros = this.disparoConfig.numerosImportados.split(/[\n,]+/).map(n => n.replace(/\D/g, '').trim()).filter(n => n); this.addNotification('Importando...', `Criando ${numeros.length} novos leads no painel.`, 'info'); for (let num of numeros) { const { data: newLead } = await this.client.from('leads').upsert({ numero: num, nome: 'Lead Importado' }, { onConflict: 'numero' }).select().single(); alvos.push(newLead); } await this.loadLeads(); } else if (this.disparoConfig.status === 'todos') { alvos = this.leads; } else { alvos = this.leads.filter(l => l.status === this.disparoConfig.status); } if (alvos.length === 0) return alert('Nenhum lead encontrado.'); this.disparoConfig.isRunning = true; this.disparoConfig.total = alvos.length; this.disparoConfig.sent = 0; let publicMediaUrl = null; let mediaType = null; if (this.disparoConfig.tipoMensagem === 'simples' && this.disparoConfig.file) { const file = this.disparoConfig.file; const fileName = `bulk-${Date.now()}-${file.name}`; await this.client.storage.from('chat_media').upload(`disparos/${fileName}`, file); const { data } = this.client.storage.from('chat_media').getPublicUrl(`disparos/${fileName}`); publicMediaUrl = data.publicUrl; mediaType = file.type.includes('image') ? 'image' : file.type.includes('video') ? 'video' : file.type.includes('audio') ? 'audio' : 'document'; } for (const lead of alvos) { if (!this.disparoConfig.isRunning) break; try { if (this.disparoConfig.tipoMensagem === 'fluxo') { const rule = this.botRules.find(r => r.id === this.disparoConfig.selectedFlowId); if(rule) await this.triggerBotRuleManual(rule, lead); } else { if (publicMediaUrl) { let endpoint = 'sendDocument'; let body = { number: lead.numero }; if(mediaType === 'audio') { endpoint = 'sendWhatsAppAudio'; body.audio = publicMediaUrl; } else if(mediaType === 'image') { endpoint = 'sendImage'; body.media = publicMediaUrl; } else if(mediaType === 'video') { endpoint = 'sendVideo'; body.media = publicMediaUrl; } else { body.media = publicMediaUrl; body.fileName = this.disparoConfig.file.name; } await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); await this.client.from('messages').insert({ lead_id: lead.id, content: publicMediaUrl, from_me: true, type: mediaType }); } if (this.disparoConfig.msg) { const msgPronta = this.processSpintax(this.disparoConfig.msg, lead); await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: lead.numero, text: msgPronta }) }); await this.client.from('messages').insert({ lead_id: lead.id, content: msgPronta, from_me: true, type: 'text' }); } } } catch (e) { console.error(e); } this.disparoConfig.sent++; if (this.disparoConfig.sent < this.disparoConfig.total && this.disparoConfig.isRunning) { const delay = Math.floor(Math.random() * (this.disparoConfig.maxDelay - this.disparoConfig.minDelay + 1)) + parseInt(this.disparoConfig.minDelay); await new Promise(r => setTimeout(r, delay * 1000)); } } this.disparoConfig.isRunning = false; this.addNotification('Disparo Finalizado', `Enviado para ${this.disparoConfig.sent} leads.`, 'success'); },
+                async iniciarDisparo() { if (this.disparoConfig.isRunning) return; let alvos = []; if (this.disparoConfig.status === 'importados') { if(!this.disparoConfig.numerosImportados) return alert('Cole os números.'); const numeros = this.disparoConfig.numerosImportados.split(/[\n,]+/).map(n => n.replace(/\D/g, '').trim()).filter(n => n); this.addNotification('Importando...', `Criando ${numeros.length} novos leads no painel.`, 'info'); for (let num of numeros) { const { data: newLead } = await this.client.from('leads').upsert({ numero: num, nome: 'Lead Importado' }, { onConflict: 'numero' }).select().single(); alvos.push(newLead); } await this.loadLeads(); } else if (this.disparoConfig.status === 'todos') { alvos = this.leads; } else { alvos = this.leads.filter(l => l.status === this.disparoConfig.status); } if (alvos.length === 0) return alert('Nenhum lead encontrado.'); this.disparoConfig.isRunning = true; this.disparoConfig.total = alvos.length; this.disparoConfig.sent = 0; let publicMediaUrl = null; let mediaType = null; if (this.disparoConfig.tipoMensagem === 'simples' && this.disparoConfig.file) { const file = this.disparoConfig.file; const fileName = `bulk-${Date.now()}-${file.name}`; await this.client.storage.from('chat_media').upload(`disparos/${fileName}`, file); const { data } = this.client.storage.from('chat_media').getPublicUrl(`disparos/${fileName}`); publicMediaUrl = data.publicUrl; mediaType = file.type.includes('image') ? 'image' : file.type.includes('video') ? 'video' : file.type.includes('audio') ? 'audio' : 'document'; } for (const lead of alvos) { if (!this.disparoConfig.isRunning) break; try { if (this.disparoConfig.tipoMensagem === 'fluxo') { const rule = this.botRules.find(r => r.id === this.disparoConfig.selectedFlowId); if(rule) await this.triggerBotRuleManual(rule, lead); } else { if (publicMediaUrl) { let endpoint = 'sendDocument'; let body = { number: lead.numero }; if(mediaType === 'audio') { endpoint = 'sendWhatsAppAudio'; body.audio = publicMediaUrl; } else if(mediaType === 'image') { endpoint = 'sendImage'; body.media = publicMediaUrl; } else if(mediaType === 'video') { endpoint = 'sendVideo'; body.media = publicMediaUrl; } else { body.media = publicMediaUrl; body.fileName = this.disparoConfig.file.name; } await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); await this.client.from('messages').insert({ lead_id: lead.id, content: publicMediaUrl, from_me: true, type: mediaType, status: 'sent' }); } if (this.disparoConfig.msg) { const msgPronta = this.processSpintax(this.disparoConfig.msg, lead); await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: lead.numero, text: msgPronta }) }); await this.client.from('messages').insert({ lead_id: lead.id, content: msgPronta, from_me: true, type: 'text', status: 'sent' }); } } } catch (e) { console.error(e); } this.disparoConfig.sent++; if (this.disparoConfig.sent < this.disparoConfig.total && this.disparoConfig.isRunning) { const delay = Math.floor(Math.random() * (this.disparoConfig.maxDelay - this.disparoConfig.minDelay + 1)) + parseInt(this.disparoConfig.minDelay); await new Promise(r => setTimeout(r, delay * 1000)); } } this.disparoConfig.isRunning = false; this.addNotification('Disparo Finalizado', `Enviado para ${this.disparoConfig.sent} leads.`, 'success'); },
                 pararDisparo() { this.disparoConfig.isRunning = false; },
 
                 setupRealtime() {
@@ -582,18 +580,27 @@
                         else if (payload.eventType === 'UPDATE') { if (payload.new.status === 'fechado' && payload.old.status !== 'fechado') { this.addNotification('Venda Fechada! 🚀', `${payload.new.nome} agora é cliente!`, 'success'); } }
                     }).subscribe();
                     
-                    this.client.channel('msgs_channel').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-                        if (!payload.new.from_me) {
-                            if (!this.isChatOpen || this.selectedLead?.id !== payload.new.lead_id) {
-                                const leadMsg = this.leads.find(l => l.id === payload.new.lead_id);
-                                if(leadMsg && leadMsg.status !== 'grupo') { this.addNotification('Nova Mensagem', `De: ${leadMsg.nome}`, 'info'); }
+                    this.client.channel('msgs_channel').on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, payload => {
+                        // Quando INSERE
+                        if (payload.eventType === 'INSERT') {
+                            if (!payload.new.from_me) {
+                                if (!this.isChatOpen || this.selectedLead?.id !== payload.new.lead_id) {
+                                    const leadMsg = this.leads.find(l => l.id === payload.new.lead_id);
+                                    if(leadMsg && leadMsg.status !== 'grupo') { this.addNotification('Nova Mensagem', `De: ${leadMsg.nome}`, 'info'); }
+                                }
                             }
-                        }
-                        if (this.isChatOpen && payload.new.lead_id === this.selectedLead?.id) { 
-                            if(!this.messages.find(m => m.id === payload.new.id)) { 
-                                this.messages.push(payload.new); 
-                                this.scrollToBottom(); 
-                            } 
+                            if (this.isChatOpen && payload.new.lead_id === this.selectedLead?.id) { 
+                                if(!this.messages.find(m => m.id === payload.new.id)) { this.messages.push(payload.new); this.scrollToBottom(); } 
+                            }
+                        } 
+                        // Quando ATUALIZA (Ex: Quando a mensagem é lida e muda de "sent" para "read")
+                        else if (payload.eventType === 'UPDATE') {
+                            if (this.isChatOpen && payload.new.lead_id === this.selectedLead?.id) {
+                                const idx = this.messages.findIndex(m => m.id === payload.new.id);
+                                if (idx !== -1) {
+                                    this.messages[idx] = payload.new;
+                                }
+                            }
                         }
                     }).subscribe();
                 },
