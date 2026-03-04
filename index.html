@@ -137,6 +137,62 @@
                     </div>
                 </div>
 
+                <div x-show="screen === 'disparo'" x-cloak class="max-w-xl mx-auto space-y-4 pb-20">
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border dark:border-slate-800 shadow-sm">
+                        <h3 class="font-black text-lg mb-4 dark:text-white flex items-center gap-2">
+                            <i data-lucide="send" class="w-5 h-5 text-indigo-500"></i> Disparo Inteligente
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-[10px] font-black uppercase text-slate-500 mb-1 block">Público Alvo (Funil)</label>
+                                <select x-model="disparoConfig.status" :disabled="disparoConfig.isRunning" class="w-full bg-slate-50 dark:bg-slate-950 border dark:border-slate-800 rounded-xl p-3 text-sm dark:text-white outline-none">
+                                    <option value="todos">Todos os Leads</option>
+                                    <template x-for="col in columns" :key="col.id">
+                                        <option :value="col.id" x-text="col.name"></option>
+                                    </template>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-black uppercase text-slate-500 mb-1 block">Mensagem (Use {nome} e {Opção1|Opção2})</label>
+                                <textarea x-model="disparoConfig.msg" :disabled="disparoConfig.isRunning" rows="4" class="w-full bg-slate-50 dark:bg-slate-950 border dark:border-slate-800 rounded-xl p-4 text-sm dark:text-white outline-none"></textarea>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-[10px] font-black uppercase text-slate-500 mb-1 block">Espera Mínima (segundos)</label>
+                                    <input x-model="disparoConfig.minDelay" type="number" :disabled="disparoConfig.isRunning" class="w-full bg-slate-50 dark:bg-slate-950 border dark:border-slate-800 rounded-xl p-3 text-sm dark:text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black uppercase text-slate-500 mb-1 block">Espera Máxima (segundos)</label>
+                                    <input x-model="disparoConfig.maxDelay" type="number" :disabled="disparoConfig.isRunning" class="w-full bg-slate-50 dark:bg-slate-950 border dark:border-slate-800 rounded-xl p-3 text-sm dark:text-white outline-none">
+                                </div>
+                            </div>
+
+                            <div x-show="disparoConfig.isRunning || disparoConfig.sent > 0" class="bg-indigo-50 dark:bg-indigo-900/40 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-xs font-bold text-indigo-600 dark:text-indigo-300">Progresso do Envio</span>
+                                    <span class="text-xs font-black text-indigo-600 dark:text-indigo-300" x-text="`${disparoConfig.sent} / ${disparoConfig.total}`"></span>
+                                </div>
+                                <div class="w-full bg-indigo-200 dark:bg-indigo-950 rounded-full h-2 mb-2 overflow-hidden">
+                                    <div class="bg-indigo-600 h-2 rounded-full transition-all duration-300" :style="`width: ${(disparoConfig.sent / disparoConfig.total) * 100}%`"></div>
+                                </div>
+                                <p class="text-[10px] font-bold text-indigo-500 animate-pulse mt-2" x-show="disparoConfig.isRunning">🚀 Disparando... Mantenha a aba aberta!</p>
+                                <p class="text-[10px] font-bold text-emerald-500 mt-2" x-show="!disparoConfig.isRunning && disparoConfig.sent > 0 && disparoConfig.sent === disparoConfig.total">✅ Disparo concluído com sucesso!</p>
+                            </div>
+
+                            <button x-show="!disparoConfig.isRunning" @click="iniciarDisparo()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="play" class="w-4 h-4"></i> Iniciar Disparo
+                            </button>
+                            
+                            <button x-show="disparoConfig.isRunning" @click="pararDisparo()" class="w-full bg-red-500 hover:bg-red-600 text-white font-black py-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="square" class="w-4 h-4"></i> Parar Disparo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
             </section>
         </main>
 
@@ -208,7 +264,18 @@
             return {
                 screen: 'kanban', isChatOpen: false, selectedLead: null, selectedLeadStatus: '', msgInput: '', leads: [], messages: [], botRules: [], newRule: { trigger: '', response: '' }, botMediaFile: null,
                 isDarkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
-                navItems: [{ id: 'dash', label: 'Dash', icon: 'pie-chart' }, { id: 'kanban', label: 'Funil', icon: 'columns' }, { id: 'bot', label: 'Robô', icon: 'bot' }],
+                
+                // ADICIONADO MENU DISPARO AQUI
+                navItems: [
+                    { id: 'dash', label: 'Dash', icon: 'pie-chart' }, 
+                    { id: 'kanban', label: 'Funil', icon: 'columns' }, 
+                    { id: 'bot', label: 'Robô', icon: 'bot' },
+                    { id: 'disparo', label: 'Disparo', icon: 'send' }
+                ],
+                
+                // ADICIONADO VARIAVEIS DO DISPARO
+                disparoConfig: { status: 'todos', msg: '{Oi|Olá|Fala} {nome}, temos uma oferta especial pra você!', minDelay: 20, maxDelay: 60, isRunning: false, sent: 0, total: 0 },
+                
                 columns: [{ id: 'novo_lead', name: 'Triagem' }, { id: 'atendimento', name: 'Negócio' }, { id: 'proposta', name: 'Proposta' }, { id: 'fechado', name: 'Venda' }],
                 
                 async init() {
@@ -216,7 +283,7 @@
                     const SB_KEY = 'sb_publishable_3PAly_BCdvoldAzm1Y7SxQ_S3rp2QhQ';
                     this.client = supabase.createClient(SB_URL, SB_KEY);
                     await this.loadLeads();
-                    await this.loadBotRules(); // REATIVADO
+                    await this.loadBotRules();
                     this.setupRealtime();
                     setTimeout(() => lucide.createIcons(), 100);
                 },
@@ -290,6 +357,71 @@
 
                 async loadBotRules() { const { data } = await this.client.from('chatbot_rules').select('*').order('created_at', { ascending: false }); if(data) { this.botRules = data; setTimeout(() => lucide.createIcons(), 50); } },
                 async deleteBotRule(id) { await this.client.from('chatbot_rules').delete().eq('id', id); this.loadBotRules(); },
+
+                // --- FUNÇÕES DO DISPARADOR INTELIGENTE AQUI ---
+                processSpintax(text, lead) {
+                    let msg = text.replace(/{nome}/g, lead.nome ? lead.nome.split(' ')[0] : 'Cliente');
+                    msg = msg.replace(/{([^{}]+)}/g, function(match, options) {
+                        const words = options.split('|');
+                        return words[Math.floor(Math.random() * words.length)];
+                    });
+                    return msg;
+                },
+
+                async iniciarDisparo() {
+                    if (this.disparoConfig.isRunning) return;
+                    
+                    let alvos = this.leads;
+                    if (this.disparoConfig.status !== 'todos') {
+                        alvos = this.leads.filter(l => l.status === this.disparoConfig.status);
+                    }
+
+                    if (alvos.length === 0) {
+                        alert('Nenhum lead encontrado para este filtro.');
+                        return;
+                    }
+
+                    this.disparoConfig.isRunning = true;
+                    this.disparoConfig.total = alvos.length;
+                    this.disparoConfig.sent = 0;
+
+                    for (const lead of alvos) {
+                        if (!this.disparoConfig.isRunning) break;
+
+                        const msgPronta = this.processSpintax(this.disparoConfig.msg, lead);
+
+                        try {
+                            await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', {
+                                method: 'POST', 
+                                headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, 
+                                body: JSON.stringify({ number: lead.numero, text: msgPronta })
+                            });
+                            
+                            // Salva no Supabase para aparecer no histórico do chat
+                            await this.client.from('messages').insert({ lead_id: lead.id, content: msgPronta, from_me: true, type: 'text' });
+                        } catch (error) {
+                            console.error('Erro ao enviar para', lead.numero, error);
+                        }
+
+                        this.disparoConfig.sent++;
+
+                        // Aplica o delay se não for a última mensagem e se o disparo não foi cancelado
+                        if (this.disparoConfig.sent < this.disparoConfig.total && this.disparoConfig.isRunning) {
+                            const min = parseInt(this.disparoConfig.minDelay);
+                            const max = parseInt(this.disparoConfig.maxDelay);
+                            const delaySeconds = Math.floor(Math.random() * (max - min + 1)) + min;
+                            await new Promise(r => setTimeout(r, delaySeconds * 1000));
+                        }
+                    }
+
+                    this.disparoConfig.isRunning = false;
+                    setTimeout(() => lucide.createIcons(), 50); // Recarrega os ícones se necessário
+                },
+
+                pararDisparo() {
+                    this.disparoConfig.isRunning = false;
+                },
+                // --- FIM DO DISPARADOR ---
 
                 setupRealtime() {
                     this.client.channel('leads_channel').on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => this.loadLeads()).subscribe();
