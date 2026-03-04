@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br" x-data="crmApp()">
+<html lang="pt-pt" x-data="crmApp()">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -16,8 +16,7 @@
             background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); 
             background-blend-mode: overlay; 
         }
-        .kanban-col { min-width: 280px; height: calc(100vh - 200px); }
-        input:focus { outline: none; }
+        .kanban-col { min-width: 300px; height: calc(100vh - 220px); }
         .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); }
     </style>
 </head>
@@ -25,59 +24,74 @@
 
     <header class="p-4 border-b border-slate-800 bg-slate-900/50 backdrop-blur-md flex justify-between items-center sticky top-0 z-40">
         <div>
-            <h1 class="text-xl font-black text-blue-500 tracking-tighter" x-text="screen.toUpperCase()">DASHBOARD</h1>
+            <h1 class="text-xl font-black text-blue-500 tracking-tighter" x-text="screen === 'dash' ? 'DASHBOARD' : 'PIPELINE'"></h1>
             <p class="text-[10px] text-emerald-500 font-bold flex items-center gap-1 uppercase">
-                <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Evolution Online
+                <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Evolution: igor
             </p>
         </div>
         <div class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-emerald-500 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">IB</div>
     </header>
 
-    <main class="h-screen overflow-y-auto pb-32 p-4">
+    <main class="h-screen overflow-y-auto pb-40 p-4">
         
-        <div x-show="screen === 'dash'" x-cloak class="space-y-4">
+        <div x-show="screen === 'dash'" x-cloak class="space-y-6">
             <div class="grid grid-cols-2 gap-4">
-                <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 shadow-xl text-center">
-                    <p class="text-slate-500 text-[10px] font-bold uppercase mb-2 text-center w-full">Total Leads</p>
+                <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl">
+                    <p class="text-slate-500 text-[10px] font-bold uppercase mb-1">Total Leads</p>
                     <h3 class="text-4xl font-black" x-text="leads.length">0</h3>
                 </div>
-                <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 shadow-xl border-l-4 border-l-blue-500 text-center">
-                    <p class="text-slate-500 text-[10px] font-bold uppercase mb-2 text-center w-full">Novos</p>
+                <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl border-l-4 border-l-blue-500">
+                    <p class="text-slate-500 text-[10px] font-bold uppercase mb-1">Novos</p>
                     <h3 class="text-4xl font-black" x-text="leads.filter(l => l.status === 'novo_lead').length">0</h3>
                 </div>
             </div>
             
-            <h2 class="font-bold text-lg mt-6">Atividade Recente</h2>
-            <div class="space-y-2">
-                <template x-for="lead in leads.slice(0, 5)" :key="lead.id">
-                    <div class="bg-slate-900/50 p-3 rounded-2xl border border-slate-800 flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-[10px] font-bold text-white" x-text="lead.nome.substring(0,2).toUpperCase()"></div>
-                        <div class="flex-1">
-                            <p class="text-sm font-bold" x-text="lead.nome"></p>
-                            <p class="text-[10px] text-slate-500" x-text="lead.numero"></p>
+            <div class="bg-slate-900/40 p-4 rounded-3xl border border-slate-800">
+                <h2 class="font-bold text-sm mb-4 flex items-center gap-2">
+                    <i data-lucide="zap" class="w-4 h-4 text-yellow-500"></i> Últimas Interações
+                </h2>
+                <div class="space-y-3">
+                    <template x-for="lead in leads.slice(0, 4)" :key="lead.id">
+                        <div class="flex items-center gap-3 p-2 hover:bg-slate-800/50 rounded-xl transition-colors">
+                            <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold" x-text="lead.nome.substring(0,2).toUpperCase()"></div>
+                            <div class="flex-1">
+                                <p class="text-sm font-bold" x-text="lead.nome"></p>
+                                <p class="text-[10px] text-slate-500" x-text="lead.numero"></p>
+                            </div>
+                            <span class="text-[9px] bg-blue-500/10 text-blue-400 px-2 py-1 rounded-md font-bold uppercase" x-text="lead.status"></span>
                         </div>
-                        <span class="text-[9px] text-blue-400 font-bold uppercase" x-text="lead.status.replace('_',' ')"></span>
-                    </div>
-                </template>
+                    </template>
+                </div>
             </div>
         </div>
 
         <div x-show="screen === 'kanban'" x-cloak class="flex gap-4 overflow-x-auto pb-10 no-scrollbar">
             <template x-for="col in columns" :key="col.id">
-                <div class="kanban-col bg-slate-900/30 p-3 rounded-3xl border border-slate-800/50 flex flex-col gap-3">
+                <div class="kanban-col bg-slate-900/20 p-3 rounded-3xl border border-slate-800/50 flex flex-col gap-4"
+                     @dragover.prevent 
+                     @drop="updateStatus($event.dataTransfer.getData('leadId'), col.id)">
+                    
                     <div class="flex justify-between items-center px-2">
                         <span class="text-[11px] font-black text-slate-500 uppercase tracking-widest" x-text="col.name"></span>
-                        <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded-full" x-text="leads.filter(l => l.status === col.id).length"></span>
+                        <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full" x-text="leads.filter(l => l.status === col.id).length"></span>
                     </div>
                     
                     <div class="flex-1 overflow-y-auto flex flex-col gap-3 no-scrollbar">
                         <template x-for="lead in leads.filter(l => l.status === col.id)" :key="lead.id">
-                            <div @click="openChatModal(lead)" class="bg-slate-900 p-4 rounded-2xl border border-slate-800 active:scale-95 transition-all shadow-md cursor-pointer hover:border-blue-500/50">
-                                <p class="font-bold text-sm" x-text="lead.nome"></p>
-                                <p class="text-[11px] text-slate-400 mb-3" x-text="lead.numero"></p>
+                            <div draggable="true" 
+                                 @dragstart="$event.dataTransfer.setData('leadId', lead.id)"
+                                 @click="openChat(lead)" 
+                                 class="bg-slate-900 p-4 rounded-2xl border border-slate-800 active:scale-95 transition-all shadow-md cursor-pointer hover:border-blue-500/50 group">
+                                <div class="flex justify-between items-start mb-2">
+                                    <p class="font-bold text-sm group-hover:text-blue-400" x-text="lead.nome"></p>
+                                    <i data-lucide="more-horizontal" class="w-4 h-4 text-slate-700"></i>
+                                </div>
+                                <p class="text-[11px] text-slate-500 mb-3" x-text="lead.numero"></p>
                                 <div class="flex justify-between items-center">
                                     <span class="text-[9px] bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded-md font-bold uppercase">WhatsApp</span>
-                                    <i data-lucide="message-circle" class="w-4 h-4 text-slate-600"></i>
+                                    <div class="flex -space-x-2">
+                                        <div class="w-5 h-5 rounded-full border-2 border-slate-900 bg-slate-700"></div>
+                                    </div>
                                 </div>
                             </div>
                         </template>
@@ -88,21 +102,25 @@
     </main>
 
     <div x-show="isChatOpen" x-transition x-cloak class="fixed inset-0 bg-slate-950 z-[100] flex flex-col">
-        <header class="p-4 bg-slate-900 border-b border-slate-800 flex items-center gap-3">
-            <button @click="isChatOpen = false" class="p-2"><i data-lucide="arrow-left"></i></button>
+        <header class="p-4 bg-slate-900 border-b border-slate-800 flex items-center gap-3 shadow-2xl">
+            <button @click="isChatOpen = false" class="p-2 hover:bg-slate-800 rounded-full transition-colors"><i data-lucide="arrow-left"></i></button>
+            <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold" x-text="selectedLead?.nome.substring(0,2).toUpperCase()"></div>
             <div class="flex-1">
                 <p class="font-bold text-sm" x-text="selectedLead?.nome"></p>
-                <p class="text-[10px] text-emerald-500 font-bold">Online via Evolution</p>
+                <p class="text-[10px] text-emerald-500 font-bold flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Ativo agora
+                </p>
             </div>
+            <button class="p-2 text-slate-500"><i data-lucide="phone"></i></button>
         </header>
 
-        <div class="flex-1 bg-chat overflow-y-auto p-4 space-y-3" id="chat-box">
+        <div class="flex-1 bg-chat overflow-y-auto p-4 space-y-4" id="chat-box">
             <template x-for="msg in messages" :key="msg.id">
-                <div :class="msg.from_me ? 'justify-end' : 'justify-start'" class="flex w-full">
+                <div :class="msg.from_me ? 'justify-end' : 'justify-start'" class="flex w-full animate-in fade-in slide-in-from-bottom-1">
                     <div :class="msg.from_me ? 'bg-blue-600 rounded-l-2xl rounded-tr-2xl' : 'bg-slate-800 rounded-r-2xl rounded-tl-2xl'" 
                          class="p-3 max-w-[85%] shadow-lg border border-white/5">
-                        <p class="text-sm text-white" x-text="msg.content"></p>
-                        <div class="flex items-center justify-end gap-1 mt-1 opacity-50">
+                        <p class="text-sm text-white leading-relaxed" x-text="msg.content"></p>
+                        <div class="flex items-center justify-end gap-1 mt-1.5 opacity-40">
                             <span class="text-[9px] text-white" x-text="new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></span>
                             <template x-if="msg.from_me">
                                 <i data-lucide="check-check" class="w-3 h-3 text-white"></i>
@@ -113,33 +131,32 @@
             </template>
         </div>
 
-        <footer class="p-4 bg-slate-900 flex gap-2 items-center">
-            <input x-model="msgInput" @keydown.enter="sendMsg()" type="text" placeholder="Mensagem..." class="flex-1 bg-slate-800 border-none rounded-2xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-blue-500">
-            <button @click="sendMsg()" class="bg-blue-600 p-3 rounded-2xl text-white shadow-lg active:scale-90 transition-transform">
+        <footer class="p-4 bg-slate-900 border-t border-slate-800 flex gap-3 items-center">
+            <div class="flex-1 bg-slate-800 rounded-2xl flex items-center px-4">
+                <input x-model="msgInput" @keydown.enter="sendMsg()" type="text" placeholder="Escreva aqui..." class="w-full bg-transparent py-3 text-sm text-white border-none focus:ring-0">
+                <i data-lucide="paperclip" class="w-5 h-5 text-slate-500"></i>
+            </div>
+            <button @click="sendMsg()" class="bg-blue-600 p-4 rounded-2xl text-white shadow-lg active:scale-90 transition-transform">
                 <i data-lucide="send-horizontal" class="w-5 h-5"></i>
             </button>
         </footer>
     </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 glass border-t border-slate-800 p-4 flex justify-around items-center z-50 rounded-t-3xl">
-        <button @click="screen = 'dash'" :class="screen === 'dash' ? 'text-blue-500' : 'text-slate-500'" class="flex flex-col items-center gap-1">
+    <nav class="fixed bottom-0 left-0 right-0 glass border-t border-slate-800/50 p-4 flex justify-around items-center z-50 rounded-t-[40px]">
+        <button @click="screen = 'dash'" :class="screen === 'dash' ? 'text-blue-500' : 'text-slate-500'" class="flex flex-col items-center gap-1 transition-all">
             <i data-lucide="layout-grid" class="w-6 h-6"></i>
-            <span class="text-[10px] font-black uppercase">Home</span>
+            <span class="text-[10px] font-black uppercase tracking-tighter">Dashboard</span>
         </button>
-        <button @click="screen = 'kanban'" :class="screen === 'kanban' ? 'text-blue-500' : 'text-slate-500'" class="flex flex-col items-center gap-1">
-            <i data-lucide="trello" class="w-6 h-6"></i>
-            <span class="text-[10px] font-black uppercase">Kanban</span>
-        </button>
-        <div class="bg-blue-600 p-4 rounded-full -mt-12 border-8 border-slate-950 shadow-2xl text-white">
-            <i data-lucide="plus" class="w-6 h-6"></i>
+        
+        <div class="relative">
+            <div class="absolute -top-14 left-1/2 -translate-x-1/2 bg-blue-600 p-4 rounded-full border-8 border-slate-950 shadow-2xl text-white active:scale-90 transition-transform cursor-pointer">
+                <i data-lucide="plus" class="w-7 h-7"></i>
+            </div>
         </div>
-        <button class="text-slate-700 flex flex-col items-center gap-1 opacity-30">
-            <i data-lucide="git-merge" class="w-6 h-6"></i>
-            <span class="text-[10px] font-black uppercase">Funis</span>
-        </button>
-        <button class="text-slate-700 flex flex-col items-center gap-1 opacity-30">
-            <i data-lucide="settings" class="w-6 h-6"></i>
-            <span class="text-[10px] font-black uppercase">Ajustes</span>
+
+        <button @click="screen = 'kanban'" :class="screen === 'kanban' ? 'text-blue-500' : 'text-slate-500'" class="flex flex-col items-center gap-1 transition-all">
+            <i data-lucide="trello" class="w-6 h-6"></i>
+            <span class="text-[10px] font-black uppercase tracking-tighter">Pipeline</span>
         </button>
     </nav>
 
@@ -152,22 +169,21 @@
                 msgInput: '',
                 leads: [],
                 messages: [],
-                activeChannel: null,
                 columns: [
-                    { id: 'novo_lead', name: 'Novo Lead' },
-                    { id: 'atendimento', name: 'Atendimento' },
+                    { id: 'novo_lead', name: 'Novos' },
+                    { id: 'atendimento', name: 'Conversa' },
                     { id: 'proposta', name: 'Proposta' },
-                    { id: 'fechado', name: 'Fechado' }
+                    { id: 'fechado', name: 'Venda' }
                 ],
                 
                 async init() {
-                    // CREDENCIAIS DO IGOR BORGES
+                    // CONFIGURAÇÕES DO IGOR BORGES
                     const SB_URL = 'https://qhnbisjogpdoyszpsucs.supabase.co';
                     const SB_KEY = 'sb_publishable_3PAly_BCdvoldAzm1Y7SxQ_S3rp2QhQ';
                     this.client = supabase.createClient(SB_URL, SB_KEY);
                     
                     await this.loadLeads();
-                    this.subscribeLeads();
+                    this.setupRealtime();
                     lucide.createIcons();
                 },
 
@@ -175,75 +191,78 @@
                     const { data } = await this.client.from('leads').select('*').order('created_at', { ascending: false });
                     if (data) {
                         this.leads = data;
-                        setTimeout(() => lucide.createIcons(), 50);
+                        setTimeout(() => lucide.createIcons(), 100);
                     }
                 },
 
-                subscribeLeads() {
-                    this.client.channel('leads-realtime')
+                setupRealtime() {
+                    // Atualiza Leads em tempo real (Kanban/Dash)
+                    this.client.channel('public:leads')
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => this.loadLeads())
+                        .subscribe();
+
+                    // Atualiza Mensagens em tempo real (Chat)
+                    this.client.channel('public:messages')
+                        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+                            if (this.isChatOpen && payload.new.lead_id === this.selectedLead?.id) {
+                                this.messages.push(payload.new);
+                                this.scrollToBottom();
+                                setTimeout(() => lucide.createIcons(), 50);
+                            }
+                        })
                         .subscribe();
                 },
 
-                async openChatModal(lead) {
+                async updateStatus(leadId, newStatus) {
+                    if (!leadId) return;
+                    await this.client.from('leads').update({ status: newStatus }).eq('id', leadId);
+                },
+
+                async openChat(lead) {
                     this.selectedLead = lead;
                     this.isChatOpen = true;
                     this.messages = [];
-                    await this.loadMessages(lead.id);
-                    this.subscribeMessages(lead.id);
-                    this.scrollToBottom();
-                    setTimeout(() => lucide.createIcons(), 50);
-                },
-
-                async loadMessages(leadId) {
+                    
+                    // Carrega histórico
                     const { data } = await this.client
                         .from('messages')
                         .select('*')
-                        .eq('lead_id', leadId)
+                        .eq('lead_id', lead.id)
                         .order('timestamp', { ascending: true });
+                    
                     if (data) this.messages = data;
-                },
-
-                subscribeMessages(leadId) {
-                    if (this.activeChannel) this.client.removeChannel(this.activeChannel);
-                    this.activeChannel = this.client.channel(`chat-${leadId}`)
-                        .on('postgres_changes', { 
-                            event: 'INSERT', 
-                            schema: 'public', 
-                            table: 'messages',
-                            filter: `lead_id=eq.${leadId}` 
-                        }, payload => {
-                            this.messages.push(payload.new);
-                            this.scrollToBottom();
-                            setTimeout(() => lucide.createIcons(), 50);
-                        }).subscribe();
+                    this.scrollToBottom();
+                    setTimeout(() => lucide.createIcons(), 100);
                 },
 
                 async sendMsg() {
                     if(!this.msgInput || !this.selectedLead) return;
                     
+                    const textToSend = this.msgInput;
+                    this.msgInput = '';
+
                     const EVO_URL = 'https://projeto-evolution-api.xtknqq.easypanel.host';
                     const API_KEY = '773C15E29974-4BA2-B003-3F697EC279AE';
                     const INSTANCE = 'igor';
 
-                    const textToSend = this.msgInput;
-                    this.msgInput = '';
-
                     try {
+                        // Envia via Evolution API
                         await fetch(`${EVO_URL}/message/sendText/${INSTANCE}`, {
                             method: 'POST',
                             headers: { 'apikey': API_KEY, 'Content-Type': 'application/json' },
                             body: JSON.stringify({ "number": this.selectedLead.numero, "text": textToSend })
                         });
+
+                        // NOTA: A mensagem aparecerá no chat assim que a tua Edge Function a salvar no Supabase
                     } catch (e) {
-                        alert("Erro ao conectar com a Evolution API.");
+                        console.error("Erro ao enviar:", e);
                     }
                 },
 
                 scrollToBottom() {
                     setTimeout(() => {
                         const box = document.getElementById('chat-box');
-                        if(box) box.scrollTop = box.scrollHeight;
+                        if(box) box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
                     }, 100);
                 }
             }
