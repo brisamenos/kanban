@@ -483,14 +483,13 @@
                 async loadLeads() { const { data } = await this.client.from('leads').select('*').order('created_at', { ascending: false }); if (data) this.leads = data; setTimeout(() => lucide.createIcons(), 50); },
                 async openChat(lead) { this.selectedLead = lead; this.selectedLeadStatus = lead.status; this.isChatOpen = true; this.messages = []; const { data } = await this.client.from('messages').select('*').eq('lead_id', lead.id).order('timestamp', { ascending: true }); this.messages = data || []; this.scrollToBottom(); setTimeout(() => lucide.createIcons(), 50); },
 
+                // RESOLVIDO A DUPLICAÇÃO DA MENSAGEM: Agora só insere no banco, o Realtime carrega na tela
                 async sendMsg() {
                     if(!this.msgInput || !this.selectedLead) return; const text = this.msgInput; this.msgInput = '';
-                    this.messages.push({ id: Date.now(), content: text, from_me: true, type: 'text', timestamp: new Date().toISOString() }); this.scrollToBottom();
                     await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ "number": this.selectedLead.numero, "text": text }) });
                     await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: text, from_me: true, type: 'text' });
                 },
 
-                // CORREÇÃO SILENCIOSA DOS ENDPOINTS DE MÍDIA DA EVOLUTION 
                 async uploadAndSend(event, type) {
                     const file = event.target.files[0]; if (!file || !this.selectedLead) return;
                     const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9]/g, '')}.${file.name.split('.').pop()}`;
@@ -505,7 +504,6 @@
                     else if (type === 'video') { endpoint = 'sendVideo'; body.media = data.publicUrl; }
                     else { endpoint = 'sendDocument'; body.media = data.publicUrl; body.fileName = file.name; }
                     
-                    this.messages.push({ id: Date.now(), content: data.publicUrl, from_me: true, type: type, timestamp: new Date().toISOString() }); this.scrollToBottom();
                     await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
                     await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: data.publicUrl, from_me: true, type: type });
                 },
@@ -565,7 +563,6 @@
                 },
                 pararDisparo() { this.disparoConfig.isRunning = false; },
 
-                // FLUXO DO CHAT CORRIGIDO SILENCIOSAMENTE PARA OS ENDPOINTS ANTIGOS
                 async triggerBotRuleManual(rule) {
                     if(!this.selectedLead) return;
                     if(rule.flow_steps) {
@@ -611,7 +608,12 @@
                     this.client.channel('leads_channel').on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => this.loadLeads()).subscribe();
                     this.client.channel('msgs_channel').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
                         if (!payload.new.from_me) this.playSound();
-                        if (this.isChatOpen && payload.new.lead_id === this.selectedLead?.id) { if(!this.messages.find(m => m.id === payload.new.id)) { this.messages.push(payload.new); this.scrollToBottom(); } }
+                        if (this.isChatOpen && payload.new.lead_id === this.selectedLead?.id) { 
+                            if(!this.messages.find(m => m.id === payload.new.id)) { 
+                                this.messages.push(payload.new); 
+                                this.scrollToBottom(); 
+                            } 
+                        }
                     }).subscribe();
                 },
 
