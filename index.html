@@ -232,11 +232,34 @@
                 <template x-for="msg in messages" :key="msg.id">
                     <div :class="msg.from_me ? 'justify-end' : 'justify-start'" class="flex w-full">
                         <div :class="msg.from_me ? 'bg-indigo-600 text-white rounded-l-2xl rounded-tr-2xl' : 'bg-white dark:bg-slate-800 dark:text-slate-200 rounded-r-2xl rounded-tl-2xl shadow-sm'" class="p-3.5 max-w-[85%] relative">
-                            <template x-if="msg.content && msg.content.includes('http') && (msg.content.includes('chat_media') || msg.content.includes('[Áudio]') || msg.content.includes('[IMAGE]') || msg.content.includes('[VIDEO]') || msg.content.includes('[DOCUMENT]'))">
-                                <a :href="msg.content.split(' ').pop()" target="_blank" class="underline text-xs font-bold block" :class="msg.from_me ? 'text-indigo-100' : 'text-indigo-500'"><i data-lucide="external-link" class="w-3 h-3 inline"></i> Abrir Arquivo</a>
+                            
+                            <template x-if="msg.type === 'audio' || (msg.content && (msg.content.includes('[audio]') || msg.content.includes('[Áudio]')))">
+                                <div class="flex flex-col">
+                                    <audio controls :src="extractUrl(msg.content)" class="w-56 h-10 outline-none"></audio>
+                                </div>
                             </template>
-                            <template x-if="msg.content && !msg.content.includes('chat_media') && !msg.content.includes('[IMAGE]')"><p class="text-sm font-medium leading-relaxed break-words" x-text="msg.content"></p></template>
-                            <div class="flex justify-end mt-1 opacity-50"><span class="text-[9px] font-black" x-text="new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></span></div>
+
+                            <template x-if="msg.type === 'image' || (msg.content && (msg.content.includes('[image]') || msg.content.includes('[IMAGE]')))">
+                                <div class="flex flex-col">
+                                    <img :src="extractUrl(msg.content)" class="max-w-[220px] rounded-lg cursor-pointer shadow-sm" @click="window.open(extractUrl(msg.content), '_blank')">
+                                </div>
+                            </template>
+
+                            <template x-if="msg.type === 'video' || (msg.content && (msg.content.includes('[video]') || msg.content.includes('[VIDEO]')))">
+                                <div class="flex flex-col">
+                                    <video controls :src="extractUrl(msg.content)" class="max-w-[220px] rounded-lg shadow-sm"></video>
+                                </div>
+                            </template>
+
+                            <template x-if="(msg.type === 'document' || msg.content.includes('http')) && !msg.content.includes('[image]') && !msg.content.includes('[IMAGE]') && !msg.content.includes('[audio]') && !msg.content.includes('[Áudio]') && !msg.content.includes('[video]') && !msg.content.includes('[VIDEO]') && msg.type !== 'image' && msg.type !== 'audio' && msg.type !== 'video'">
+                                <a :href="extractUrl(msg.content)" target="_blank" class="underline text-xs font-bold block flex items-center gap-1" :class="msg.from_me ? 'text-indigo-100' : 'text-indigo-500'"><i data-lucide="external-link" class="w-3.5 h-3.5"></i> Abrir Arquivo</a>
+                            </template>
+
+                            <template x-if="msg.type === 'text' || (!msg.content.includes('http') && msg.type !== 'audio' && msg.type !== 'image' && msg.type !== 'video' && msg.type !== 'document')">
+                                <p class="text-sm font-medium leading-relaxed break-words whitespace-pre-wrap" x-text="formatText(msg.content)"></p>
+                            </template>
+
+                            <div class="flex justify-end mt-1.5 opacity-50"><span class="text-[9px] font-black" x-text="new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></span></div>
                         </div>
                     </div>
                 </template>
@@ -253,7 +276,7 @@
                         <input type="file" x-ref="iI" class="hidden" @change="uploadAndSend($event, 'image')"><input type="file" x-ref="aI" class="hidden" @change="uploadAndSend($event, 'audio')"><input type="file" x-ref="dI" class="hidden" @change="uploadAndSend($event, 'document')">
                         <button @click="$refs.iI.click()" class="p-2 text-slate-400"><i data-lucide="image" class="w-5 h-5"></i></button>
                         <button @click="$refs.aI.click()" class="p-2 text-slate-400"><i data-lucide="mic" class="w-6 h-6"></i></button>
-                        <button @click="$refs.dI.click()" class="p-2 text-slate-400"><i data-lucide="file-text" class="w-6 h-6"></i></button>
+                        <button @click="$refs.dI.click()" class="p-2 text-slate-400"><i data-lucide="file-text" class="w-5 h-5"></i></button>
                     </div>
                     <div class="flex-1 bg-slate-50 dark:bg-slate-950 rounded-xl flex items-center px-3 border dark:border-slate-800">
                         <input x-model="msgInput" @keydown.enter="sendMsg()" type="text" placeholder="Mensagem..." class="w-full bg-transparent py-3 text-sm dark:text-white outline-none">
@@ -266,7 +289,8 @@
         <nav class="md:hidden fixed bottom-0 w-full glass flex justify-between items-center z-40 h-16 px-8 border-t dark:border-slate-800 pb-safe">
             <template x-for="item in navItems">
                 <button @click="screen = item.id" :class="screen === item.id ? 'text-indigo-600 scale-110 font-black' : 'text-slate-400'" class="flex flex-col items-center gap-1 transition-all">
-                    <i :data-lucide="item.icon" class="w-5 h-5"></i><span class="text-[9px]" x-text="item.label"></span>
+                    <i :data-lucide="item.icon" class="w-5 h-5"></i>
+                    <span class="text-[9px]" x-text="item.label"></span>
                 </button>
             </template>
         </nav>
@@ -299,6 +323,17 @@
                     setTimeout(() => lucide.createIcons(), 100);
                 },
 
+                // FUNÇÕES PARA PROCESSAR AS MÍDIAS NO CHAT VISUALMENTE
+                extractUrl(text) {
+                    if (!text) return '';
+                    const match = text.match(/https?:\/\/[^\s]+/);
+                    return match ? match[0] : text;
+                },
+                formatText(text) {
+                    if (!text) return '';
+                    return text.replace(/\[(IMAGE|AUDIO|VIDEO|DOCUMENT|Áudio|image|video|audio|document)\]/gi, '').trim();
+                },
+
                 toggleTheme() { this.isDarkMode = !this.isDarkMode; localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light'); setTimeout(() => lucide.createIcons(), 50); },
                 playSound() { new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3').play().catch(() => {}); },
 
@@ -318,7 +353,7 @@
                 async sendMsg() {
                     if(!this.msgInput || !this.selectedLead) return;
                     const text = this.msgInput; this.msgInput = '';
-                    this.messages.push({ id: Date.now(), content: text, from_me: true, timestamp: new Date().toISOString() });
+                    this.messages.push({ id: Date.now(), content: text, from_me: true, type: 'text', timestamp: new Date().toISOString() });
                     this.scrollToBottom();
                     await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', {
                         method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ "number": this.selectedLead.numero, "text": text })
@@ -336,28 +371,28 @@
                     let body = { number: this.selectedLead.numero, media: data.publicUrl };
                     if (type === 'audio') { endpoint = 'sendWhatsAppAudio'; delete body.media; body.audio = data.publicUrl; }
                     else { body.mediatype = type === 'image' ? 'image' : type === 'video' ? 'video' : 'document'; body.fileName = file.name; }
+                    
+                    // Coloca na tela pra vc ver antes mesmo de confirmar no banco
+                    this.messages.push({ id: Date.now(), content: data.publicUrl, from_me: true, type: type, timestamp: new Date().toISOString() });
+                    this.scrollToBottom();
+                    
                     await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-                    await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: `[${type.toUpperCase()}] ${data.publicUrl}`, from_me: true, type: type });
+                    await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: data.publicUrl, from_me: true, type: type });
                 },
 
                 processSpintax(text, lead) {
                     if(!text) return "";
                     let msg = text.replace(/{nome}/g, lead.nome ? lead.nome.split(' ')[0] : 'Cliente');
                     msg = msg.replace(/{([^{}]+)}/g, function(match, options) {
-                        const words = options.split('|');
-                        return words[Math.floor(Math.random() * words.length)];
+                        const words = options.split('|'); return words[Math.floor(Math.random() * words.length)];
                     });
                     return msg;
                 },
 
                 async iniciarDisparo() {
                     if (this.disparoConfig.isRunning) return;
-                    
                     let alvos = this.leads;
-                    if (this.disparoConfig.status !== 'todos') {
-                        alvos = this.leads.filter(l => l.status === this.disparoConfig.status);
-                    }
-
+                    if (this.disparoConfig.status !== 'todos') alvos = this.leads.filter(l => l.status === this.disparoConfig.status);
                     if (alvos.length === 0) return alert('Nenhum lead encontrado.');
 
                     this.disparoConfig.isRunning = true;
@@ -368,7 +403,7 @@
                     let mediaType = null;
                     if (this.disparoConfig.file) {
                         const file = this.disparoConfig.file;
-                        const fileName = `bulk-${Date.now()}-${file.name}`;
+                        const fileName = `bulk-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '')}`;
                         await this.client.storage.from('chat_media').upload(`disparos/${fileName}`, file);
                         const { data } = this.client.storage.from('chat_media').getPublicUrl(`disparos/${fileName}`);
                         publicMediaUrl = data.publicUrl;
@@ -377,41 +412,27 @@
 
                     for (const lead of alvos) {
                         if (!this.disparoConfig.isRunning) break;
-
                         try {
                             if (publicMediaUrl) {
                                 let endpoint = 'sendMedia';
                                 let body = { number: lead.numero, media: publicMediaUrl, mediatype: mediaType, fileName: this.disparoConfig.file.name };
                                 if(mediaType === 'audio') { endpoint = 'sendWhatsAppAudio'; delete body.media; body.audio = publicMediaUrl; }
-                                
-                                await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, {
-                                    method: 'POST', 
-                                    headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, 
-                                    body: JSON.stringify(body)
-                                });
-                                await this.client.from('messages').insert({ lead_id: lead.id, content: `[${mediaType.toUpperCase()}] ${publicMediaUrl}`, from_me: true, type: mediaType });
+                                await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                                await this.client.from('messages').insert({ lead_id: lead.id, content: publicMediaUrl, from_me: true, type: mediaType });
                             }
-
                             if (this.disparoConfig.msg) {
                                 const msgPronta = this.processSpintax(this.disparoConfig.msg, lead);
-                                await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', {
-                                    method: 'POST', 
-                                    headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, 
-                                    body: JSON.stringify({ number: lead.numero, text: msgPronta })
-                                });
+                                await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: lead.numero, text: msgPronta }) });
                                 await this.client.from('messages').insert({ lead_id: lead.id, content: msgPronta, from_me: true, type: 'text' });
                             }
-
                         } catch (e) { console.error(e); }
 
                         this.disparoConfig.sent++;
-
                         if (this.disparoConfig.sent < this.disparoConfig.total && this.disparoConfig.isRunning) {
                             const delay = Math.floor(Math.random() * (this.disparoConfig.maxDelay - this.disparoConfig.minDelay + 1)) + parseInt(this.disparoConfig.minDelay);
                             await new Promise(r => setTimeout(r, delay * 1000));
                         }
                     }
-
                     this.disparoConfig.isRunning = false;
                 },
 
@@ -420,13 +441,17 @@
                 async triggerBotRuleManual(rule) {
                     if(!this.selectedLead) return;
                     if(rule.media_url) {
-                        let endpoint = 'sendMedia';
-                        let body = { number: this.selectedLead.numero, media: rule.media_url, mediatype: rule.media_type || 'document' };
-                        if(rule.media_type === 'audio') { endpoint = 'sendWhatsAppAudio'; delete body.media; body.audio = rule.media_url; }
+                        let endpoint = 'sendDocument'; // Correção de endpoint para a versão suportada
+                        let body = { number: this.selectedLead.numero, media: rule.media_url, fileName: "Documento.pdf" };
+                        if (rule.media_type === 'image') { endpoint = 'sendImage'; }
+                        else if (rule.media_type === 'audio') { endpoint = 'sendWhatsAppAudio'; delete body.media; body.audio = rule.media_url; }
+                        else if (rule.media_type === 'video') { endpoint = 'sendVideo'; }
                         await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                        await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: rule.media_url, from_me: true, type: rule.media_type || 'document' });
                     }
                     if(rule.response_text) {
                         await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: this.selectedLead.numero, text: rule.response_text }) });
+                        await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: rule.response_text, from_me: true, type: 'text' });
                     }
                 },
 
