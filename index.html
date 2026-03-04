@@ -51,13 +51,8 @@
             <div x-show="true" x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="translate-x-full opacity-0" x-transition:enter-end="translate-x-0 opacity-100" x-transition:leave="transition ease-in duration-200 transform" x-transition:leave-start="translate-x-0 opacity-100" x-transition:leave-end="translate-x-full opacity-0" 
                  class="bg-white dark:bg-slate-900 border-l-4 p-4 rounded-2xl shadow-2xl pointer-events-auto flex items-start gap-3 w-full"
                  :class="notif.type === 'success' ? 'border-emerald-500' : 'border-indigo-500'">
-                <div :class="notif.type === 'success' ? 'text-emerald-500' : 'text-indigo-500'" class="mt-0.5">
-                    <i :data-lucide="notif.type === 'success' ? 'check-circle' : 'bell'" class="w-5 h-5"></i>
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm font-black dark:text-white" x-text="notif.title"></h4>
-                    <p class="text-xs text-slate-500 font-medium leading-tight mt-0.5" x-text="notif.message"></p>
-                </div>
+                <div :class="notif.type === 'success' ? 'text-emerald-500' : 'text-indigo-500'" class="mt-0.5"><i :data-lucide="notif.type === 'success' ? 'check-circle' : 'bell'" class="w-5 h-5"></i></div>
+                <div class="flex-1"><h4 class="text-sm font-black dark:text-white" x-text="notif.title"></h4><p class="text-xs text-slate-500 font-medium leading-tight mt-0.5" x-text="notif.message"></p></div>
             </div>
         </template>
     </div>
@@ -66,12 +61,10 @@
         
         <aside class="w-64 glass border-r hidden md:flex flex-col z-20 border-gray-200 dark:border-slate-800">
             <div class="p-6 flex items-center gap-3 border-b border-gray-100 dark:border-slate-800/50">
-                <div class="w-9 h-9 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/40">
-                    <i data-lucide="zap" class="text-white w-5 h-5"></i>
-                </div>
+                <div class="w-9 h-9 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/40"><i data-lucide="zap" class="text-white w-5 h-5"></i></div>
                 <h1 class="font-black text-xl tracking-tighter dark:text-white">EVO<span class="text-indigo-500">PRO</span></h1>
             </div>
-            <nav class="flex-1 px-4 space-y-1.5 mt-4">
+            <nav class="flex-1 px-4 space-y-1.5 mt-4 overflow-y-auto no-scrollbar pb-10">
                 <template x-for="item in navItems">
                     <button @click="screen = item.id" :class="screen === item.id ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all">
                         <i :data-lucide="item.icon" class="w-4 h-4"></i> <span x-text="item.label"></span>
@@ -92,75 +85,44 @@
             <section class="flex-1 overflow-y-auto p-4 md:p-8 no-scrollbar pb-24 md:pb-8">
                 
                 <div x-show="screen === 'dash'" x-cloak class="space-y-6 max-w-7xl mx-auto">
-                    
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] shadow-sm border border-gray-100 dark:border-slate-800 transition-all hover:shadow-md">
-                            <div class="flex justify-between items-start mb-2">
-                                <p class="text-slate-500 text-[10px] font-black uppercase">Total Leads</p>
-                                <i data-lucide="users" class="w-4 h-4 text-indigo-500"></i>
-                            </div>
+                            <div class="flex justify-between items-start mb-2"><p class="text-slate-500 text-[10px] font-black uppercase">Total Leads</p><i data-lucide="users" class="w-4 h-4 text-indigo-500"></i></div>
                             <h3 class="text-4xl font-black dark:text-white" x-text="leads.length">0</h3>
                         </div>
-
                         <div class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] shadow-sm border border-gray-100 dark:border-slate-800 transition-all hover:shadow-md">
-                            <div class="flex justify-between items-start mb-2">
-                                <p class="text-slate-500 text-[10px] font-black uppercase">Em Negociação</p>
-                                <i data-lucide="message-circle" class="w-4 h-4 text-blue-500"></i>
-                            </div>
+                            <div class="flex justify-between items-start mb-2"><p class="text-slate-500 text-[10px] font-black uppercase">Em Negociação</p><i data-lucide="message-circle" class="w-4 h-4 text-blue-500"></i></div>
                             <h3 class="text-4xl font-black text-blue-500" x-text="leads.filter(l => l.status === 'atendimento' || l.status === 'proposta').length">0</h3>
                         </div>
-
                         <div class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] shadow-sm border border-gray-100 dark:border-slate-800 transition-all hover:shadow-md">
-                            <div class="flex justify-between items-start mb-2">
-                                <p class="text-slate-500 text-[10px] font-black uppercase">Conversão</p>
-                                <i data-lucide="pie-chart" class="w-4 h-4 text-purple-500"></i>
-                            </div>
+                            <div class="flex justify-between items-start mb-2"><p class="text-slate-500 text-[10px] font-black uppercase">Conversão</p><i data-lucide="pie-chart" class="w-4 h-4 text-purple-500"></i></div>
                             <h3 class="text-4xl font-black text-purple-500" x-text="leads.length > 0 ? Math.round((leads.filter(l => l.status === 'fechado').length / leads.length) * 100) + '%' : '0%'">0%</h3>
                         </div>
-
                         <div class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] shadow-sm border border-gray-100 dark:border-slate-800 border-b-4 border-b-emerald-500 transition-all hover:shadow-md">
-                            <div class="flex justify-between items-start mb-2">
-                                <p class="text-slate-500 text-[10px] font-black uppercase">Vendas Ganhas</p>
-                                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
-                            </div>
+                            <div class="flex justify-between items-start mb-2"><p class="text-slate-500 text-[10px] font-black uppercase">Vendas Ganhas</p><i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i></div>
                             <h3 class="text-4xl font-black text-emerald-500" x-text="leads.filter(l => l.status === 'fechado').length">0</h3>
                         </div>
                     </div>
-
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        
                         <div class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-slate-800">
                             <h3 class="font-black text-lg mb-6 dark:text-white flex items-center gap-2"><i data-lucide="bar-chart-2" class="text-indigo-500"></i> Saúde do Funil</h3>
                             <div class="space-y-5">
                                 <template x-for="col in columns" :key="col.id">
                                     <div>
-                                        <div class="flex justify-between text-xs font-bold mb-2">
-                                            <span class="text-slate-600 dark:text-slate-400 uppercase tracking-wider" x-text="col.name"></span>
-                                            <span class="dark:text-white bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md" x-text="leads.filter(l => l.status === col.id).length + ' leads'"></span>
-                                        </div>
-                                        <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-3 overflow-hidden">
-                                            <div class="h-3 rounded-full transition-all duration-1000" 
-                                                 :class="col.id === 'fechado' ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : (col.id === 'novo_lead' ? 'bg-blue-400' : 'bg-indigo-500')"
-                                                 :style="`width: ${leads.length > 0 ? (leads.filter(l => l.status === col.id).length / leads.length) * 100 : 0}%`"></div>
-                                        </div>
+                                        <div class="flex justify-between text-xs font-bold mb-2"><span class="text-slate-600 dark:text-slate-400 uppercase tracking-wider" x-text="col.name"></span><span class="dark:text-white bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md" x-text="leads.filter(l => l.status === col.id).length + ' leads'"></span></div>
+                                        <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-3 overflow-hidden"><div class="h-3 rounded-full transition-all duration-1000" :class="col.id === 'fechado' ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : (col.id === 'novo_lead' ? 'bg-blue-400' : 'bg-indigo-500')" :style="`width: ${leads.length > 0 ? (leads.filter(l => l.status === col.id).length / leads.length) * 100 : 0}%`"></div></div>
                                     </div>
                                 </template>
                             </div>
                         </div>
-
                         <div class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-slate-800">
                             <h3 class="font-black text-lg mb-4 dark:text-white flex items-center gap-2"><i data-lucide="activity" class="text-indigo-500"></i> Atividade Recente</h3>
                             <div class="space-y-3">
                                 <template x-for="lead in leads.slice(0, 5)" :key="lead.id">
                                     <div class="flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border border-transparent hover:border-gray-100 dark:hover:border-slate-700" @click="screen='kanban'; openChat(lead)">
                                         <img :src="lead.foto_url || 'https://api.dicebear.com/8.x/notionists/svg?seed=' + lead.nome" class="w-12 h-12 rounded-xl object-cover bg-slate-100 dark:bg-slate-700 shadow-sm" @error="$el.src = 'https://api.dicebear.com/8.x/notionists/svg?seed=' + lead.nome">
-                                        <div class="flex-1 overflow-hidden">
-                                            <h4 class="font-bold text-sm dark:text-white truncate" x-text="lead.nome"></h4>
-                                            <p class="text-[10px] text-slate-500 truncate" x-text="lead.numero"></p>
-                                        </div>
-                                        <span class="text-[9px] font-black uppercase px-3 py-1.5 rounded-lg shrink-0" 
-                                              :class="lead.status === 'fechado' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400'"
-                                              x-text="columns.find(c => c.id === lead.status)?.name || lead.status"></span>
+                                        <div class="flex-1 overflow-hidden"><h4 class="font-bold text-sm dark:text-white truncate" x-text="lead.nome"></h4><p class="text-[10px] text-slate-500 truncate" x-text="lead.numero"></p></div>
+                                        <span class="text-[9px] font-black uppercase px-3 py-1.5 rounded-lg shrink-0" :class="lead.status === 'fechado' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400'" x-text="columns.find(c => c.id === lead.status)?.name || lead.status"></span>
                                     </div>
                                 </template>
                                 <div x-show="leads.length === 0" class="text-center py-6 text-slate-400 text-sm font-bold">Nenhum lead ainda.</div>
@@ -172,73 +134,22 @@
                 <div x-show="screen === 'kanban'" x-cloak class="flex gap-4 overflow-x-auto pb-4 no-scrollbar kanban-container h-full">
                     <template x-for="col in columns" :key="col.id">
                         <div class="kanban-col flex flex-col gap-3 bg-slate-200/40 dark:bg-slate-900/40 p-3 rounded-[2rem] border border-gray-200/50 dark:border-slate-800/50" @dragover.prevent @drop="updateStatus($event.dataTransfer.getData('id'), col.id)">
-                            <div class="flex items-center justify-between px-2 pt-1">
-                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-500" x-text="col.name"></span>
-                                <span class="text-[10px] bg-white dark:bg-slate-800 px-2.5 py-1 rounded-full font-bold shadow-sm dark:text-white" x-text="leads.filter(l => l.status === col.id).length"></span>
-                            </div>
+                            <div class="flex items-center justify-between px-2 pt-1"><span class="text-[10px] font-black uppercase tracking-widest text-slate-500" x-text="col.name"></span><span class="text-[10px] bg-white dark:bg-slate-800 px-2.5 py-1 rounded-full font-bold shadow-sm dark:text-white" x-text="leads.filter(l => l.status === col.id).length"></span></div>
                             <div class="flex-1 overflow-y-auto flex flex-col gap-3 no-scrollbar">
                                 <template x-for="lead in leads.filter(l => l.status === col.id)" :key="lead.id">
-                                    <div draggable="true" @dragstart="$event.dataTransfer.setData('id', lead.id)" @click="openChat(lead)" 
-                                         class="bg-white dark:bg-slate-800 p-4 rounded-3xl shadow-sm hover:shadow-md border border-gray-100 dark:border-slate-700/50 active:scale-[0.98] transition-all cursor-pointer">
+                                    <div draggable="true" @dragstart="$event.dataTransfer.setData('id', lead.id)" @click="openChat(lead)" class="bg-white dark:bg-slate-800 p-4 rounded-3xl shadow-sm hover:shadow-md border border-gray-100 dark:border-slate-700/50 active:scale-[0.98] transition-all cursor-pointer">
                                         <div class="flex items-center gap-3">
                                             <div class="relative shrink-0">
                                                 <img :src="lead.foto_url || 'https://api.dicebear.com/8.x/notionists/svg?seed=' + lead.nome" class="w-12 h-12 rounded-2xl object-cover bg-slate-100 dark:bg-slate-700 border border-gray-100 dark:border-slate-600" @error="$el.src = 'https://api.dicebear.com/8.x/notionists/svg?seed=' + lead.nome">
                                                 <div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full"></div>
                                             </div>
-                                            <div class="flex-1 overflow-hidden">
-                                                <h4 class="font-bold text-sm text-slate-950 dark:text-white truncate" x-text="lead.nome"></h4>
-                                                <p class="text-[10px] text-slate-500 font-medium" x-text="lead.numero"></p>
-                                            </div>
+                                            <div class="flex-1 overflow-hidden"><h4 class="font-bold text-sm text-slate-950 dark:text-white truncate" x-text="lead.nome"></h4><p class="text-[10px] text-slate-500 font-medium" x-text="lead.numero"></p></div>
                                         </div>
                                     </div>
                                 </template>
                             </div>
                         </div>
                     </template>
-                </div>
-
-                <div x-show="screen === 'biblioteca'" x-cloak class="space-y-6 max-w-5xl mx-auto">
-                    <label class="w-full bg-indigo-600 text-white py-5 rounded-2xl flex items-center justify-center gap-2 font-black text-sm uppercase cursor-pointer shadow-lg active:scale-95 transition-all">
-                        <i data-lucide="upload-cloud"></i> Subir Novo Arquivo Local
-                        <input type="file" class="hidden" @change="addToLibrary($el)">
-                    </label>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <template x-for="(file, index) in myLibrary" :key="index">
-                            <div class="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 p-5 rounded-3xl relative shadow-sm">
-                                <button @click="removeFromLibrary(index)" class="absolute top-4 right-4 text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
-                                <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500 mb-3"><i :data-lucide="file.type.includes('image') ? 'image' : 'file-text'"></i></div>
-                                <p class="font-bold text-sm dark:text-white truncate" x-text="file.name"></p>
-                                <button @click="sendFromLibrary(file)" class="w-full mt-4 bg-gray-100 dark:bg-slate-800 text-[10px] font-black py-3 rounded-xl uppercase hover:bg-indigo-600 hover:text-white transition-all">Disparar para Lead Atual</button>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-
-                <div x-show="screen === 'disparo'" x-cloak class="max-w-xl mx-auto space-y-4">
-                    <div class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-gray-100 dark:border-slate-800 shadow-sm">
-                        <h3 class="font-black text-lg mb-4 dark:text-white flex items-center gap-2">
-                            <i data-lucide="send" class="w-5 h-5 text-indigo-500"></i> Disparo em Massa
-                        </h3>
-                        <div class="space-y-4">
-                            <select x-model="disparoConfig.status" :disabled="disparoConfig.isRunning" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-3 text-sm dark:text-white outline-none">
-                                <option value="todos">Todos os Leads</option>
-                                <template x-for="col in columns" :key="col.id"><option :value="col.id" x-text="col.name"></option></template>
-                            </select>
-                            <textarea x-model="disparoConfig.msg" :disabled="disparoConfig.isRunning" rows="3" placeholder="{Oi|Olá} {nome}, tudo bem?" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-sm dark:text-white outline-none"></textarea>
-                            <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-200 dark:border-slate-800 flex justify-center gap-4 items-center">
-                                <input type="file" x-ref="disparoFile" class="hidden" @change="disparoConfig.file = $event.target.files[0]">
-                                <button @click="$refs.disparoFile.click()" class="text-indigo-600 font-bold text-xs"><i data-lucide="paperclip" class="w-4 h-4 inline mr-1"></i> Anexar Arquivo</button>
-                                <span class="text-xs text-slate-500 truncate max-w-[150px]" x-text="disparoConfig.file?.name || 'Nenhum anexo'"></span>
-                            </div>
-                            <div class="flex gap-2">
-                                <input x-model="disparoConfig.minDelay" type="number" placeholder="Min seg" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-3 text-sm dark:text-white outline-none">
-                                <input x-model="disparoConfig.maxDelay" type="number" placeholder="Max seg" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-3 text-sm dark:text-white outline-none">
-                            </div>
-                            <div x-show="disparoConfig.isRunning" class="text-center text-xs font-bold text-indigo-500 animate-pulse" x-text="`Enviando: ${disparoConfig.sent}/${disparoConfig.total}`"></div>
-                            <button x-show="!disparoConfig.isRunning" @click="iniciarDisparo()" class="w-full bg-indigo-600 text-white font-black py-4 rounded-xl shadow-lg">Iniciar Campanha</button>
-                            <button x-show="disparoConfig.isRunning" @click="pararDisparo()" class="w-full bg-red-500 text-white font-black py-4 rounded-xl shadow-lg">Parar</button>
-                        </div>
-                    </div>
                 </div>
 
                 <div x-show="screen === 'bot'" x-cloak class="max-w-3xl mx-auto space-y-6 pb-10">
@@ -273,18 +184,13 @@
                                                 <span class="text-[10px] font-black uppercase text-slate-500" x-text="step.type === 'delay' ? 'Pausa de Tempo' : 'Enviar ' + step.type"></span>
                                                 <button @click="removeStep(index)" class="text-red-400 hover:text-red-600"><i data-lucide="x" class="w-4 h-4"></i></button>
                                             </div>
-                                            
-                                            <template x-if="step.type === 'text'">
-                                                <textarea x-model="step.content" rows="2" placeholder="Escreva a mensagem..." class="w-full bg-transparent text-sm outline-none dark:text-white resize-none"></textarea>
-                                            </template>
-                                            
+                                            <template x-if="step.type === 'text'"><textarea x-model="step.content" rows="2" placeholder="Escreva a mensagem..." class="w-full bg-transparent text-sm outline-none dark:text-white resize-none"></textarea></template>
                                             <template x-if="step.type === 'delay'">
                                                 <div class="flex items-center gap-2">
                                                     <input x-model="step.content" type="number" step="1000" class="w-24 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg p-2 text-sm outline-none dark:text-white text-center">
                                                     <span class="text-[10px] text-slate-500 font-bold uppercase">Milissegundos (2000 = 2 seg)</span>
                                                 </div>
                                             </template>
-                                            
                                             <template x-if="['image', 'audio', 'document'].includes(step.type)">
                                                 <div>
                                                     <input type="file" :accept="step.type === 'image' ? 'image/*' : step.type === 'audio' ? 'audio/*' : '*'" class="hidden" :id="'file-'+index" @change="attachFileToStep($event, index)">
@@ -311,7 +217,7 @@
                                 <span x-show="!isSavingFlow"><i data-lucide="save" class="w-4 h-4 inline"></i> <span x-text="editingRuleId ? 'Atualizar Fluxo' : 'Salvar Novo Fluxo'"></span></span>
                                 <span x-show="isSavingFlow" class="animate-pulse">⏳ Salvando arquivos...</span>
                             </button>
-                            <button x-show="editingRuleId" @click="cancelEdit()" class="bg-gray-200 hover:bg-gray-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold py-4 px-6 rounded-xl shadow-md transition-all">Cancelar</button>
+                            <button x-show="editingRuleId" @click="cancelEdit()" class="bg-gray-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-4 px-6 rounded-xl shadow-md transition-all">Cancelar</button>
                         </div>
                     </div>
 
@@ -339,8 +245,140 @@
                                 </div>
                             </template>
                         </div>
-                        <div x-show="botRules.length === 0" class="text-center py-10 bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-gray-300 dark:border-slate-700">
-                            <p class="text-sm text-slate-400 font-bold">Nenhum fluxo criado ainda.</p>
+                    </div>
+                </div>
+
+                <div x-show="screen === 'agenda'" x-cloak class="max-w-4xl mx-auto space-y-6 pb-20">
+                    <div class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm">
+                        <h3 class="font-black text-2xl mb-2 dark:text-white flex items-center gap-2"><i data-lucide="calendar" class="text-indigo-500"></i> Agendar Disparo</h3>
+                        <p class="text-sm text-slate-500 mb-6">Programe um texto ou um fluxo completo para ser enviado depois.</p>
+
+                        <div class="space-y-5">
+                            <div>
+                                <label class="text-[10px] font-black uppercase text-slate-500 mb-2 block ml-1">Destinatário</label>
+                                <select x-model="agendaForm.leadId" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-sm dark:text-white outline-none">
+                                    <option value="">Selecione um Lead do CRM...</option>
+                                    <template x-for="lead in leads" :key="lead.id"><option :value="lead.id" x-text="`${lead.nome} (${lead.numero})`"></option></template>
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[10px] font-black uppercase text-slate-500 mb-2 block ml-1">O que enviar?</label>
+                                    <div class="flex gap-2">
+                                        <button @click="agendaForm.tipo = 'simples'" :class="agendaForm.tipo === 'simples' ? 'bg-indigo-100 text-indigo-700 border-indigo-400' : 'bg-slate-50 text-slate-500 border-gray-200 dark:border-slate-700 dark:bg-slate-800'" class="flex-1 p-3 rounded-xl border text-xs font-bold transition-all">Texto Simples</button>
+                                        <button @click="agendaForm.tipo = 'fluxo'" :class="agendaForm.tipo === 'fluxo' ? 'bg-indigo-100 text-indigo-700 border-indigo-400' : 'bg-slate-50 text-slate-500 border-gray-200 dark:border-slate-700 dark:bg-slate-800'" class="flex-1 p-3 rounded-xl border text-xs font-bold transition-all">Fluxo Salvo</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black uppercase text-slate-500 mb-2 block ml-1">Data e Hora</label>
+                                    <input type="datetime-local" x-model="agendaForm.dataHora" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-3 text-sm dark:text-white outline-none">
+                                </div>
+                            </div>
+
+                            <div x-show="agendaForm.tipo === 'simples'">
+                                <textarea x-model="agendaForm.texto" rows="3" placeholder="Escreva a mensagem..." class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-sm dark:text-white outline-none"></textarea>
+                            </div>
+                            
+                            <div x-show="agendaForm.tipo === 'fluxo'">
+                                <select x-model="agendaForm.flowId" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-sm dark:text-white outline-none">
+                                    <option value="">Escolha um fluxo existente...</option>
+                                    <template x-for="rule in botRules" :key="rule.id"><option :value="rule.id" x-text="rule.nome || rule.trigger_text || 'Fluxo sem nome'"></option></template>
+                                </select>
+                            </div>
+
+                            <button @click="salvarAgendamento()" class="w-full bg-indigo-600 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition-transform"><i data-lucide="clock" class="w-4 h-4 inline mr-1"></i> Agendar Agora</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <h4 class="font-black text-sm text-slate-500 ml-2 uppercase tracking-widest mb-4">Agendamentos Pendentes</h4>
+                        <div class="space-y-3">
+                            <template x-for="item in agendamentos.filter(a => !a.sent)" :key="item.id">
+                                <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm flex justify-between items-center">
+                                    <div>
+                                        <p class="font-bold text-sm dark:text-white" x-text="leads.find(l => l.id === item.leadId)?.nome || 'Lead'"></p>
+                                        <p class="text-xs text-indigo-500 font-bold mt-1" x-text="new Date(item.dataHora).toLocaleString('pt-BR')"></p>
+                                        <p class="text-[10px] text-slate-500 mt-1 uppercase font-black" x-text="item.tipo === 'fluxo' ? 'Disparo de Fluxo' : 'Mensagem Simples'"></p>
+                                    </div>
+                                    <button @click="cancelarAgendamento(item.id)" class="p-3 bg-red-50 text-red-500 rounded-xl dark:bg-red-900/20"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
+                            </template>
+                            <div x-show="agendamentos.filter(a => !a.sent).length === 0" class="text-center py-6 text-slate-400 text-xs font-bold border border-dashed rounded-2xl dark:border-slate-700">Nenhum agendamento pendente.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div x-show="screen === 'biblioteca'" x-cloak class="space-y-6 max-w-5xl mx-auto pb-20">
+                    <label class="w-full bg-indigo-600 text-white py-5 rounded-2xl flex items-center justify-center gap-2 font-black text-sm uppercase cursor-pointer shadow-lg active:scale-95 transition-all">
+                        <i data-lucide="upload-cloud"></i> Subir Novo Arquivo Local
+                        <input type="file" class="hidden" @change="addToLibrary($el)">
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <template x-for="(file, index) in myLibrary" :key="index">
+                            <div class="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 p-5 rounded-3xl relative shadow-sm">
+                                <button @click="removeFromLibrary(index)" class="absolute top-4 right-4 text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+                                <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500 mb-3"><i :data-lucide="file.type.includes('image') ? 'image' : 'file-text'"></i></div>
+                                <p class="font-bold text-sm dark:text-white truncate" x-text="file.name"></p>
+                                <button @click="sendFromLibrary(file)" class="w-full mt-4 bg-gray-100 dark:bg-slate-800 text-[10px] font-black py-3 rounded-xl uppercase hover:bg-indigo-600 hover:text-white transition-all">Disparar para Lead Atual</button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <div x-show="screen === 'disparo'" x-cloak class="max-w-xl mx-auto space-y-4 pb-20">
+                    <div class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[2.5rem] border border-gray-100 dark:border-slate-800 shadow-sm">
+                        <h3 class="font-black text-2xl mb-2 dark:text-white flex items-center gap-2"><i data-lucide="send" class="text-indigo-500"></i> Disparo em Massa</h3>
+                        <p class="text-sm text-slate-500 mb-6">Atire mensagens ou fluxos completos para vários leads de uma vez.</p>
+                        
+                        <div class="space-y-5">
+                            <div>
+                                <label class="text-[10px] font-black uppercase text-slate-500 mb-2 block ml-1">Público Alvo</label>
+                                <select x-model="disparoConfig.status" :disabled="disparoConfig.isRunning" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-sm dark:text-white outline-none">
+                                    <option value="todos">Todos os Leads</option>
+                                    <template x-for="col in columns" :key="col.id"><option :value="col.id" x-text="col.name"></option></template>
+                                    <option value="importados">📥 Importar Números Manuais</option>
+                                </select>
+                            </div>
+
+                            <div x-show="disparoConfig.status === 'importados'" x-transition>
+                                <label class="text-[10px] font-black uppercase text-slate-500 mb-2 block ml-1">Cole os Números (Com DDI, um por linha)</label>
+                                <textarea x-model="disparoConfig.numerosImportados" rows="4" placeholder="Ex: 5511999999999&#10;5511888888888" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-sm dark:text-white outline-none"></textarea>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-black uppercase text-slate-500 mb-2 block ml-1">Tipo de Mensagem</label>
+                                <div class="flex gap-2">
+                                    <button @click="disparoConfig.tipoMensagem = 'simples'" :class="disparoConfig.tipoMensagem === 'simples' ? 'bg-indigo-100 text-indigo-700 border-indigo-400' : 'bg-slate-50 text-slate-500 border-gray-200 dark:border-slate-700 dark:bg-slate-800'" class="flex-1 p-3 rounded-xl border text-xs font-bold transition-all">Mensagem Simples</button>
+                                    <button @click="disparoConfig.tipoMensagem = 'fluxo'" :class="disparoConfig.tipoMensagem === 'fluxo' ? 'bg-indigo-100 text-indigo-700 border-indigo-400' : 'bg-slate-50 text-slate-500 border-gray-200 dark:border-slate-700 dark:bg-slate-800'" class="flex-1 p-3 rounded-xl border text-xs font-bold transition-all">Usar Fluxo Salvo</button>
+                                </div>
+                            </div>
+
+                            <div x-show="disparoConfig.tipoMensagem === 'simples'" class="space-y-4">
+                                <textarea x-model="disparoConfig.msg" :disabled="disparoConfig.isRunning" rows="3" placeholder="{Oi|Olá} {nome}, tudo bem?" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-sm dark:text-white outline-none"></textarea>
+                                <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-dashed border-gray-300 dark:border-slate-700 flex justify-center gap-4 items-center">
+                                    <input type="file" x-ref="disparoFile" class="hidden" @change="disparoConfig.file = $event.target.files[0]">
+                                    <button @click="$refs.disparoFile.click()" class="text-indigo-600 font-bold text-xs"><i data-lucide="paperclip" class="w-4 h-4 inline mr-1"></i> Anexar Arquivo (Opcional)</button>
+                                    <span class="text-xs text-slate-500 truncate max-w-[150px]" x-text="disparoConfig.file?.name || ''"></span>
+                                </div>
+                            </div>
+
+                            <div x-show="disparoConfig.tipoMensagem === 'fluxo'">
+                                <select x-model="disparoConfig.selectedFlowId" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-sm dark:text-white outline-none">
+                                    <option value="">Escolha qual fluxo disparar...</option>
+                                    <template x-for="rule in botRules" :key="rule.id"><option :value="rule.id" x-text="rule.nome || rule.trigger_text || 'Fluxo sem nome'"></option></template>
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="text-[10px] font-black uppercase text-slate-500 ml-1">Delay Min (seg)</label><input x-model="disparoConfig.minDelay" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-3 text-sm dark:text-white outline-none mt-1"></div>
+                                <div><label class="text-[10px] font-black uppercase text-slate-500 ml-1">Delay Max (seg)</label><input x-model="disparoConfig.maxDelay" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl p-3 text-sm dark:text-white outline-none mt-1"></div>
+                            </div>
+
+                            <div x-show="disparoConfig.isRunning" class="text-center text-xs font-bold text-indigo-500 animate-pulse bg-indigo-50 dark:bg-indigo-900/30 p-3 rounded-xl border border-indigo-100 dark:border-indigo-800" x-text="`🔥 Atirando: ${disparoConfig.sent} de ${disparoConfig.total} enviados`"></div>
+                            
+                            <button x-show="!disparoConfig.isRunning" @click="iniciarDisparo()" class="w-full bg-indigo-600 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition-transform">Iniciar Campanha</button>
+                            <button x-show="disparoConfig.isRunning" @click="pararDisparo()" class="w-full bg-red-500 text-white font-black py-4 rounded-xl shadow-lg">Pausar Disparo</button>
                         </div>
                     </div>
                 </div>
@@ -355,7 +393,7 @@
                 <div class="flex items-center overflow-hidden">
                     <button @click="isChatOpen = false" class="p-2 -ml-2 mr-1 text-slate-500"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
                     
-                    <div class="relative mr-3 cursor-pointer group" @click="forceUpdateProfilePic(selectedLead)" title="Clique para puxar a foto do WhatsApp">
+                    <div class="relative mr-3 cursor-pointer group" @click="forceUpdateProfilePic(selectedLead)" title="Puxar foto do WhatsApp">
                         <img :src="selectedLead?.foto_url || 'https://api.dicebear.com/8.x/notionists/svg?seed=' + selectedLead?.nome" 
                              class="w-10 h-10 rounded-2xl border border-gray-100 dark:border-slate-700 object-cover transition-all" 
                              :class="isUpdatingPic ? 'opacity-50' : 'opacity-100'"
@@ -381,7 +419,6 @@
                 <template x-for="msg in messages" :key="msg.id">
                     <div :class="msg.from_me ? 'justify-end' : 'justify-start'" class="flex w-full">
                         <div :class="msg.from_me ? 'bg-indigo-600 text-white rounded-l-2xl rounded-tr-2xl shadow-md' : 'bg-white dark:bg-slate-800 dark:text-slate-200 rounded-r-2xl rounded-tl-2xl shadow-sm'" class="p-3.5 max-w-[85%] relative">
-                            
                             <template x-if="msg.type === 'audio' || (msg.content && msg.content.includes('ogg'))">
                                 <audio controls :src="extractUrl(msg.content)" class="w-56 h-10 outline-none"></audio>
                             </template>
@@ -397,7 +434,6 @@
                             <template x-if="msg.type === 'text' || (!msg.content.includes('http') && msg.type !== 'audio' && msg.type !== 'image' && msg.type !== 'video' && msg.type !== 'document')">
                                 <p class="text-sm font-medium leading-relaxed break-words whitespace-pre-wrap" x-text="formatText(msg.content)"></p>
                             </template>
-
                             <div class="flex justify-end mt-1.5 opacity-50"><span class="text-[9px] font-black" x-text="new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></span></div>
                         </div>
                     </div>
@@ -417,14 +453,9 @@
                                 <span class="font-black text-[15px] text-slate-800 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors tracking-tight" x-text="rule.nome || rule.trigger_text || 'Fluxo sem nome'"></span>
                                 <span class="text-[10px] font-bold text-slate-400 mt-1 flex items-center gap-1"><i data-lucide="git-merge" class="w-3 h-3"></i> <span x-text="rule.flow_steps ? `${rule.flow_steps.length} blocos` : 'Regra simples'"></span></span>
                             </div>
-                            <div class="w-8 h-8 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center shadow-sm group-hover:bg-indigo-600 group-hover:text-white transition-colors text-slate-400">
-                                <i data-lucide="send" class="w-4 h-4 ml-0.5"></i>
-                            </div>
+                            <div class="w-8 h-8 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center shadow-sm group-hover:bg-indigo-600 group-hover:text-white transition-colors text-slate-400"><i data-lucide="send" class="w-4 h-4 ml-0.5"></i></div>
                         </button>
                     </template>
-                    <div x-show="botRules.length === 0" class="text-center py-6">
-                        <p class="text-xs text-slate-400 font-bold">Crie um fluxo na aba Automação.</p>
-                    </div>
                 </div>
             </div>
 
@@ -444,11 +475,7 @@
                         <input type="file" x-ref="iI" class="hidden" @change="uploadAndSend($event, 'image')">
                         <input type="file" x-ref="aI" class="hidden" @change="uploadAndSend($event, 'audio')">
                         <input type="file" x-ref="dI" class="hidden" @change="uploadAndSend($event, 'document')">
-                        
-                        <button @click="showFlowsMenu = !showFlowsMenu; setTimeout(() => lucide.createIcons(), 50)" class="p-2.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 rounded-xl mr-1 transition-colors" title="Abrir Menu de Fluxos">
-                            <i data-lucide="layers" class="w-5 h-5"></i>
-                        </button>
-
+                        <button @click="showFlowsMenu = !showFlowsMenu; setTimeout(() => lucide.createIcons(), 50)" class="p-2.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 rounded-xl mr-1 transition-colors" title="Abrir Menu de Fluxos"><i data-lucide="layers" class="w-5 h-5"></i></button>
                         <button @click="$refs.iI.click()" class="p-2 text-slate-400 hover:text-indigo-500"><i data-lucide="image" class="w-5 h-5"></i></button>
                         <button @click="$refs.aI.click()" class="p-2 text-slate-400 hover:text-indigo-500"><i data-lucide="mic" class="w-5 h-5"></i></button>
                         <button @click="$refs.dI.click()" class="p-2 text-slate-400 hover:text-indigo-500"><i data-lucide="file-text" class="w-5 h-5"></i></button>
@@ -461,9 +488,9 @@
             </footer>
         </div>
 
-        <nav class="md:hidden fixed bottom-0 w-full glass flex justify-between items-center z-40 h-16 px-6 border-t border-gray-200 dark:border-slate-800 pb-safe">
+        <nav class="md:hidden fixed bottom-0 w-full glass flex justify-between items-center z-40 h-16 px-4 border-t border-gray-200 dark:border-slate-800 pb-safe overflow-x-auto no-scrollbar">
             <template x-for="item in navItems">
-                <button @click="screen = item.id" :class="screen === item.id ? 'text-indigo-600 scale-110 font-black' : 'text-slate-400'" class="flex flex-col items-center gap-1 transition-all">
+                <button @click="screen = item.id" :class="screen === item.id ? 'text-indigo-600 scale-110 font-black' : 'text-slate-400'" class="flex flex-col items-center gap-1 transition-all min-w-[60px]">
                     <i :data-lucide="item.icon" class="w-5 h-5"></i>
                     <span class="text-[9px]" x-text="item.label"></span>
                 </button>
@@ -474,28 +501,27 @@
     <script>
         function crmApp() {
             return {
-                screen: 'dash', // Agora abre no Dashboard para você ver a novidade
+                screen: 'dash',
                 isChatOpen: false, selectedLead: null, selectedLeadStatus: '', msgInput: '', leads: [], messages: [], botRules: [], myLibrary: [],
                 newRule: { trigger: '', response: '' }, botMediaFile: null,
                 isDarkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
                 
-                showFlowsMenu: false,
-                isUpdatingPic: false,
+                showFlowsMenu: false, isUpdatingPic: false, notifications: [],
+                flowBuilder: { name: '', trigger: '', steps: [] }, isSavingFlow: false, editingRuleId: null,
 
-                // NOVO: SISTEMA DE NOTIFICAÇÕES (TOAST)
-                notifications: [],
-
-                flowBuilder: { name: '', trigger: '', steps: [] },
-                isSavingFlow: false,
-                editingRuleId: null,
-
-                disparoConfig: { status: 'todos', msg: '', minDelay: 30, maxDelay: 60, isRunning: false, sent: 0, total: 0, file: null },
+                // MODIFICADO: Disparo agora com tipoMensagem e numerosImportados
+                disparoConfig: { status: 'todos', tipoMensagem: 'simples', selectedFlowId: '', numerosImportados: '', msg: '', minDelay: 30, maxDelay: 60, isRunning: false, sent: 0, total: 0, file: null },
                 
+                // NOVO: Estado do Agendamento
+                agendaForm: { leadId: '', tipo: 'simples', flowId: '', texto: '', dataHora: '' },
+                agendamentos: [],
+
                 navItems: [
                     { id: 'dash', label: 'Dash', icon: 'pie-chart' }, 
                     { id: 'kanban', label: 'Funil', icon: 'columns' }, 
                     { id: 'bot', label: 'Automação', icon: 'git-merge' },
                     { id: 'disparo', label: 'Disparo', icon: 'send' },
+                    { id: 'agenda', label: 'Agenda', icon: 'calendar' }, // NOVO ITEM NO MENU
                     { id: 'biblioteca', label: 'Mídias', icon: 'folder' }
                 ],
                 columns: [{ id: 'novo_lead', name: 'Triagem' }, { id: 'atendimento', name: 'Negócio' }, { id: 'proposta', name: 'Proposta' }, { id: 'fechado', name: 'Venda' }],
@@ -506,48 +532,90 @@
                     this.client = supabase.createClient(SB_URL, SB_KEY);
                     await this.loadLeads();
                     await this.loadBotRules();
+                    this.loadAgendamentos(); // Inicia leitura local da agenda
                     this.setupRealtime();
                     setTimeout(() => lucide.createIcons(), 100);
+
+                    // MONITOR DE AGENDAMENTO (Checa a cada 30 segundos)
+                    setInterval(() => { this.checkAgendamentos(); }, 30000);
                 },
 
-                // FUNÇÃO DE NOTIFICAÇÕES (TOAST)
+                // LÓGICA DE AGENDAMENTO
+                loadAgendamentos() {
+                    const salvos = localStorage.getItem('evo_agendamentos');
+                    if (salvos) this.agendamentos = JSON.parse(salvos);
+                },
+                salvarAgendamento() {
+                    if (!this.agendaForm.leadId) return alert('Selecione um Lead.');
+                    if (!this.agendaForm.dataHora) return alert('Escolha a data e a hora.');
+                    if (this.agendaForm.tipo === 'simples' && !this.agendaForm.texto) return alert('Escreva a mensagem.');
+                    if (this.agendaForm.tipo === 'fluxo' && !this.agendaForm.flowId) return alert('Selecione um Fluxo.');
+
+                    const novoAgendamento = {
+                        id: Date.now(),
+                        leadId: this.agendaForm.leadId,
+                        tipo: this.agendaForm.tipo,
+                        flowId: this.agendaForm.flowId,
+                        texto: this.agendaForm.texto,
+                        dataHora: this.agendaForm.dataHora,
+                        sent: false
+                    };
+
+                    this.agendamentos.push(novoAgendamento);
+                    localStorage.setItem('evo_agendamentos', JSON.stringify(this.agendamentos));
+                    this.agendaForm = { leadId: '', tipo: 'simples', flowId: '', texto: '', dataHora: '' };
+                    this.addNotification('Sucesso', 'Mensagem agendada!', 'success');
+                    setTimeout(() => lucide.createIcons(), 50);
+                },
+                cancelarAgendamento(id) {
+                    this.agendamentos = this.agendamentos.filter(a => a.id !== id);
+                    localStorage.setItem('evo_agendamentos', JSON.stringify(this.agendamentos));
+                },
+                async checkAgendamentos() {
+                    const now = new Date();
+                    for (let ag of this.agendamentos) {
+                        if (!ag.sent && new Date(ag.dataHora) <= now) {
+                            const leadAlvo = this.leads.find(l => l.id === ag.leadId);
+                            if (leadAlvo) {
+                                if (ag.tipo === 'simples') {
+                                    await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: leadAlvo.numero, text: ag.texto }) });
+                                    await this.client.from('messages').insert({ lead_id: leadAlvo.id, content: ag.texto, from_me: true, type: 'text' });
+                                } else if (ag.tipo === 'fluxo') {
+                                    const rule = this.botRules.find(r => r.id === ag.flowId);
+                                    if (rule) await this.triggerBotRuleManual(rule, leadAlvo); // Usa targetLead
+                                }
+                                this.addNotification('Agendamento Enviado! 🚀', `Mensagem enviada para ${leadAlvo.nome}`, 'success');
+                            }
+                            ag.sent = true;
+                        }
+                    }
+                    localStorage.setItem('evo_agendamentos', JSON.stringify(this.agendamentos));
+                },
+
+                // TOAST
                 addNotification(title, message, type = 'info') {
                     const id = Date.now();
                     this.notifications.push({ id, title, message, type });
-                    setTimeout(() => {
-                        this.notifications = this.notifications.filter(n => n.id !== id);
-                    }, 5000);
+                    setTimeout(() => { this.notifications = this.notifications.filter(n => n.id !== id); }, 5000);
                     setTimeout(() => lucide.createIcons(), 50);
-                    
-                    if (type === 'success') {
-                        // Som de Venda/Sucesso
-                        new Audio('https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3').play().catch(() => {});
-                    } else {
-                        // Som normal
-                        this.playSound();
-                    }
+                    if (type === 'success') { new Audio('https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3').play().catch(() => {}); } 
+                    else { this.playSound(); }
                 },
 
+                // OUTRAS FUNÇÕES MANTIDAS
                 async forceUpdateProfilePic(lead) {
                     if(!lead || this.isUpdatingPic) return;
                     this.isUpdatingPic = true;
                     try {
-                        const res = await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/chat/fetchProfilePictureUrl/igor`, {
-                            method: 'POST', 
-                            headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, 
-                            body: JSON.stringify({ "number": lead.numero })
-                        });
+                        const res = await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/chat/fetchProfilePictureUrl/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ "number": lead.numero }) });
                         const data = await res.json();
                         const picUrl = data.picture || data.profilePictureUrl || data.url || null;
-                        
                         if(picUrl) {
                             await this.client.from('leads').update({ foto_url: picUrl }).eq('id', lead.id);
                             this.leads = this.leads.map(l => l.id === lead.id ? {...l, foto_url: picUrl} : l);
-                            if (this.selectedLead && this.selectedLead.id === lead.id) {
-                                this.selectedLead.foto_url = picUrl;
-                            }
+                            if (this.selectedLead && this.selectedLead.id === lead.id) { this.selectedLead.foto_url = picUrl; }
                         }
-                    } catch(e) { console.error('Erro ao atualizar foto:', e); }
+                    } catch(e) {}
                     this.isUpdatingPic = false;
                 },
 
@@ -555,9 +623,8 @@
                     this.editingRuleId = rule.id;
                     this.flowBuilder.name = rule.nome || rule.trigger_text || '';
                     this.flowBuilder.trigger = rule.trigger_text || '';
-                    if (rule.flow_steps && rule.flow_steps.length > 0) {
-                        this.flowBuilder.steps = JSON.parse(JSON.stringify(rule.flow_steps));
-                    } else {
+                    if (rule.flow_steps && rule.flow_steps.length > 0) { this.flowBuilder.steps = JSON.parse(JSON.stringify(rule.flow_steps)); } 
+                    else {
                         this.flowBuilder.steps = [];
                         if (rule.media_url) this.flowBuilder.steps.push({ type: rule.media_type || 'document', content: rule.media_url, fileName: 'Mídia no BD' });
                         if (rule.response_text && !rule.response_text.includes('"isFlow":true')) this.flowBuilder.steps.push({ type: 'text', content: rule.response_text });
@@ -566,13 +633,9 @@
                     setTimeout(() => lucide.createIcons(), 50);
                 },
                 cancelEdit() { this.editingRuleId = null; this.flowBuilder = { name: '', trigger: '', steps: [] }; },
-
                 addStep(type) { this.flowBuilder.steps.push({ type: type, content: type === 'delay' ? 2000 : '', fileObj: null, fileName: '' }); setTimeout(() => lucide.createIcons(), 50); },
                 removeStep(index) { this.flowBuilder.steps.splice(index, 1); },
-                attachFileToStep(event, index) {
-                    const file = event.target.files[0];
-                    if(file) { this.flowBuilder.steps[index].fileObj = file; this.flowBuilder.steps[index].fileName = file.name; }
-                },
+                attachFileToStep(event, index) { const file = event.target.files[0]; if(file) { this.flowBuilder.steps[index].fileObj = file; this.flowBuilder.steps[index].fileName = file.name; } },
                 
                 async saveFlow() {
                     if(!this.flowBuilder.name) return alert('Dê um Nome para o seu fluxo!');
@@ -590,15 +653,11 @@
                         }
 
                         const flowData = { isFlow: true, name: this.flowBuilder.name.trim(), steps: finalSteps };
-                        const dataToSave = { 
-                            trigger_text: this.flowBuilder.trigger ? this.flowBuilder.trigger.toLowerCase().trim() : 'Fluxo', 
-                            response_text: JSON.stringify(flowData), media_url: null, media_type: null 
-                        };
+                        const dataToSave = { trigger_text: this.flowBuilder.trigger ? this.flowBuilder.trigger.toLowerCase().trim() : 'Fluxo', response_text: JSON.stringify(flowData), media_url: null, media_type: null };
 
                         if (this.editingRuleId) { await this.client.from('chatbot_rules').update(dataToSave).eq('id', this.editingRuleId); } 
                         else { await this.client.from('chatbot_rules').insert(dataToSave); }
-                        
-                        this.cancelEdit(); await this.loadBotRules(); alert('Fluxo salvo com sucesso!');
+                        this.cancelEdit(); await this.loadBotRules(); this.addNotification('Sucesso', 'Fluxo Salvo!', 'success');
                     } catch(e) { console.error(e); alert('Erro ao salvar fluxo: ' + e.message); }
                     this.isSavingFlow = false;
                 },
@@ -616,43 +675,45 @@
                         setTimeout(() => lucide.createIcons(), 50); 
                     } 
                 },
-
                 async deleteBotRule(id) { if(!confirm("Apagar esse fluxo?")) return; await this.client.from('chatbot_rules').delete().eq('id', id); this.loadBotRules(); },
 
-                async triggerBotRuleManual(rule) {
-                    if(!this.selectedLead) return;
+                // DISPARADOR MANUAL AGORA ACEITA UM 'targetLead' OPCIONAL
+                async triggerBotRuleManual(rule, targetLead = null) {
+                    const leadFinal = targetLead || this.selectedLead;
+                    if(!leadFinal) return;
+                    
                     if(rule.flow_steps && rule.flow_steps.length > 0) {
                         for(const step of rule.flow_steps) {
                             if (step.type === 'delay') { await new Promise(r => setTimeout(r, parseInt(step.content)||2000)); }
                             else if (step.type === 'text') { 
-                                await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: this.selectedLead.numero, text: step.content }) }); 
-                                await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: step.content, from_me: true, type: 'text' }); 
+                                await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: leadFinal.numero, text: step.content }) }); 
+                                await this.client.from('messages').insert({ lead_id: leadFinal.id, content: step.content, from_me: true, type: 'text' }); 
                             }
                             else {
-                                let endpoint = 'sendDocument'; let bodyMedia = { number: this.selectedLead.numero };
+                                let endpoint = 'sendDocument'; let bodyMedia = { number: leadFinal.numero };
                                 if (step.type === 'audio') { endpoint = 'sendWhatsAppAudio'; bodyMedia.audio = step.content; }
                                 else if (step.type === 'image') { endpoint = 'sendImage'; bodyMedia.media = step.content; }
                                 else if (step.type === 'video') { endpoint = 'sendVideo'; bodyMedia.media = step.content; }
                                 else { bodyMedia.media = step.content; bodyMedia.fileName = "Documento"; }
                                 await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(bodyMedia) });
-                                await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: step.content, from_me: true, type: step.type });
+                                await this.client.from('messages').insert({ lead_id: leadFinal.id, content: step.content, from_me: true, type: step.type });
                             }
                             if(step.type !== 'delay') await new Promise(r => setTimeout(r, 1000));
                         }
                     } else if (rule.media_url || (rule.response_text && !rule.response_text.includes('"isFlow":true'))) {
                         if(rule.media_url) {
-                            let endpoint = 'sendDocument'; let body = { number: this.selectedLead.numero };
+                            let endpoint = 'sendDocument'; let body = { number: leadFinal.numero };
                             if(rule.media_type === 'audio') { endpoint = 'sendWhatsAppAudio'; body.audio = rule.media_url; }
                             else if(rule.media_type === 'image') { endpoint = 'sendImage'; body.media = rule.media_url; }
                             else { body.media = rule.media_url; body.fileName = "Documento"; }
                             await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-                            await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: rule.media_url, from_me: true, type: rule.media_type || 'document' });
+                            await this.client.from('messages').insert({ lead_id: leadFinal.id, content: rule.media_url, from_me: true, type: rule.media_type || 'document' });
                         }
                         if(rule.response_text) {
-                            await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: this.selectedLead.numero, text: rule.response_text }) });
-                            await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: rule.response_text, from_me: true, type: 'text' });
+                            await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: leadFinal.numero, text: rule.response_text }) });
+                            await this.client.from('messages').insert({ lead_id: leadFinal.id, content: rule.response_text, from_me: true, type: 'text' });
                         }
-                    } else { alert('Atenção: Este fluxo está vazio (0 passos). Clique em Editar e adicione mensagens para disparar.'); }
+                    }
                 },
 
                 extractUrl(text) { if (!text) return ''; const match = text.match(/https?:\/\/[^\s]+/); return match ? match[0] : text; },
@@ -695,14 +756,34 @@
                     if(!text) return ""; let msg = text.replace(/{nome}/g, lead.nome ? lead.nome.split(' ')[0] : 'Cliente');
                     return msg.replace(/{([^{}]+)}/g, function(match, options) { const words = options.split('|'); return words[Math.floor(Math.random() * words.length)]; });
                 },
+
+                // DISPARO AGORA SUPORTA IMPORTAÇÃO E FLUXOS
                 async iniciarDisparo() {
                     if (this.disparoConfig.isRunning) return;
-                    let alvos = this.leads; if (this.disparoConfig.status !== 'todos') alvos = this.leads.filter(l => l.status === this.disparoConfig.status);
+                    let alvos = [];
+                    
+                    if (this.disparoConfig.status === 'importados') {
+                        if(!this.disparoConfig.numerosImportados) return alert('Cole os números para importar.');
+                        const numeros = this.disparoConfig.numerosImportados.split(/[\n,]+/).map(n => n.replace(/\D/g, '').trim()).filter(n => n);
+                        
+                        this.addNotification('Importando...', `Criando ${numeros.length} novos leads no painel.`, 'info');
+                        // Salva os leads importados no banco primeiro para terem um ID
+                        for (let num of numeros) {
+                            const { data: newLead } = await this.client.from('leads').upsert({ numero: num, nome: 'Lead Importado' }, { onConflict: 'numero' }).select().single();
+                            alvos.push(newLead);
+                        }
+                        await this.loadLeads(); // Atualiza a tela
+                    } else if (this.disparoConfig.status === 'todos') {
+                        alvos = this.leads;
+                    } else {
+                        alvos = this.leads.filter(l => l.status === this.disparoConfig.status);
+                    }
+
                     if (alvos.length === 0) return alert('Nenhum lead encontrado.');
                     this.disparoConfig.isRunning = true; this.disparoConfig.total = alvos.length; this.disparoConfig.sent = 0;
                     
                     let publicMediaUrl = null; let mediaType = null;
-                    if (this.disparoConfig.file) {
+                    if (this.disparoConfig.tipoMensagem === 'simples' && this.disparoConfig.file) {
                         const file = this.disparoConfig.file; const fileName = `bulk-${Date.now()}-${file.name}`;
                         await this.client.storage.from('chat_media').upload(`disparos/${fileName}`, file);
                         const { data } = this.client.storage.from('chat_media').getPublicUrl(`disparos/${fileName}`);
@@ -712,19 +793,25 @@
                     for (const lead of alvos) {
                         if (!this.disparoConfig.isRunning) break;
                         try {
-                            if (publicMediaUrl) {
-                                let endpoint = 'sendDocument'; let body = { number: lead.numero };
-                                if(mediaType === 'audio') { endpoint = 'sendWhatsAppAudio'; body.audio = publicMediaUrl; }
-                                else if(mediaType === 'image') { endpoint = 'sendImage'; body.media = publicMediaUrl; }
-                                else if(mediaType === 'video') { endpoint = 'sendVideo'; body.media = publicMediaUrl; }
-                                else { body.media = publicMediaUrl; body.fileName = this.disparoConfig.file.name; }
-                                await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-                                await this.client.from('messages').insert({ lead_id: lead.id, content: publicMediaUrl, from_me: true, type: mediaType });
-                            }
-                            if (this.disparoConfig.msg) {
-                                const msgPronta = this.processSpintax(this.disparoConfig.msg, lead);
-                                await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: lead.numero, text: msgPronta }) });
-                                await this.client.from('messages').insert({ lead_id: lead.id, content: msgPronta, from_me: true, type: 'text' });
+                            if (this.disparoConfig.tipoMensagem === 'fluxo') {
+                                const rule = this.botRules.find(r => r.id === this.disparoConfig.selectedFlowId);
+                                if(rule) await this.triggerBotRuleManual(rule, lead); // Passa o lead alvo
+                            } else {
+                                // MENSAGEM SIMPLES MANTIDA
+                                if (publicMediaUrl) {
+                                    let endpoint = 'sendDocument'; let body = { number: lead.numero };
+                                    if(mediaType === 'audio') { endpoint = 'sendWhatsAppAudio'; body.audio = publicMediaUrl; }
+                                    else if(mediaType === 'image') { endpoint = 'sendImage'; body.media = publicMediaUrl; }
+                                    else if(mediaType === 'video') { endpoint = 'sendVideo'; body.media = publicMediaUrl; }
+                                    else { body.media = publicMediaUrl; body.fileName = this.disparoConfig.file.name; }
+                                    await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                                    await this.client.from('messages').insert({ lead_id: lead.id, content: publicMediaUrl, from_me: true, type: mediaType });
+                                }
+                                if (this.disparoConfig.msg) {
+                                    const msgPronta = this.processSpintax(this.disparoConfig.msg, lead);
+                                    await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: lead.numero, text: msgPronta }) });
+                                    await this.client.from('messages').insert({ lead_id: lead.id, content: msgPronta, from_me: true, type: 'text' });
+                                }
                             }
                         } catch (e) { console.error(e); }
                         this.disparoConfig.sent++;
@@ -734,14 +821,13 @@
                         }
                     }
                     this.disparoConfig.isRunning = false;
+                    this.addNotification('Disparo Finalizado', `Enviado para ${this.disparoConfig.sent} leads.`, 'success');
                 },
                 pararDisparo() { this.disparoConfig.isRunning = false; },
 
-                // REALTIME COM DISPARO DE TOASTS
                 setupRealtime() {
                     this.client.channel('leads_channel').on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, (payload) => {
                         this.loadLeads();
-                        // NOTIFICAÇÕES VISUAIS DE LEAD
                         if (payload.eventType === 'INSERT') {
                             this.addNotification('Novo Lead!', `O cliente ${payload.new.nome} chegou.`, 'info');
                         } else if (payload.eventType === 'UPDATE') {
@@ -753,18 +839,14 @@
                     
                     this.client.channel('msgs_channel').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
                         if (!payload.new.from_me) {
-                            // Toca o som ou mostra alerta se não estiver no chat do cliente
                             if (!this.isChatOpen || this.selectedLead?.id !== payload.new.lead_id) {
                                 const leadMsg = this.leads.find(l => l.id === payload.new.lead_id);
-                                if(leadMsg) {
-                                    this.addNotification('Nova Mensagem', `De: ${leadMsg.nome}`, 'info');
-                                }
+                                if(leadMsg) { this.addNotification('Nova Mensagem', `De: ${leadMsg.nome}`, 'info'); }
                             }
                         }
                         if (this.isChatOpen && payload.new.lead_id === this.selectedLead?.id) { 
                             if(!this.messages.find(m => m.id === payload.new.id)) { 
-                                this.messages.push(payload.new); 
-                                this.scrollToBottom(); 
+                                this.messages.push(payload.new); this.scrollToBottom(); 
                             } 
                         }
                     }).subscribe();
