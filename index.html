@@ -1,86 +1,118 @@
 <!DOCTYPE html>
-<html lang="pt-br" x-data="crmApp()">
+<html lang="pt-br" x-data="crmApp()" :class="{ 'dark': isDarkMode }">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EvoCRM Pro | Igor Borges</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: {} }
+        }
+    </script>
+
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
     <script src="https://bernardo-castilho.github.io/DragDropTouch/DragDropTouch.js"></script>
 
     <style>
         [x-cloak] { display: none !important; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .bg-chat { background-color: #0b141a; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; opacity: 0.2; }
+        
+        /* Padrão de fundo do WhatsApp */
+        .bg-chat-pattern { 
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); 
+            background-blend-mode: overlay; 
+        }
+        
         .kanban-col { min-width: 85vw; height: calc(100vh - 240px); scroll-snap-align: center; }
         @media (min-width: 768px) { .kanban-col { min-width: 320px; } }
         .kanban-container { scroll-snap-type: x mandatory; }
-        .glass-nav { background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(12px); border-top: 1px solid rgba(255,255,255,0.05); }
-        body { touch-action: pan-y; } 
+        
+        /* Navegação Mobile com suporte a Light/Dark */
+        .glass-nav { 
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-top: 1px solid rgba(0,0,0,0.05); 
+        }
+        .dark .glass-nav { 
+            background: rgba(2, 6, 23, 0.95); border-top: 1px solid rgba(255,255,255,0.05); 
+        }
+        
+        body { touch-action: pan-y; transition: background-color 0.3s, color 0.3s; } 
     </style>
 </head>
-<body class="bg-slate-950 text-slate-200 antialiased font-sans overflow-hidden selection:bg-indigo-500 selection:text-white">
+<body class="bg-gray-50 text-gray-800 dark:bg-slate-950 dark:text-slate-200 antialiased font-sans overflow-hidden selection:bg-indigo-500 selection:text-white transition-colors duration-200">
 
     <div class="flex h-screen w-full relative">
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 hidden md:flex flex-col z-10">
+        
+        <aside class="w-64 bg-white border-r border-gray-200 dark:bg-slate-900 dark:border-slate-800 hidden md:flex flex-col z-10 transition-colors duration-200">
             <div class="p-6 flex items-center gap-3">
                 <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
                     <i data-lucide="zap" class="text-white w-5 h-5"></i>
                 </div>
-                <h1 class="font-black text-xl tracking-tighter text-white">EVO<span class="text-indigo-500">PRO</span></h1>
+                <h1 class="font-black text-xl tracking-tighter text-gray-900 dark:text-white">EVO<span class="text-indigo-500">PRO</span></h1>
             </div>
             <nav class="flex-1 px-4 space-y-2 mt-4">
                 <template x-for="item in navItems">
-                    <button @click="screen = item.id" :class="screen === item.id ? 'bg-indigo-500/10 text-indigo-400 border-r-4 border-indigo-500' : 'text-slate-400 hover:bg-slate-800'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all">
+                    <button @click="screen = item.id" :class="screen === item.id ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-r-4 border-indigo-500 font-black' : 'text-gray-500 hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-slate-800 font-bold'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all">
                         <i :data-lucide="item.icon" class="w-5 h-5"></i> <span x-text="item.label"></span>
                     </button>
                 </template>
             </nav>
-            <div class="p-6 border-t border-slate-800">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-xs text-white">IB</div>
+            <div class="p-6 border-t border-gray-200 dark:border-slate-800 flex justify-between items-center">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-xs text-white shrink-0">IB</div>
                     <div class="flex-1 overflow-hidden">
-                        <p class="text-xs font-bold truncate text-white">Igor Borges</p>
+                        <p class="text-xs font-bold truncate text-gray-900 dark:text-white">Igor Borges</p>
                         <p class="text-[9px] text-emerald-500 font-black uppercase tracking-widest">Admin Online</p>
                     </div>
                 </div>
+                <button @click="toggleTheme()" class="p-2 text-gray-400 hover:text-indigo-500 dark:text-slate-400 dark:hover:text-indigo-400 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-all">
+                    <i :data-lucide="isDarkMode ? 'sun' : 'moon'" class="w-4 h-4"></i>
+                </button>
             </div>
         </aside>
 
         <main class="flex-1 flex flex-col relative w-full h-full pb-20 md:pb-0">
-            <header class="h-16 px-4 md:px-8 flex items-center justify-between bg-slate-950/80 backdrop-blur-md sticky top-0 z-30 border-b border-slate-800/50">
-                <h2 class="font-black text-sm uppercase tracking-widest text-white" x-text="navItems.find(i => i.id === screen)?.label || 'CRM'"></h2>
+            <header class="h-16 px-4 md:px-8 flex items-center justify-between bg-white/90 border-b border-gray-200 dark:bg-slate-950/80 dark:border-slate-800/50 backdrop-blur-md sticky top-0 z-30 transition-colors duration-200">
+                <div class="flex items-center gap-3">
+                    <h2 class="font-black text-sm uppercase tracking-widest text-gray-900 dark:text-white" x-text="navItems.find(i => i.id === screen)?.label || 'CRM'"></h2>
+                </div>
+                <button @click="toggleTheme()" class="md:hidden p-2 text-gray-500 hover:text-indigo-500 dark:text-slate-400 dark:hover:text-white bg-gray-100 dark:bg-slate-800 rounded-full transition-colors">
+                    <i :data-lucide="isDarkMode ? 'sun' : 'moon'" class="w-4 h-4"></i>
+                </button>
             </header>
 
             <section class="flex-1 overflow-y-auto p-4 md:p-8 no-scrollbar">
                 
                 <div x-show="screen === 'dash'" x-cloak class="grid grid-cols-2 gap-4">
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl shadow-lg">
-                        <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Leads</p>
-                        <h3 class="text-3xl font-black mt-1 text-white" x-text="leads.length">0</h3>
+                    <div class="bg-white border border-gray-200 dark:bg-slate-900 dark:border-slate-800 p-5 rounded-3xl shadow-sm dark:shadow-lg transition-colors duration-200">
+                        <p class="text-gray-500 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Leads</p>
+                        <h3 class="text-3xl font-black mt-1 text-gray-900 dark:text-white" x-text="leads.length">0</h3>
                     </div>
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl shadow-lg border-b-4 border-b-emerald-500">
-                        <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Vendas Fechadas</p>
-                        <h3 class="text-3xl font-black mt-1 text-white" x-text="leads.filter(l => l.status === 'fechado').length">0</h3>
+                    <div class="bg-white border border-gray-200 dark:bg-slate-900 dark:border-slate-800 p-5 rounded-3xl shadow-sm dark:shadow-lg border-b-4 border-b-emerald-500 dark:border-b-emerald-500 transition-colors duration-200">
+                        <p class="text-gray-500 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest">Vendas Fechadas</p>
+                        <h3 class="text-3xl font-black mt-1 text-gray-900 dark:text-white" x-text="leads.filter(l => l.status === 'fechado').length">0</h3>
                     </div>
                 </div>
 
                 <div x-show="screen === 'kanban'" x-cloak class="flex gap-4 overflow-x-auto pb-6 no-scrollbar kanban-container h-full">
                     <template x-for="col in columns" :key="col.id">
-                        <div class="kanban-col flex flex-col gap-3 bg-slate-900/30 p-2 md:p-3 rounded-[2rem] border border-slate-800/50" @dragover.prevent @drop="updateStatus($event.dataTransfer.getData('id'), col.id)">
+                        <div class="kanban-col flex flex-col gap-3 bg-gray-100/50 border border-gray-200 dark:bg-slate-900/30 dark:border-slate-800/50 p-2 md:p-3 rounded-[2rem] transition-colors duration-200" @dragover.prevent @drop="updateStatus($event.dataTransfer.getData('id'), col.id)">
                             <div class="flex items-center justify-between px-3 pt-2">
-                                <span class="text-[11px] font-black uppercase tracking-widest text-slate-300" x-text="col.name"></span>
-                                <span class="text-[10px] bg-slate-800 text-white px-2.5 py-1 rounded-full font-bold" x-text="leads.filter(l => l.status === col.id).length"></span>
+                                <span class="text-[11px] font-black uppercase tracking-widest text-gray-500 dark:text-slate-300" x-text="col.name"></span>
+                                <span class="text-[10px] bg-white text-gray-800 border border-gray-200 dark:bg-slate-800 dark:text-white dark:border-slate-700 px-2.5 py-1 rounded-full font-bold shadow-sm" x-text="leads.filter(l => l.status === col.id).length"></span>
                             </div>
                             <div class="flex-1 overflow-y-auto flex flex-col gap-3 no-scrollbar pb-2">
                                 <template x-for="lead in leads.filter(l => l.status === col.id)" :key="lead.id">
                                     <div draggable="true" @dragstart="$event.dataTransfer.setData('id', lead.id)" @click="openChat(lead)" 
-                                         class="bg-slate-900 border border-slate-700 p-4 rounded-3xl active:scale-95 transition-all cursor-pointer shadow-md relative">
-                                        <h4 class="font-bold text-sm text-white truncate pr-6 mb-2" x-text="lead.nome"></h4>
-                                        <p class="text-[11px] text-slate-400 flex items-center gap-1.5"><i data-lucide="smartphone" class="w-3 h-3"></i> <span x-text="lead.numero"></span></p>
-                                        <i data-lucide="grip-horizontal" class="absolute top-4 right-4 w-4 h-4 text-slate-600"></i>
+                                         class="bg-white border border-gray-200 shadow-sm dark:bg-slate-900 dark:border-slate-700 p-4 rounded-3xl active:scale-95 transition-all cursor-pointer relative group">
+                                        <h4 class="font-bold text-sm text-gray-900 dark:text-white truncate pr-6 mb-2" x-text="lead.nome"></h4>
+                                        <p class="text-[11px] text-gray-500 dark:text-slate-400 flex items-center gap-1.5"><i data-lucide="smartphone" class="w-3 h-3"></i> <span x-text="lead.numero"></span></p>
+                                        <i data-lucide="grip-horizontal" class="absolute top-4 right-4 w-4 h-4 text-gray-300 group-hover:text-gray-400 dark:text-slate-600"></i>
                                     </div>
                                 </template>
                             </div>
@@ -95,33 +127,33 @@
                     </label>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <template x-for="(file, index) in myLibrary" :key="index">
-                            <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl relative">
-                                <button @click="removeFromLibrary(index)" class="absolute top-4 right-4 text-slate-600 hover:text-red-500 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
-                                <div class="w-12 h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-400 mb-3">
+                            <div class="bg-white border border-gray-200 dark:bg-slate-900 dark:border-slate-800 p-5 rounded-3xl relative shadow-sm transition-colors duration-200">
+                                <button @click="removeFromLibrary(index)" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 dark:text-slate-600 dark:hover:text-red-500 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                                <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500 dark:text-indigo-400 mb-3 border border-indigo-100 dark:border-none">
                                     <i :data-lucide="file.type.includes('image') ? 'image' : 'file-text'"></i>
                                 </div>
-                                <p class="font-bold text-sm text-white truncate" x-text="file.name"></p>
-                                <button @click="sendFromLibrary(file)" class="w-full mt-4 bg-slate-800 hover:bg-indigo-600 text-[10px] font-black text-white py-3 rounded-xl transition-all uppercase">Disparar p/ Lead Atual</button>
+                                <p class="font-bold text-sm text-gray-900 dark:text-white truncate" x-text="file.name"></p>
+                                <button @click="sendFromLibrary(file)" class="w-full mt-4 bg-gray-100 text-gray-700 hover:bg-indigo-600 hover:text-white dark:bg-slate-800 dark:hover:bg-indigo-600 text-[10px] font-black dark:text-white py-3 rounded-xl transition-all uppercase">Disparar p/ Lead Atual</button>
                             </div>
                         </template>
                     </div>
                 </div>
 
                 <div x-show="screen === 'bot'" x-cloak class="space-y-6 max-w-4xl mx-auto">
-                    <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-[2rem] shadow-lg">
-                        <input x-model="newRule.trigger" type="text" placeholder="Gatilho do cliente (ex: tabela, audio)..." class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white mb-3 focus:border-indigo-500 outline-none">
+                    <div class="bg-white border border-gray-200 dark:bg-slate-900 dark:border-slate-800 p-6 md:p-8 rounded-[2rem] shadow-sm transition-colors duration-200">
+                        <input x-model="newRule.trigger" type="text" placeholder="Gatilho do cliente (ex: tabela, audio)..." class="w-full bg-gray-50 border border-gray-200 text-gray-900 dark:bg-slate-950 dark:border-slate-800 rounded-2xl p-4 text-sm dark:text-white mb-3 focus:border-indigo-500 outline-none transition-colors">
                         
-                        <textarea x-model="newRule.response" placeholder="Mensagem de texto do robô (opcional caso envie apenas mídia)..." rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white mb-4 focus:border-indigo-500 outline-none"></textarea>
+                        <textarea x-model="newRule.response" placeholder="Mensagem de texto do robô (opcional caso envie apenas mídia)..." rows="2" class="w-full bg-gray-50 border border-gray-200 text-gray-900 dark:bg-slate-950 dark:border-slate-800 rounded-2xl p-4 text-sm dark:text-white mb-4 focus:border-indigo-500 outline-none transition-colors"></textarea>
                         
                         <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
                             <input type="file" x-ref="botMediaInput" class="hidden" @change="botMediaFile = $event.target.files[0]">
-                            <button @click="$refs.botMediaInput.click()" class="bg-slate-800 px-5 py-3 rounded-xl text-xs font-bold text-slate-300 hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center gap-2 border border-slate-700">
+                            <button @click="$refs.botMediaInput.click()" class="bg-gray-100 hover:bg-indigo-600 hover:text-white text-gray-700 dark:bg-slate-800 px-5 py-3 rounded-xl text-xs font-bold dark:text-slate-300 dark:hover:bg-indigo-600 dark:hover:text-white transition-all flex items-center justify-center gap-2 border border-gray-200 dark:border-slate-700">
                                 <i data-lucide="paperclip" class="w-4 h-4"></i> Anexar Áudio, Imagem ou PDF
                             </button>
-                            <div x-show="botMediaFile" class="flex items-center gap-2 bg-indigo-500/10 px-4 py-2 rounded-xl border border-indigo-500/30">
-                                <i data-lucide="file-check" class="w-4 h-4 text-indigo-400"></i>
-                                <span x-text="botMediaFile?.name" class="text-xs text-indigo-400 font-bold truncate max-w-[150px]"></span>
-                                <button @click="botMediaFile = null; $refs.botMediaInput.value = ''" class="text-red-500 hover:text-red-400 ml-2"><i data-lucide="x-circle" class="w-4 h-4"></i></button>
+                            <div x-show="botMediaFile" class="flex items-center gap-2 bg-indigo-50 border border-indigo-200 dark:bg-indigo-500/10 px-4 py-2 rounded-xl dark:border-indigo-500/30">
+                                <i data-lucide="file-check" class="w-4 h-4 text-indigo-500 dark:text-indigo-400"></i>
+                                <span x-text="botMediaFile?.name" class="text-xs text-indigo-600 dark:text-indigo-400 font-bold truncate max-w-[150px]"></span>
+                                <button @click="botMediaFile = null; $refs.botMediaInput.value = ''" class="text-red-500 hover:text-red-600 dark:hover:text-red-400 ml-2"><i data-lucide="x-circle" class="w-4 h-4"></i></button>
                             </div>
                         </div>
 
@@ -130,15 +162,15 @@
                     
                     <div class="space-y-3">
                         <template x-for="rule in botRules" :key="rule.id">
-                            <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex justify-between items-center">
+                            <div class="bg-white border border-gray-200 dark:bg-slate-900 dark:border-slate-800 p-4 rounded-2xl flex justify-between items-center shadow-sm transition-colors duration-200">
                                 <div class="flex-1 pr-4">
                                     <div class="flex gap-2 items-center">
-                                        <span class="text-[9px] bg-indigo-500/20 text-indigo-400 px-2 py-1 rounded font-black uppercase" x-text="rule.trigger_text"></span>
-                                        <span x-show="rule.media_url" class="text-[9px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded font-black uppercase flex items-center gap-1"><i data-lucide="paperclip" class="w-3 h-3"></i> Mídia Anexada</span>
+                                        <span class="text-[9px] bg-indigo-50 text-indigo-600 border border-indigo-200 dark:border-none dark:bg-indigo-500/20 dark:text-indigo-400 px-2 py-1 rounded font-black uppercase" x-text="rule.trigger_text"></span>
+                                        <span x-show="rule.media_url" class="text-[9px] bg-emerald-50 text-emerald-600 border border-emerald-200 dark:border-none dark:bg-emerald-500/20 dark:text-emerald-400 px-2 py-1 rounded font-black uppercase flex items-center gap-1"><i data-lucide="paperclip" class="w-3 h-3"></i> Mídia Anexada</span>
                                     </div>
-                                    <p class="text-sm text-slate-300 mt-2 line-clamp-2" x-text="rule.response_text || '(Apenas envio de arquivo)'"></p>
+                                    <p class="text-sm text-gray-700 dark:text-slate-300 mt-2 line-clamp-2" x-text="rule.response_text || '(Apenas envio de arquivo)'"></p>
                                 </div>
-                                <button @click="deleteBotRule(rule.id)" class="text-slate-600 hover:text-red-500 p-2 transition-colors"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                                <button @click="deleteBotRule(rule.id)" class="text-gray-400 hover:text-red-500 dark:text-slate-600 dark:hover:text-red-500 p-2 transition-colors"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                             </div>
                         </template>
                     </div>
@@ -149,7 +181,7 @@
 
         <nav class="md:hidden fixed bottom-0 w-full glass-nav pb-safe pt-2 px-6 flex justify-between items-center z-40 h-20 rounded-t-[2rem]">
             <template x-for="item in navItems">
-                <button @click="screen = item.id" :class="screen === item.id ? 'text-indigo-400 scale-110' : 'text-slate-500'" class="flex flex-col items-center gap-1 p-2 transition-all">
+                <button @click="screen = item.id" :class="screen === item.id ? 'text-indigo-600 dark:text-indigo-400 scale-110' : 'text-gray-400 dark:text-slate-500'" class="flex flex-col items-center gap-1 p-2 transition-all">
                     <i :data-lucide="item.icon" class="w-6 h-6"></i>
                     <span class="text-[9px] font-bold" x-text="item.label"></span>
                 </button>
@@ -157,39 +189,41 @@
         </nav>
 
         <div x-show="isChatOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" x-cloak 
-             class="fixed inset-0 md:left-auto md:right-0 w-full md:w-[450px] bg-slate-950 md:border-l border-slate-800 z-[100] flex flex-col shadow-2xl">
+             class="fixed inset-0 md:left-auto md:right-0 w-full md:w-[450px] bg-gray-50 border-l border-gray-200 dark:bg-slate-950 dark:border-slate-800 z-[100] flex flex-col shadow-2xl transition-colors duration-200">
             
-            <header class="h-[72px] px-4 border-b border-slate-800 flex items-center bg-slate-900 z-10 shrink-0 justify-between">
+            <header class="h-[72px] px-4 border-b border-gray-200 dark:border-slate-800 flex items-center bg-white dark:bg-slate-900 z-10 shrink-0 justify-between transition-colors duration-200">
                 <div class="flex items-center overflow-hidden">
-                    <button @click="isChatOpen = false" class="p-2 -ml-2 mr-1 text-slate-400 hover:text-white rounded-full"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
+                    <button @click="isChatOpen = false" class="p-2 -ml-2 mr-1 text-gray-500 hover:text-gray-900 dark:text-slate-400 dark:hover:text-white rounded-full transition-colors"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
                     <div class="truncate">
-                        <h3 class="font-bold text-base text-white truncate" x-text="selectedLead?.nome"></h3>
-                        <p class="text-[10px] text-emerald-500 font-bold" x-text="selectedLead?.numero"></p>
+                        <h3 class="font-bold text-base text-gray-900 dark:text-white truncate" x-text="selectedLead?.nome"></h3>
+                        <p class="text-[10px] text-emerald-600 dark:text-emerald-500 font-bold" x-text="selectedLead?.numero"></p>
                     </div>
                 </div>
                 
-                <select x-model="selectedLeadStatus" @change="updateStatus(selectedLead.id, $event.target.value)" class="bg-slate-800 text-[10px] font-bold uppercase text-white border border-slate-700 rounded-lg p-2 outline-none ml-2 shrink-0">
+                <select x-model="selectedLeadStatus" @change="updateStatus(selectedLead.id, $event.target.value)" class="bg-gray-100 text-[10px] font-bold uppercase text-gray-700 border border-gray-200 dark:bg-slate-800 dark:text-white dark:border-slate-700 rounded-lg p-2 outline-none ml-2 shrink-0 transition-colors">
                     <template x-for="col in columns" :key="col.id">
                         <option :value="col.id" x-text="col.name" :selected="selectedLead?.status === col.id"></option>
                     </template>
                 </select>
             </header>
 
-            <div class="absolute inset-0 top-[72px] bottom-[140px] bg-chat -z-0"></div>
+            <div class="absolute inset-0 top-[72px] bottom-[140px] bg-[#efeae2] dark:bg-[#0b141a] bg-chat-pattern opacity-60 dark:opacity-20 -z-0 transition-colors duration-200"></div>
             
             <div class="flex-1 overflow-y-auto p-4 space-y-4 z-10 scroll-smooth" id="chat-box">
                 <template x-for="msg in messages" :key="msg.id">
                     <div :class="msg.from_me ? 'justify-end' : 'justify-start'" class="flex w-full">
-                        <div :class="msg.from_me ? 'bg-indigo-600 text-white rounded-l-2xl rounded-tr-2xl' : 'bg-slate-800 text-slate-200 rounded-r-2xl rounded-tl-2xl'" class="p-3.5 max-w-[85%] shadow-md relative">
+                        <div :class="msg.from_me ? 'bg-indigo-600 text-white rounded-l-2xl rounded-tr-2xl' : 'bg-white text-gray-800 border border-gray-100 shadow-sm dark:border-none dark:bg-slate-800 dark:text-slate-200 rounded-r-2xl rounded-tl-2xl'" class="p-3.5 max-w-[85%] relative transition-colors duration-200">
+                            
                             <template x-if="msg.content && msg.content.includes('http') && (msg.content.includes('chat_media') || msg.content.includes('[Áudio]') || msg.content.includes('[Imagem]') || msg.content.includes('[Documento]'))">
-                                <a :href="msg.content.split(' ').pop()" target="_blank" class="text-indigo-200 underline break-all text-sm flex items-center gap-1">
+                                <a :href="msg.content.split(' ').pop()" target="_blank" class="underline break-all text-sm flex items-center gap-1" :class="msg.from_me ? 'text-indigo-200' : 'text-indigo-500 dark:text-indigo-400'">
                                     <i data-lucide="external-link" class="w-3 h-3"></i> Abrir Arquivo
                                 </a>
                             </template>
                             <template x-if="msg.content && !msg.content.includes('chat_media')">
                                 <p class="text-[15px] leading-relaxed break-words" x-text="msg.content"></p>
                             </template>
-                            <div class="flex items-center justify-end gap-1 mt-1 opacity-50">
+                            
+                            <div class="flex items-center justify-end gap-1 mt-1 opacity-60">
                                 <span class="text-[9px] font-bold" x-text="new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></span>
                                 <template x-if="msg.from_me"><i data-lucide="check-check" class="w-3 h-3"></i></template>
                             </div>
@@ -198,11 +232,11 @@
                 </template>
             </div>
 
-            <footer class="bg-slate-900 border-t border-slate-800 flex flex-col z-10 pb-safe shrink-0">
-                <div class="flex gap-2 overflow-x-auto p-3 no-scrollbar border-b border-slate-800/50">
-                    <button @click="msgInput = 'Olá! Tudo bem? Sou o Igor, como posso ajudar?'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300 transition-colors hover:bg-indigo-600">👋 Saudação</button>
-                    <button @click="msgInput = 'Vou enviar os detalhes das campanhas de tráfego pago para o seu negócio.'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300 transition-colors hover:bg-indigo-600">📈 Tráfego</button>
-                    <button @click="msgInput = 'A energia solar reduz seus custos drasticamente.'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300 transition-colors hover:bg-indigo-600">☀️ Solar</button>
+            <footer class="bg-white border-t border-gray-200 dark:bg-slate-900 dark:border-slate-800 flex flex-col z-10 pb-safe shrink-0 transition-colors duration-200">
+                <div class="flex gap-2 overflow-x-auto p-3 no-scrollbar border-b border-gray-100 dark:border-slate-800/50">
+                    <button @click="msgInput = 'Olá! Tudo bem? Sou o Igor, como posso ajudar?'" class="shrink-0 bg-gray-100 text-gray-700 border border-gray-200 px-3 py-1.5 rounded-full text-[10px] font-bold dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 transition-colors hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 dark:hover:text-white">👋 Saudação</button>
+                    <button @click="msgInput = 'Vou enviar os detalhes das campanhas de tráfego pago para o seu negócio.'" class="shrink-0 bg-gray-100 text-gray-700 border border-gray-200 px-3 py-1.5 rounded-full text-[10px] font-bold dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 transition-colors hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 dark:hover:text-white">📈 Tráfego</button>
+                    <button @click="msgInput = 'A energia solar reduz seus custos drasticamente.'" class="shrink-0 bg-gray-100 text-gray-700 border border-gray-200 px-3 py-1.5 rounded-full text-[10px] font-bold dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 transition-colors hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 dark:hover:text-white">☀️ Solar</button>
                 </div>
                 
                 <input type="file" x-ref="imageInput" accept="image/*" class="hidden" @change="uploadAndSend($event, 'image')">
@@ -211,14 +245,14 @@
 
                 <div class="flex items-center gap-1.5 p-3">
                     <div class="flex gap-0.5">
-                        <button @click="$refs.imageInput.click()" class="p-2 text-slate-400 hover:text-indigo-400 hover:bg-slate-800 rounded-full" title="Enviar Imagem"><i data-lucide="image" class="w-5 h-5"></i></button>
-                        <button @click="$refs.audioInput.click()" class="p-2 text-slate-400 hover:text-indigo-400 hover:bg-slate-800 rounded-full" title="Enviar Áudio"><i data-lucide="mic" class="w-5 h-5"></i></button>
-                        <button @click="$refs.docInput.click()" class="p-2 text-slate-400 hover:text-indigo-400 hover:bg-slate-800 rounded-full" title="Enviar Documento"><i data-lucide="file-text" class="w-5 h-5"></i></button>
+                        <button @click="$refs.imageInput.click()" class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-indigo-400 dark:hover:bg-slate-800 rounded-full transition-colors" title="Enviar Imagem"><i data-lucide="image" class="w-5 h-5"></i></button>
+                        <button @click="$refs.audioInput.click()" class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-indigo-400 dark:hover:bg-slate-800 rounded-full transition-colors" title="Enviar Áudio"><i data-lucide="mic" class="w-5 h-5"></i></button>
+                        <button @click="$refs.docInput.click()" class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-gray-100 dark:text-slate-400 dark:hover:text-indigo-400 dark:hover:bg-slate-800 rounded-full transition-colors" title="Enviar Documento"><i data-lucide="file-text" class="w-5 h-5"></i></button>
                     </div>
-                    <div class="flex-1 bg-slate-950 rounded-full flex items-center px-4 border border-slate-800 focus-within:border-indigo-500">
-                        <input x-model="msgInput" @keydown.enter="sendMsg()" type="text" placeholder="Mensagem..." class="w-full bg-transparent py-3.5 text-[15px] text-white outline-none">
+                    <div class="flex-1 bg-gray-100 dark:bg-slate-950 rounded-full flex items-center px-4 border border-gray-200 dark:border-slate-800 focus-within:border-indigo-500 transition-colors">
+                        <input x-model="msgInput" @keydown.enter="sendMsg()" type="text" placeholder="Escreva a mensagem..." class="w-full bg-transparent py-3.5 text-[15px] text-gray-900 dark:text-white outline-none">
                     </div>
-                    <button @click="sendMsg()" class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white shrink-0 active:scale-90 shadow-lg shadow-indigo-500/30"><i data-lucide="send" class="w-5 h-5 ml-1"></i></button>
+                    <button @click="sendMsg()" class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white shrink-0 active:scale-90 shadow-lg shadow-indigo-500/30 transition-transform"><i data-lucide="send" class="w-5 h-5 ml-1"></i></button>
                 </div>
             </footer>
         </div>
@@ -229,6 +263,10 @@
             return {
                 screen: 'dash', isChatOpen: false, selectedLead: null, selectedLeadStatus: '', msgInput: '', leads: [], messages: [], 
                 botRules: [], newRule: { trigger: '', response: '' }, botMediaFile: null,
+                
+                // Lógica de Troca de Tema
+                isDarkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+                
                 navItems: [
                     { id: 'dash', label: 'Dash', icon: 'pie-chart' }, { id: 'kanban', label: 'Funil', icon: 'columns' }, { id: 'bot', label: 'Robô', icon: 'bot' }
                 ],
@@ -244,6 +282,12 @@
                     await this.loadBotRules();
                     this.setupRealtime();
                     setTimeout(() => lucide.createIcons(), 100);
+                },
+
+                toggleTheme() {
+                    this.isDarkMode = !this.isDarkMode;
+                    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
+                    setTimeout(() => lucide.createIcons(), 50);
                 },
 
                 playSound() {
@@ -285,14 +329,13 @@
                     } catch (e) { console.error("Erro ao enviar:", e); }
                 },
 
-                // ROTA sendMedia CORRIGIDA
                 async uploadAndSend(event, type) {
                     const file = event.target.files[0];
                     if (!file) return;
                     if (!this.selectedLead) { alert("Abra o chat de um cliente."); event.target.value = ''; return; }
                     
                     const tempMsgId = Date.now();
-                    this.messages.push({ id: tempMsgId, content: `⏳ Upload de arquivo em andamento...`, from_me: true, timestamp: new Date().toISOString() });
+                    this.messages.push({ id: tempMsgId, content: `⏳ Upload em andamento...`, from_me: true, timestamp: new Date().toISOString() });
                     this.scrollToBottom();
 
                     try {
@@ -309,21 +352,11 @@
                         this.messages.find(m => m.id === tempMsgId).content = `⏳ Disparando WhatsApp...`;
 
                         let endpoint = 'sendMedia';
-                        let bodyData = { 
-                            "number": this.selectedLead.numero,
-                            "media": publicMediaUrl
-                        };
+                        let bodyData = { "number": this.selectedLead.numero, "media": publicMediaUrl };
 
-                        if (type === 'image') { 
-                            bodyData.mediatype = 'image';
-                        } else if (type === 'audio') { 
-                            endpoint = 'sendWhatsAppAudio'; 
-                            delete bodyData.media;
-                            bodyData.audio = publicMediaUrl; 
-                        } else { 
-                            bodyData.mediatype = 'document'; 
-                            bodyData.fileName = file.name; 
-                        }
+                        if (type === 'image') { bodyData.mediatype = 'image'; } 
+                        else if (type === 'audio') { endpoint = 'sendWhatsAppAudio'; delete bodyData.media; bodyData.audio = publicMediaUrl; } 
+                        else { bodyData.mediatype = 'document'; bodyData.fileName = file.name; }
 
                         const evoResponse = await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, {
                             method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(bodyData)
@@ -378,9 +411,7 @@
                         this.botMediaFile = null;
                         this.$refs.botMediaInput.value = '';
                         this.loadBotRules();
-                    } catch (err) {
-                        alert(`❌ Falha: ${err.message}`);
-                    }
+                    } catch (err) { alert(`❌ Falha: ${err.message}`); }
                 },
 
                 async loadBotRules() {
