@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br" x-data="crmEnterprise()">
+<html lang="pt-br" x-data="crmUltimate()">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -12,56 +12,54 @@
         [x-cloak] { display: none !important; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .bg-chat { background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; opacity: 0.1; }
-        .kanban-col { min-width: 320px; height: calc(100vh - 220px); }
-        .sidebar-active { background: rgba(99, 102, 241, 0.1); color: #818cf8; border-right: 3px solid #6366f1; }
-        .glass { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(16px); }
+        .kanban-col { min-width: 320px; height: calc(100vh - 200px); }
+        .sidebar-active { background: rgba(99, 102, 241, 0.15); color: #818cf8; border-right: 4px solid #6366f1; }
     </style>
 </head>
 <body class="bg-[#020617] text-slate-200 antialiased overflow-hidden font-sans">
 
     <div class="flex h-screen w-full">
-        <aside class="w-64 bg-slate-900/50 border-r border-slate-800 flex flex-col hidden md:flex">
-            <div class="p-6 flex items-center gap-3">
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col hidden md:flex">
+            <div class="p-8 flex items-center gap-3">
                 <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
                     <i data-lucide="zap" class="text-white w-6 h-6"></i>
                 </div>
-                <h1 class="font-black text-lg tracking-tighter">EVO<span class="text-indigo-500">PRO</span></h1>
+                <h1 class="font-black text-xl tracking-tighter">EVO<span class="text-indigo-500">CRM</span></h1>
             </div>
 
-            <nav class="flex-1 px-4 space-y-2 overflow-y-auto no-scrollbar">
-                <p class="text-[10px] font-black text-slate-500 uppercase px-4 mb-2">Menu Principal</p>
+            <nav class="flex-1 px-4 space-y-1">
                 <button @click="screen = 'dash'" :class="screen === 'dash' && 'sidebar-active'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800">
-                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Dashboard
+                    <i data-lucide="pie-chart" class="w-5 h-5"></i> Dashboard
                 </button>
                 <button @click="screen = 'kanban'" :class="screen === 'kanban' && 'sidebar-active'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800">
-                    <i data-lucide="trello" class="w-5 h-5"></i> Kanban
+                    <i data-lucide="columns" class="w-5 h-5"></i> Kanban (Funil)
                 </button>
                 <button @click="screen = 'campanhas'" :class="screen === 'campanhas' && 'sidebar-active'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800">
-                    <i data-lucide="megaphone" class="w-5 h-5"></i> Campanhas
+                    <i data-lucide="send" class="w-5 h-5"></i> Disparos / Campanha
                 </button>
                 <button @click="screen = 'biblioteca'" :class="screen === 'biblioteca' && 'sidebar-active'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800">
-                    <i data-lucide="folder-open" class="w-5 h-5"></i> Biblioteca
+                    <i data-lucide="folder-kanban" class="w-5 h-5"></i> Mídias / Arquivos
                 </button>
             </nav>
 
             <div class="p-6 border-t border-slate-800">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-xs text-white">IB</div>
+                <div class="flex items-center gap-3 bg-slate-800/50 p-3 rounded-2xl border border-slate-700">
+                    <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-xs">IB</div>
                     <div class="flex-1 overflow-hidden">
                         <p class="text-xs font-bold truncate">Igor Borges</p>
-                        <p class="text-[10px] text-emerald-500 font-black uppercase">Admin Online</p>
+                        <p class="text-[9px] text-emerald-500 font-black uppercase tracking-widest">Online</p>
                     </div>
                 </div>
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col relative bg-[#020617]">
-            <header class="h-16 border-b border-slate-800 px-8 flex items-center justify-between glass sticky top-0 z-40">
-                <h2 class="font-bold text-sm uppercase tracking-widest text-slate-400" x-text="screen"></h2>
+        <main class="flex-1 flex flex-col bg-[#020617] relative">
+            <header class="h-16 border-b border-slate-800 px-8 flex items-center justify-between backdrop-blur-md bg-[#020617]/50 sticky top-0 z-40">
+                <h2 class="font-bold text-xs uppercase tracking-[0.3em] text-slate-500" x-text="screen"></h2>
                 <div class="flex items-center gap-4">
                     <div class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 flex items-center gap-2">
                         <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                        <span class="text-[10px] font-black text-slate-400">INSTÂNCIA: IGOR</span>
+                        <span class="text-[10px] font-black text-slate-400 uppercase">Evolution: Conectado</span>
                     </div>
                 </div>
             </header>
@@ -70,7 +68,7 @@
                 
                 <div x-show="screen === 'dash'" x-cloak class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl">
-                        <p class="text-slate-500 text-[10px] font-black uppercase mb-2">Total de Leads</p>
+                        <p class="text-slate-500 text-[10px] font-black uppercase mb-2">Novos Leads (Hoje)</p>
                         <h3 class="text-4xl font-black" x-text="leads.length">0</h3>
                     </div>
                     <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl border-l-4 border-l-emerald-500">
@@ -91,7 +89,7 @@
                                     <div draggable="true" @dragstart="$event.dataTransfer.setData('id', lead.id)" @click="openChat(lead)" 
                                          class="bg-slate-900 border border-slate-800 p-5 rounded-2xl hover:border-indigo-500/50 transition-all cursor-pointer shadow-lg">
                                         <h4 class="font-bold text-sm mb-2" x-text="lead.nome"></h4>
-                                        <div class="flex flex-wrap gap-1 mb-3">
+                                        <div class="flex gap-1 mb-3">
                                             <template x-for="tag in lead.tags || []">
                                                 <span class="text-[8px] bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded font-bold uppercase" x-text="tag"></span>
                                             </template>
@@ -104,21 +102,26 @@
                     </template>
                 </div>
 
-                <div x-show="screen === 'biblioteca'" x-cloak class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-                    <template x-for="media in library" :key="media.id">
-                        <div class="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-2xl group hover:border-indigo-500 transition-all">
-                            <div class="flex items-center gap-4">
-                                <div class="p-3 bg-indigo-600/10 rounded-xl text-indigo-400"><i :data-lucide="media.type === 'video' ? 'video' : 'file-text'"></i></div>
-                                <div>
-                                    <p class="font-bold text-sm" x-text="media.name"></p>
-                                    <p class="text-[10px] text-slate-500 uppercase" x-text="media.type"></p>
+                <div x-show="screen === 'biblioteca'" x-cloak class="space-y-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold">Arquivos e Mídias para Envio</h3>
+                        <label class="bg-indigo-600 hover:bg-indigo-500 px-6 py-3 rounded-xl cursor-pointer font-bold text-xs transition-all flex items-center gap-2">
+                            <i data-lucide="upload-cloud" class="w-4 h-4"></i> UPLOAD NOVO ARQUIVO
+                            <input type="file" class="hidden" @change="addToLibrary($el)">
+                        </label>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <template x-for="(file, index) in myLibrary" :key="index">
+                            <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl relative group hover:border-indigo-500 transition-all">
+                                <button @click="removeFromLibrary(index)" class="absolute top-4 right-4 text-slate-700 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                <div class="w-12 h-12 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400 mb-4">
+                                    <i :data-lucide="file.type.includes('image') ? 'image' : 'file-text'"></i>
                                 </div>
+                                <p class="font-bold text-sm truncate" x-text="file.name"></p>
+                                <button @click="sendFromLibrary(file)" class="w-full mt-4 bg-slate-800 hover:bg-indigo-600 text-[10px] font-black py-3 rounded-xl transition-all uppercase tracking-widest">ENVIAR AGORA</button>
                             </div>
-                            <button @click="sendLibraryMedia(media.url, media.type)" class="bg-indigo-600 hover:bg-indigo-500 p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all">
-                                <i data-lucide="send" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    </template>
+                        </template>
+                    </div>
                 </div>
 
             </section>
@@ -127,12 +130,10 @@
         <div x-show="isChatOpen" x-transition x-cloak class="fixed inset-y-0 right-0 w-full md:w-[450px] bg-slate-900 border-l border-slate-800 z-[100] flex flex-col shadow-2xl">
             <header class="p-6 border-b border-slate-800 flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <button @click="isChatOpen = false" class="p-2 hover:bg-slate-800 rounded-lg"><i data-lucide="chevron-right"></i></button>
+                    <button @click="isChatOpen = false" class="p-2 hover:bg-slate-800 rounded-lg transition-all"><i data-lucide="chevron-right"></i></button>
                     <div>
                         <h3 class="font-bold text-base" x-text="selectedLead?.nome"></h3>
-                        <p class="text-[10px] text-emerald-500 font-black uppercase tracking-widest flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> WhatsApp Ativo
-                        </p>
+                        <p class="text-[10px] text-emerald-500 font-black uppercase tracking-widest">WhatsApp Online</p>
                     </div>
                 </div>
             </header>
@@ -141,26 +142,20 @@
                 <template x-for="msg in messages" :key="msg.id">
                     <div :class="msg.from_me ? 'justify-end' : 'justify-start'" class="flex w-full">
                         <div :class="msg.from_me ? 'bg-indigo-600 rounded-tr-none' : 'bg-slate-800 rounded-tl-none'" class="p-4 rounded-2xl max-w-[85%] shadow-xl">
-                            <template x-if="msg.type === 'audio'">
-                                <div class="flex items-center gap-2"><i data-lucide="play" class="w-4 h-4"></i><div class="h-1 w-24 bg-white/20 rounded-full"></div></div>
-                            </template>
-                            <template x-if="msg.type !== 'audio'">
-                                <p class="text-sm" x-text="msg.content"></p>
-                            </template>
-                            <div class="flex items-center justify-end gap-1 mt-2 opacity-40 text-[8px] uppercase font-bold">
-                                <span x-text="new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></span>
-                                <template x-if="msg.from_me"><i data-lucide="check-check" class="w-3 h-3"></i></template>
-                            </div>
+                            <p class="text-sm" x-text="msg.content"></p>
+                            <div class="text-[8px] mt-2 opacity-40 text-right uppercase font-bold" x-text="new Date(msg.timestamp).toLocaleTimeString()"></div>
                         </div>
                     </div>
                 </template>
             </div>
 
-            <footer class="p-6 bg-slate-900 border-t border-slate-800 flex flex-col gap-4">
+            <footer class="p-6 border-t border-slate-800 flex flex-col gap-4 bg-slate-900">
+                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                    <button @click="msgInput = 'Oi, tudo bem?'" class="whitespace-nowrap bg-slate-800 px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase hover:bg-indigo-600">Saudação</button>
+                    <button @click="msgInput = 'Seguem valores...'" class="whitespace-nowrap bg-slate-800 px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase hover:bg-indigo-600">Valores</button>
+                </div>
                 <div class="flex gap-3 items-center">
-                    <input type="file" x-ref="fileInput" @change="sendMediaFile($el)" class="hidden">
-                    <button @click="$refs.fileInput.click()" class="text-slate-500 hover:text-white"><i data-lucide="paperclip" class="w-6 h-6"></i></button>
-                    <input x-model="msgInput" @keydown.enter="sendMsg()" type="text" placeholder="Mensagem..." class="flex-1 bg-slate-800 border-none rounded-xl px-5 py-3.5 text-sm focus:ring-2 focus:ring-indigo-500 transition-all outline-none">
+                    <input x-model="msgInput" @keydown.enter="sendMsg()" type="text" placeholder="Escreva aqui..." class="flex-1 bg-slate-800 border-none rounded-xl px-5 py-3.5 text-sm focus:ring-2 focus:ring-indigo-500 transition-all outline-none">
                     <button @click="sendMsg()" class="bg-indigo-600 p-3.5 rounded-xl hover:bg-indigo-500 transition-all active:scale-95 shadow-lg shadow-indigo-500/20">
                         <i data-lucide="send" class="w-5 h-5 text-white"></i>
                     </button>
@@ -170,25 +165,15 @@
     </div>
 
     <script>
-        function crmEnterprise() {
+        function crmUltimate() {
             return {
-                screen: 'dash',
-                isChatOpen: false,
-                selectedLead: null,
-                msgInput: '',
-                leads: [],
-                messages: [],
-                library: [
-                    { id: 1, name: 'Proposta Energia Solar', type: 'document', url: 'LINK_AQUI' },
-                    { id: 2, name: 'Vídeo Igor Borges', type: 'video', url: 'LINK_AQUI' }
-                ],
+                screen: 'dash', isChatOpen: false, selectedLead: null, msgInput: '', leads: [], messages: [], myLibrary: [],
                 columns: [
                     { id: 'novo_lead', name: 'Triagem / IA', color: 'bg-amber-500' },
                     { id: 'atendimento', name: 'Em Conversa', color: 'bg-indigo-500' },
-                    { id: 'proposta', name: 'Aguardando Pix', color: 'bg-emerald-500' },
-                    { id: 'fechado', name: 'Venda Concluída', color: 'bg-slate-600' }
+                    { id: 'proposta', name: 'Proposta Enviada', color: 'bg-emerald-500' },
+                    { id: 'fechado', name: 'Venda Fechada', color: 'bg-slate-600' }
                 ],
-                
                 async init() {
                     const SB_URL = 'https://qhnbisjogpdoyszpsucs.supabase.co';
                     const SB_KEY = 'sb_publishable_3PAly_BCdvoldAzm1Y7SxQ_S3rp2QhQ';
@@ -197,13 +182,11 @@
                     this.setupRealtime();
                     lucide.createIcons();
                 },
-
                 async loadLeads() {
                     const { data } = await this.client.from('leads').select('*').order('created_at', { ascending: false });
                     if (data) this.leads = data;
                     setTimeout(() => lucide.createIcons(), 100);
                 },
-
                 setupRealtime() {
                     this.client.channel('any').on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => this.loadLeads()).subscribe();
                     this.client.channel('msgs').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
@@ -213,52 +196,43 @@
                         }
                     }).subscribe();
                 },
-
-                async updateStatus(leadId, newStatus) {
-                    await this.client.from('leads').update({ status: newStatus }).eq('id', leadId);
+                addToLibrary(input) {
+                    const file = input.files[0]; if (!file) return;
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => {
+                        this.myLibrary.push({ name: file.name, type: file.type, base64: reader.result.split(',')[1] });
+                        setTimeout(() => lucide.createIcons(), 100);
+                    };
                 },
-
+                removeFromLibrary(index) { this.myLibrary.splice(index, 1); },
+                async sendFromLibrary(file) {
+                    if (!this.selectedLead) return alert("Selecione um lead no Kanban!");
+                    let endpoint = file.type.includes('image') ? 'sendImage' : file.type.includes('video') ? 'sendVideo' : 'sendDocument';
+                    await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, {
+                        method: 'POST',
+                        headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ "number": this.selectedLead.numero, "media": file.base64, "fileName": file.name })
+                    });
+                    alert("Arquivo disparado com sucesso!");
+                },
+                async updateStatus(id, status) { await this.client.from('leads').update({ status }).eq('id', id); },
                 async openChat(lead) {
-                    this.selectedLead = lead;
-                    this.isChatOpen = true;
-                    this.messages = [];
+                    this.selectedLead = lead; this.isChatOpen = true;
                     const { data } = await this.client.from('messages').select('*').eq('lead_id', lead.id).order('timestamp', { ascending: true });
-                    this.messages = data || [];
-                    this.scrollToBottom();
+                    this.messages = data || []; this.scrollToBottom();
                     setTimeout(() => lucide.createIcons(), 100);
                 },
-
                 async sendMsg() {
                     if(!this.msgInput || !this.selectedLead) return;
-                    const text = this.msgInput;
-                    this.msgInput = '';
+                    const text = this.msgInput; this.msgInput = '';
                     await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', {
                         method: 'POST',
                         headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' },
                         body: JSON.stringify({ "number": this.selectedLead.numero, "text": text })
                     });
                 },
-
-                async sendMediaFile(fileInput) {
-                    const file = fileInput.files[0];
-                    if (!file || !this.selectedLead) return;
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onload = async () => {
-                        const base64 = reader.result.split(',')[1];
-                        let endpoint = file.type.includes('image') ? 'sendImage' : 'sendDocument';
-                        await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, {
-                            method: 'POST',
-                            headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ "number": this.selectedLead.numero, "media": base64, "fileName": file.name })
-                        });
-                        alert("Enviado!");
-                    };
-                },
-
-                scrollToBottom() {
-                    setTimeout(() => { const b = document.getElementById('chat-box'); if(b) b.scrollTop = b.scrollHeight; }, 100);
-                }
+                scrollToBottom() { setTimeout(() => { const b = document.getElementById('chat-box'); if(b) b.scrollTop = b.scrollHeight; }, 100); }
             }
         }
     </script>
