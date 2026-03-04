@@ -165,7 +165,6 @@
                 </div>
 
                 <div x-show="screen === 'bot'" x-cloak class="max-w-3xl mx-auto space-y-6">
-                    
                     <div class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-slate-800 transition-all">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="font-black text-2xl dark:text-white flex items-center gap-2" x-text="editingRuleId ? '✏️ Editar Fluxo' : '✨ Criar Fluxo de Automação'"></h3>
@@ -262,7 +261,7 @@
         <div x-show="isChatOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" x-cloak 
              class="fixed inset-0 bg-white dark:bg-slate-950 z-[100] flex flex-col md:left-auto md:right-0 md:w-[480px] md:border-l border-gray-200 dark:border-slate-800">
             
-            <header class="h-16 px-4 border-b border-gray-200 dark:border-slate-800 flex items-center bg-white dark:bg-slate-900 shrink-0 justify-between">
+            <header class="h-16 px-4 border-b border-gray-200 dark:border-slate-800 flex items-center bg-white dark:bg-slate-900 shrink-0 justify-between relative z-20">
                 <div class="flex items-center overflow-hidden">
                     <button @click="isChatOpen = false" class="p-2 -ml-2 mr-1 text-slate-500"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
                     <img :src="selectedLead?.foto_url || 'https://api.dicebear.com/8.x/notionists/svg?seed=' + selectedLead?.nome" class="w-10 h-10 rounded-2xl border dark:border-slate-700 object-cover" @error="$el.src = 'https://api.dicebear.com/8.x/notionists/svg?seed=' + selectedLead?.nome">
@@ -276,7 +275,7 @@
                 </select>
             </header>
 
-            <div class="absolute inset-0 top-16 bottom-[140px] bg-[#efeae2] dark:bg-[#0b141a] bg-chat-pattern opacity-30 dark:opacity-10 -z-0"></div>
+            <div class="absolute inset-0 top-16 bottom-[140px] bg-[#efeae2] dark:bg-[#0b141a] bg-chat-pattern opacity-30 dark:opacity-10 z-0"></div>
             
             <div class="flex-1 overflow-y-auto p-4 space-y-4 z-10 no-scrollbar scroll-smooth" id="chat-box">
                 <template x-for="msg in messages" :key="msg.id">
@@ -305,7 +304,31 @@
                 </template>
             </div>
 
-            <footer class="bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 p-3 z-10 pb-safe shrink-0">
+            <div x-show="showFlowsMenu" x-transition:enter="transition ease-out duration-200 transform" x-transition:enter-start="translate-y-full opacity-0" x-transition:enter-end="translate-y-0 opacity-100" x-transition:leave="transition ease-in duration-150 transform" x-transition:leave-start="translate-y-0 opacity-100" x-transition:leave-end="translate-y-full opacity-0" class="absolute bottom-[130px] left-4 right-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-gray-200 dark:border-slate-700 shadow-2xl rounded-3xl p-5 z-50 flex flex-col max-h-[60vh]">
+                <div class="flex justify-between items-center mb-4 shrink-0 border-b border-gray-100 dark:border-slate-800 pb-3">
+                    <h4 class="font-black text-slate-900 dark:text-white flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-indigo-500 fill-indigo-500/20"></i> Escolher Fluxo</h4>
+                    <button @click="showFlowsMenu = false" class="p-1.5 bg-gray-100 dark:bg-slate-800 text-slate-500 rounded-full hover:text-red-500 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+                
+                <div class="overflow-y-auto no-scrollbar flex-1 space-y-2">
+                    <template x-for="rule in botRules" :key="rule.id">
+                        <button @click="triggerBotRuleManual(rule); showFlowsMenu = false" class="w-full bg-slate-50 hover:bg-indigo-50 dark:bg-slate-800/50 dark:hover:bg-indigo-900/30 border border-gray-100 dark:border-slate-700/50 hover:border-indigo-200 dark:hover:border-indigo-700 p-4 rounded-2xl flex items-center justify-between transition-all group text-left active:scale-[0.98]">
+                            <div class="flex flex-col">
+                                <span class="font-black text-sm text-slate-800 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors uppercase tracking-tight" x-text="rule.trigger_text"></span>
+                                <span class="text-[10px] font-bold text-slate-400 mt-1 flex items-center gap-1"><i data-lucide="git-merge" class="w-3 h-3"></i> <span x-text="rule.flow_steps ? `${rule.flow_steps.length} etapas` : 'Regra simples'"></span></span>
+                            </div>
+                            <div class="w-8 h-8 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center shadow-sm group-hover:bg-indigo-600 group-hover:text-white transition-colors text-slate-400">
+                                <i data-lucide="send" class="w-4 h-4 ml-0.5"></i>
+                            </div>
+                        </button>
+                    </template>
+                    <div x-show="botRules.length === 0" class="text-center py-6">
+                        <p class="text-xs text-slate-400 font-bold">Nenhum fluxo criado.</p>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 p-3 z-20 pb-safe shrink-0 relative">
                 
                 <div class="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar mb-1">
                     <button @click="msgInput = 'Olá! Tudo bem?'" class="shrink-0 bg-slate-100 dark:bg-slate-800 text-[10px] font-black px-3 py-1.5 rounded-full dark:text-white">👋 Oi</button>
@@ -321,13 +344,18 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <div class="flex">
+                    <div class="flex items-center">
                         <input type="file" x-ref="iI" class="hidden" @change="uploadAndSend($event, 'image')">
                         <input type="file" x-ref="aI" class="hidden" @change="uploadAndSend($event, 'audio')">
                         <input type="file" x-ref="dI" class="hidden" @change="uploadAndSend($event, 'document')">
-                        <button @click="$refs.iI.click()" class="p-2 text-slate-400"><i data-lucide="image" class="w-5 h-5"></i></button>
-                        <button @click="$refs.aI.click()" class="p-2 text-slate-400"><i data-lucide="mic" class="w-5 h-5"></i></button>
-                        <button @click="$refs.dI.click()" class="p-2 text-slate-400"><i data-lucide="file-text" class="w-5 h-5"></i></button>
+                        
+                        <button @click="showFlowsMenu = !showFlowsMenu; setTimeout(() => lucide.createIcons(), 50)" class="p-2.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 rounded-xl mr-1 transition-colors" title="Abrir Menu de Fluxos">
+                            <i data-lucide="layers" class="w-5 h-5"></i>
+                        </button>
+
+                        <button @click="$refs.iI.click()" class="p-2 text-slate-400 hover:text-indigo-500"><i data-lucide="image" class="w-5 h-5"></i></button>
+                        <button @click="$refs.aI.click()" class="p-2 text-slate-400 hover:text-indigo-500"><i data-lucide="mic" class="w-5 h-5"></i></button>
+                        <button @click="$refs.dI.click()" class="p-2 text-slate-400 hover:text-indigo-500"><i data-lucide="file-text" class="w-5 h-5"></i></button>
                     </div>
                     <div class="flex-1 bg-slate-50 dark:bg-slate-950 rounded-xl flex items-center px-3 border border-gray-200 dark:border-slate-800">
                         <input x-model="msgInput" @keydown.enter="sendMsg()" type="text" placeholder="Mensagem..." class="w-full bg-transparent py-3 text-sm dark:text-white outline-none">
@@ -354,17 +382,20 @@
                 isChatOpen: false, selectedLead: null, selectedLeadStatus: '', msgInput: '', leads: [], messages: [], botRules: [], myLibrary: [],
                 isDarkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
                 
+                // NOVO MENU DE FLUXOS NO CHAT
+                showFlowsMenu: false,
+
                 // Construtor e Edição de Fluxos
                 flowBuilder: { trigger: '', steps: [] },
                 isSavingFlow: false,
-                editingRuleId: null, // Controle de Edição
+                editingRuleId: null,
 
                 disparoConfig: { status: 'todos', msg: '', minDelay: 30, maxDelay: 60, isRunning: false, sent: 0, total: 0, file: null },
                 
                 navItems: [
                     { id: 'dash', label: 'Dash', icon: 'pie-chart' }, 
                     { id: 'kanban', label: 'Funil', icon: 'columns' }, 
-                    { id: 'bot', label: 'Robô', icon: 'git-merge' },
+                    { id: 'bot', label: 'Fluxos', icon: 'git-merge' },
                     { id: 'disparo', label: 'Disparo', icon: 'send' },
                     { id: 'biblioteca', label: 'Mídias', icon: 'folder' }
                 ],
@@ -387,7 +418,6 @@
                     if (rule.flow_steps && rule.flow_steps.length > 0) {
                         this.flowBuilder.steps = JSON.parse(JSON.stringify(rule.flow_steps));
                     } else {
-                        // Converte regra antiga para o formato de fluxo visualmente
                         this.flowBuilder.steps = [];
                         if (rule.media_url) this.flowBuilder.steps.push({ type: rule.media_type || 'document', content: rule.media_url, fileName: 'Mídia salva no banco' });
                         if (rule.response_text) this.flowBuilder.steps.push({ type: 'text', content: rule.response_text });
@@ -400,7 +430,6 @@
                     this.flowBuilder = { trigger: '', steps: [] };
                 },
 
-                // LÓGICA DO FLOW BUILDER
                 addStep(type) {
                     this.flowBuilder.steps.push({ type: type, content: type === 'delay' ? 2000 : '', fileObj: null, fileName: '' });
                     setTimeout(() => lucide.createIcons(), 50);
@@ -435,10 +464,8 @@
 
                         if (this.editingRuleId) {
                             await this.client.from('chatbot_rules').update(dataToSave).eq('id', this.editingRuleId);
-                            alert('Fluxo atualizado com sucesso!');
                         } else {
                             await this.client.from('chatbot_rules').insert(dataToSave);
-                            alert('Fluxo salvo com sucesso!');
                         }
                         
                         this.cancelEdit();
@@ -447,7 +474,6 @@
                     this.isSavingFlow = false;
                 },
 
-                // FUNÇÕES DO CHAT DE MÍDIA MANTIDAS
                 extractUrl(text) { if (!text) return ''; const match = text.match(/https?:\/\/[^\s]+/); return match ? match[0] : text; },
                 formatText(text) { if (!text) return ''; return text.replace(/\[(IMAGE|AUDIO|VIDEO|DOCUMENT|image|audio|video|document)\]/gi, '').trim(); },
 
@@ -464,14 +490,21 @@
                     await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: text, from_me: true, type: 'text' });
                 },
 
+                // CORREÇÃO SILENCIOSA DOS ENDPOINTS DE MÍDIA DA EVOLUTION 
                 async uploadAndSend(event, type) {
                     const file = event.target.files[0]; if (!file || !this.selectedLead) return;
                     const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9]/g, '')}.${file.name.split('.').pop()}`;
                     await this.client.storage.from('chat_media').upload(`${this.selectedLead.numero}/${fileName}`, file);
                     const { data } = this.client.storage.from('chat_media').getPublicUrl(`${this.selectedLead.numero}/${fileName}`);
-                    let endpoint = 'sendMedia'; let body = { number: this.selectedLead.numero, media: data.publicUrl };
-                    if (type === 'audio') { endpoint = 'sendWhatsAppAudio'; delete body.media; body.audio = data.publicUrl; }
-                    else { body.mediatype = type === 'image' ? 'image' : type === 'video' ? 'video' : 'document'; body.fileName = file.name; }
+                    
+                    let endpoint = 'sendDocument'; 
+                    let body = { number: this.selectedLead.numero };
+                    
+                    if (type === 'audio') { endpoint = 'sendWhatsAppAudio'; body.audio = data.publicUrl; }
+                    else if (type === 'image') { endpoint = 'sendImage'; body.media = data.publicUrl; }
+                    else if (type === 'video') { endpoint = 'sendVideo'; body.media = data.publicUrl; }
+                    else { endpoint = 'sendDocument'; body.media = data.publicUrl; body.fileName = file.name; }
+                    
                     this.messages.push({ id: Date.now(), content: data.publicUrl, from_me: true, type: type, timestamp: new Date().toISOString() }); this.scrollToBottom();
                     await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
                     await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: data.publicUrl, from_me: true, type: type });
@@ -482,11 +515,9 @@
                 async sendFromLibrary(file) {
                     if (!this.selectedLead) return alert('Abra um chat primeiro.'); 
                     let endpoint = file.type.includes('image') ? 'sendImage' : 'sendDocument';
-                    await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ "number": this.selectedLead.numero, media: file.base64, fileName: file.name }) });
-                    alert('Disparado com sucesso!');
+                    await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ "number": this.selectedLead.numero, [file.type.includes('image') ? 'media' : 'media']: file.base64, "fileName": file.name }) });
                 },
 
-                // DISPARO MANTIDO
                 processSpintax(text, lead) {
                     if(!text) return ""; let msg = text.replace(/{nome}/g, lead.nome ? lead.nome.split(' ')[0] : 'Cliente');
                     return msg.replace(/{([^{}]+)}/g, function(match, options) { const words = options.split('|'); return words[Math.floor(Math.random() * words.length)]; });
@@ -510,10 +541,13 @@
                         if (!this.disparoConfig.isRunning) break;
                         try {
                             if (publicMediaUrl) {
-                                let endpoint = 'sendMedia'; let body = { number: lead.numero, media: publicMediaUrl, mediatype: mediaType, fileName: this.disparoConfig.file.name };
-                                if(mediaType === 'audio') { endpoint = 'sendWhatsAppAudio'; delete body.media; body.audio = publicMediaUrl; }
+                                let endpoint = 'sendDocument'; let body = { number: lead.numero };
+                                if(mediaType === 'audio') { endpoint = 'sendWhatsAppAudio'; body.audio = publicMediaUrl; }
+                                else if(mediaType === 'image') { endpoint = 'sendImage'; body.media = publicMediaUrl; }
+                                else if(mediaType === 'video') { endpoint = 'sendVideo'; body.media = publicMediaUrl; }
+                                else { body.media = publicMediaUrl; body.fileName = this.disparoConfig.file.name; }
                                 await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-                                await this.client.from('messages').insert({ lead_id: lead.id, content: `[${mediaType.toUpperCase()}] ${publicMediaUrl}`, from_me: true, type: mediaType });
+                                await this.client.from('messages').insert({ lead_id: lead.id, content: publicMediaUrl, from_me: true, type: mediaType });
                             }
                             if (this.disparoConfig.msg) {
                                 const msgPronta = this.processSpintax(this.disparoConfig.msg, lead);
@@ -531,7 +565,7 @@
                 },
                 pararDisparo() { this.disparoConfig.isRunning = false; },
 
-                // DISPARO MANUAL DE FLUXOS NO CHAT
+                // FLUXO DO CHAT CORRIGIDO SILENCIOSAMENTE PARA OS ENDPOINTS ANTIGOS
                 async triggerBotRuleManual(rule) {
                     if(!this.selectedLead) return;
                     if(rule.flow_steps) {
@@ -542,18 +576,24 @@
                                 await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: step.content, from_me: true, type: 'text' }); 
                             }
                             else {
-                                let endpoint = 'sendMedia'; let bodyMedia = { number: this.selectedLead.numero, media: step.content, mediatype: step.type };
-                                if (step.type === 'audio') { endpoint = 'sendWhatsAppAudio'; delete bodyMedia.media; bodyMedia.audio = step.content; }
+                                let endpoint = 'sendDocument'; 
+                                let bodyMedia = { number: this.selectedLead.numero };
+                                if (step.type === 'audio') { endpoint = 'sendWhatsAppAudio'; bodyMedia.audio = step.content; }
+                                else if (step.type === 'image') { endpoint = 'sendImage'; bodyMedia.media = step.content; }
+                                else if (step.type === 'video') { endpoint = 'sendVideo'; bodyMedia.media = step.content; }
+                                else { bodyMedia.media = step.content; bodyMedia.fileName = "Documento"; }
+                                
                                 await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(bodyMedia) });
                                 await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: step.content, from_me: true, type: step.type });
                             }
                             if(step.type !== 'delay') await new Promise(r => setTimeout(r, 1000));
                         }
                     } else if (rule.media_url || rule.response_text) {
-                        // Roda regra antiga legado
                         if(rule.media_url) {
-                            let endpoint = 'sendMedia'; let body = { number: this.selectedLead.numero, media: rule.media_url, mediatype: rule.media_type || 'document' };
-                            if(rule.media_type === 'audio') { endpoint = 'sendWhatsAppAudio'; delete body.media; body.audio = rule.media_url; }
+                            let endpoint = 'sendDocument'; let body = { number: this.selectedLead.numero };
+                            if(rule.media_type === 'audio') { endpoint = 'sendWhatsAppAudio'; body.audio = rule.media_url; }
+                            else if(rule.media_type === 'image') { endpoint = 'sendImage'; body.media = rule.media_url; }
+                            else { body.media = rule.media_url; body.fileName = "Documento"; }
                             await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
                             await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: rule.media_url, from_me: true, type: rule.media_type || 'document' });
                         }
