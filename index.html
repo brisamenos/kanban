@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-br" x-data="crmUltimate()">
+<html lang="pt-br" x-data="crmApp()">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EvoCRM Enterprise | Igor Borges</title>
+    <title>EvoCRM Pro | Igor Borges</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -11,90 +11,87 @@
     <style>
         [x-cloak] { display: none !important; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .bg-chat { background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; opacity: 0.1; }
-        .kanban-col { min-width: 320px; height: calc(100vh - 200px); }
-        .sidebar-active { background: rgba(99, 102, 241, 0.15); color: #818cf8; border-right: 4px solid #6366f1; }
+        /* Fundo do chat com padrão sutil */
+        .bg-chat { 
+            background-color: #0b141a; 
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); 
+            background-blend-mode: overlay; 
+            opacity: 0.2; 
+        }
+        /* Ajuste do Kanban para Mobile */
+        .kanban-col { min-width: 85vw; height: calc(100vh - 240px); scroll-snap-align: center; }
+        @media (min-width: 768px) { .kanban-col { min-width: 320px; } }
+        .kanban-container { scroll-snap-type: x mandatory; }
+        .glass-nav { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-top: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
-<body class="bg-[#020617] text-slate-200 antialiased overflow-hidden font-sans">
+<body class="bg-slate-950 text-slate-200 antialiased font-sans overflow-hidden selection:bg-indigo-500 selection:text-white">
 
-    <div class="flex h-screen w-full">
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col hidden md:flex">
-            <div class="p-8 flex items-center gap-3">
+    <div class="flex h-screen w-full relative">
+        
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 hidden md:flex flex-col z-10">
+            <div class="p-6 flex items-center gap-3">
                 <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                    <i data-lucide="zap" class="text-white w-6 h-6"></i>
+                    <i data-lucide="zap" class="text-white w-5 h-5"></i>
                 </div>
-                <h1 class="font-black text-xl tracking-tighter">EVO<span class="text-indigo-500">CRM</span></h1>
+                <h1 class="font-black text-xl tracking-tighter text-white">EVO<span class="text-indigo-500">PRO</span></h1>
             </div>
-
-            <nav class="flex-1 px-4 space-y-1">
-                <button @click="screen = 'dash'" :class="screen === 'dash' && 'sidebar-active'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800">
-                    <i data-lucide="pie-chart" class="w-5 h-5"></i> Dashboard
-                </button>
-                <button @click="screen = 'kanban'" :class="screen === 'kanban' && 'sidebar-active'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800">
-                    <i data-lucide="columns" class="w-5 h-5"></i> Kanban (Funil)
-                </button>
-                <button @click="screen = 'campanhas'" :class="screen === 'campanhas' && 'sidebar-active'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800">
-                    <i data-lucide="send" class="w-5 h-5"></i> Disparos / Campanha
-                </button>
-                <button @click="screen = 'biblioteca'" :class="screen === 'biblioteca' && 'sidebar-active'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all text-slate-400 hover:bg-slate-800">
-                    <i data-lucide="folder-kanban" class="w-5 h-5"></i> Mídias / Arquivos
-                </button>
+            <nav class="flex-1 px-4 space-y-2 mt-4">
+                <template x-for="item in navItems">
+                    <button @click="screen = item.id" :class="screen === item.id ? 'bg-indigo-500/10 text-indigo-400 border-r-4 border-indigo-500' : 'text-slate-400 hover:bg-slate-800'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all">
+                        <i :data-lucide="item.icon" class="w-5 h-5"></i> <span x-text="item.label"></span>
+                    </button>
+                </template>
             </nav>
-
-            <div class="p-6 border-t border-slate-800">
-                <div class="flex items-center gap-3 bg-slate-800/50 p-3 rounded-2xl border border-slate-700">
-                    <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-xs">IB</div>
-                    <div class="flex-1 overflow-hidden">
-                        <p class="text-xs font-bold truncate">Igor Borges</p>
-                        <p class="text-[9px] text-emerald-500 font-black uppercase tracking-widest">Online</p>
-                    </div>
-                </div>
-            </div>
         </aside>
 
-        <main class="flex-1 flex flex-col bg-[#020617] relative">
-            <header class="h-16 border-b border-slate-800 px-8 flex items-center justify-between backdrop-blur-md bg-[#020617]/50 sticky top-0 z-40">
-                <h2 class="font-bold text-xs uppercase tracking-[0.3em] text-slate-500" x-text="screen"></h2>
-                <div class="flex items-center gap-4">
-                    <div class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 flex items-center gap-2">
-                        <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase">Evolution: Conectado</span>
+        <main class="flex-1 flex flex-col relative w-full h-full pb-20 md:pb-0">
+            <header class="h-16 px-4 md:px-8 flex items-center justify-between bg-slate-950/80 backdrop-blur-md sticky top-0 z-30 border-b border-slate-800/50">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center md:hidden">
+                        <i data-lucide="zap" class="text-white w-4 h-4"></i>
                     </div>
+                    <h2 class="font-black text-sm uppercase tracking-widest text-white" x-text="navItems.find(i => i.id === screen)?.label || 'CRM'"></h2>
+                </div>
+                <div class="flex items-center gap-2 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
+                    <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <span class="text-[9px] font-black text-emerald-400 uppercase hidden md:block">WhatsApp Ativo</span>
                 </div>
             </header>
 
-            <section class="flex-1 overflow-y-auto p-8 no-scrollbar">
+            <section class="flex-1 overflow-y-auto p-4 md:p-8 no-scrollbar">
                 
-                <div x-show="screen === 'dash'" x-cloak class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl">
-                        <p class="text-slate-500 text-[10px] font-black uppercase mb-2">Novos Leads (Hoje)</p>
-                        <h3 class="text-4xl font-black" x-text="leads.length">0</h3>
+                <div x-show="screen === 'dash'" x-cloak class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl col-span-2 md:col-span-1 shadow-lg">
+                        <div class="w-10 h-10 bg-indigo-500/20 rounded-full flex items-center justify-center mb-3 text-indigo-400"><i data-lucide="users"></i></div>
+                        <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Leads</p>
+                        <h3 class="text-3xl font-black mt-1 text-white" x-text="leads.length">0</h3>
                     </div>
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl border-l-4 border-l-emerald-500">
-                        <p class="text-slate-500 text-[10px] font-black uppercase mb-2">Vendas Fechadas</p>
-                        <h3 class="text-4xl font-black" x-text="leads.filter(l => l.status === 'fechado').length">0</h3>
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl col-span-2 md:col-span-1 shadow-lg border-b-4 border-b-emerald-500">
+                        <div class="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center mb-3 text-emerald-400"><i data-lucide="check-circle"></i></div>
+                        <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Vendas Fechadas</p>
+                        <h3 class="text-3xl font-black mt-1 text-white" x-text="leads.filter(l => l.status === 'fechado').length">0</h3>
                     </div>
                 </div>
 
-                <div x-show="screen === 'kanban'" x-cloak class="flex gap-6 overflow-x-auto pb-10 no-scrollbar">
+                <div x-show="screen === 'kanban'" x-cloak class="flex gap-4 overflow-x-auto pb-6 no-scrollbar kanban-container h-full">
                     <template x-for="col in columns" :key="col.id">
-                        <div class="kanban-col flex flex-col gap-4" @dragover.prevent @drop="updateStatus($event.dataTransfer.getData('id'), col.id)">
-                            <div class="flex items-center justify-between px-2">
-                                <span class="text-xs font-black uppercase tracking-widest text-slate-400" x-text="col.name"></span>
-                                <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-500" x-text="leads.filter(l => l.status === col.id).length"></span>
+                        <div class="kanban-col flex flex-col gap-3 bg-slate-900/30 p-2 md:p-3 rounded-[2rem] border border-slate-800/50" @dragover.prevent @drop="updateStatus($event.dataTransfer.getData('id'), col.id)">
+                            <div class="flex items-center justify-between px-3 pt-2">
+                                <span class="text-[11px] font-black uppercase tracking-widest text-slate-300" x-text="col.name"></span>
+                                <span class="text-[10px] bg-slate-800 text-white px-2.5 py-1 rounded-full font-bold" x-text="leads.filter(l => l.status === col.id).length"></span>
                             </div>
-                            <div class="flex-1 overflow-y-auto flex flex-col gap-3 no-scrollbar">
+                            <div class="flex-1 overflow-y-auto flex flex-col gap-3 no-scrollbar pb-2">
                                 <template x-for="lead in leads.filter(l => l.status === col.id)" :key="lead.id">
                                     <div draggable="true" @dragstart="$event.dataTransfer.setData('id', lead.id)" @click="openChat(lead)" 
-                                         class="bg-slate-900 border border-slate-800 p-5 rounded-2xl hover:border-indigo-500/50 transition-all cursor-pointer shadow-lg">
-                                        <h4 class="font-bold text-sm mb-2" x-text="lead.nome"></h4>
-                                        <div class="flex gap-1 mb-3">
-                                            <template x-for="tag in lead.tags || []">
-                                                <span class="text-[8px] bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded font-bold uppercase" x-text="tag"></span>
-                                            </template>
+                                         class="bg-slate-900 border border-slate-700 p-4 rounded-3xl active:scale-95 transition-all cursor-pointer shadow-md">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <h4 class="font-bold text-sm text-white truncate pr-2" x-text="lead.nome"></h4>
+                                            <i data-lucide="message-circle" class="w-4 h-4 text-indigo-400 shrink-0"></i>
                                         </div>
-                                        <p class="text-[10px] text-slate-500" x-text="lead.numero"></p>
+                                        <p class="text-[11px] text-slate-400 flex items-center gap-1.5">
+                                            <i data-lucide="smartphone" class="w-3 h-3"></i> <span x-text="lead.numero"></span>
+                                        </p>
                                     </div>
                                 </template>
                             </div>
@@ -102,23 +99,44 @@
                     </template>
                 </div>
 
-                <div x-show="screen === 'biblioteca'" x-cloak class="space-y-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold">Arquivos e Mídias para Envio</h3>
-                        <label class="bg-indigo-600 hover:bg-indigo-500 px-6 py-3 rounded-xl cursor-pointer font-bold text-xs transition-all flex items-center gap-2">
-                            <i data-lucide="upload-cloud" class="w-4 h-4"></i> UPLOAD NOVO ARQUIVO
-                            <input type="file" class="hidden" @change="addToLibrary($el)">
-                        </label>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div x-show="screen === 'biblioteca'" x-cloak class="space-y-6 max-w-4xl mx-auto">
+                    <label class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-2xl flex items-center justify-center gap-2 font-black tracking-widest text-xs uppercase cursor-pointer shadow-lg active:scale-95 transition-all">
+                        <i data-lucide="upload-cloud" class="w-5 h-5"></i> Subir Novo Arquivo
+                        <input type="file" class="hidden" @change="addToLibrary($el)">
+                    </label>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         <template x-for="(file, index) in myLibrary" :key="index">
-                            <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl relative group hover:border-indigo-500 transition-all">
-                                <button @click="removeFromLibrary(index)" class="absolute top-4 right-4 text-slate-700 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                <div class="w-12 h-12 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400 mb-4">
+                            <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl relative">
+                                <button @click="removeFromLibrary(index)" class="absolute top-4 right-4 text-slate-600 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+                                <div class="w-12 h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-400 mb-3">
                                     <i :data-lucide="file.type.includes('image') ? 'image' : 'file-text'"></i>
                                 </div>
-                                <p class="font-bold text-sm truncate" x-text="file.name"></p>
-                                <button @click="sendFromLibrary(file)" class="w-full mt-4 bg-slate-800 hover:bg-indigo-600 text-[10px] font-black py-3 rounded-xl transition-all uppercase tracking-widest">ENVIAR AGORA</button>
+                                <p class="font-bold text-sm text-white truncate" x-text="file.name"></p>
+                                <button @click="sendFromLibrary(file)" class="w-full mt-4 bg-slate-800 hover:bg-indigo-600 text-[10px] font-black text-white py-3 rounded-xl transition-all uppercase">Disparar p/ Lead Atual</button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <div x-show="screen === 'bot'" x-cloak class="space-y-6 max-w-4xl mx-auto">
+                    <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-[2rem] shadow-lg">
+                        <h3 class="font-black text-white mb-4">Adicionar Resposta Automática</h3>
+                        <div class="space-y-4">
+                            <input x-model="newRule.trigger" type="text" placeholder="Se o cliente enviar (ex: solar, tráfego, preco)..." class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white focus:border-indigo-500 outline-none">
+                            <textarea x-model="newRule.response" placeholder="O bot responde automaticamente..." rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white focus:border-indigo-500 outline-none"></textarea>
+                            <button @click="saveBotRule()" class="w-full bg-indigo-600 text-white font-black text-xs py-4 rounded-2xl uppercase tracking-widest active:scale-95 transition-all">Ativar Regra</button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <template x-for="rule in botRules" :key="rule.id">
+                            <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex justify-between items-center">
+                                <div class="flex-1 pr-4">
+                                    <span class="text-[9px] bg-indigo-500/20 text-indigo-400 px-2 py-1 rounded font-black uppercase" x-text="rule.trigger_text"></span>
+                                    <p class="text-sm text-slate-300 mt-2 line-clamp-2" x-text="rule.response_text"></p>
+                                </div>
+                                <button @click="deleteBotRule(rule.id)" class="text-slate-600 hover:text-red-500 p-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                             </div>
                         </template>
                     </div>
@@ -127,37 +145,54 @@
             </section>
         </main>
 
-        <div x-show="isChatOpen" x-transition x-cloak class="fixed inset-y-0 right-0 w-full md:w-[450px] bg-slate-900 border-l border-slate-800 z-[100] flex flex-col shadow-2xl">
-            <header class="p-6 border-b border-slate-800 flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <button @click="isChatOpen = false" class="p-2 hover:bg-slate-800 rounded-lg transition-all"><i data-lucide="chevron-right"></i></button>
-                    <div>
-                        <h3 class="font-bold text-base" x-text="selectedLead?.nome"></h3>
-                        <p class="text-[10px] text-emerald-500 font-black uppercase tracking-widest">WhatsApp Online</p>
-                    </div>
+        <nav class="md:hidden fixed bottom-0 w-full glass-nav pb-safe pt-2 px-6 flex justify-between items-center z-40 h-20 rounded-t-[2rem]">
+            <template x-for="item in navItems">
+                <button @click="screen = item.id" :class="screen === item.id ? 'text-indigo-400 scale-110' : 'text-slate-500'" class="flex flex-col items-center gap-1 p-2 transition-all">
+                    <i :data-lucide="item.icon" class="w-6 h-6"></i>
+                    <span class="text-[9px] font-bold" x-text="item.label"></span>
+                </button>
+            </template>
+        </nav>
+
+        <div x-show="isChatOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" x-cloak 
+             class="fixed inset-0 md:left-auto md:right-0 w-full md:w-[450px] bg-slate-950 md:border-l border-slate-800 z-[100] flex flex-col shadow-2xl">
+            
+            <header class="h-[72px] px-4 border-b border-slate-800 flex items-center bg-slate-900 z-10 shrink-0">
+                <button @click="isChatOpen = false" class="p-2 -ml-2 mr-2 text-slate-400 hover:text-white rounded-full active:bg-slate-800"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
+                <div class="flex-1 overflow-hidden">
+                    <h3 class="font-bold text-base text-white truncate" x-text="selectedLead?.nome"></h3>
+                    <p class="text-[10px] text-emerald-500 font-bold" x-text="selectedLead?.numero"></p>
                 </div>
             </header>
 
-            <div class="flex-1 bg-chat overflow-y-auto p-6 space-y-4 no-scrollbar" id="chat-box">
+            <div class="absolute inset-0 top-[72px] bottom-[140px] bg-chat -z-0"></div>
+            
+            <div class="flex-1 overflow-y-auto p-4 space-y-4 z-10 scroll-smooth" id="chat-box">
                 <template x-for="msg in messages" :key="msg.id">
                     <div :class="msg.from_me ? 'justify-end' : 'justify-start'" class="flex w-full">
-                        <div :class="msg.from_me ? 'bg-indigo-600 rounded-tr-none' : 'bg-slate-800 rounded-tl-none'" class="p-4 rounded-2xl max-w-[85%] shadow-xl">
-                            <p class="text-sm" x-text="msg.content"></p>
-                            <div class="text-[8px] mt-2 opacity-40 text-right uppercase font-bold" x-text="new Date(msg.timestamp).toLocaleTimeString()"></div>
+                        <div :class="msg.from_me ? 'bg-indigo-600 text-white rounded-l-2xl rounded-tr-2xl' : 'bg-slate-800 text-slate-200 rounded-r-2xl rounded-tl-2xl'" class="p-3.5 max-w-[85%] shadow-md relative">
+                            <p class="text-[15px] leading-relaxed break-words" x-text="msg.content"></p>
+                            <div class="flex items-center justify-end gap-1 mt-1 opacity-50">
+                                <span class="text-[9px] font-bold" x-text="new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></span>
+                                <template x-if="msg.from_me"><i data-lucide="check-check" class="w-3 h-3"></i></template>
+                            </div>
                         </div>
                     </div>
                 </template>
             </div>
 
-            <footer class="p-6 border-t border-slate-800 flex flex-col gap-4 bg-slate-900">
-                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                    <button @click="msgInput = 'Oi, tudo bem?'" class="whitespace-nowrap bg-slate-800 px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase hover:bg-indigo-600">Saudação</button>
-                    <button @click="msgInput = 'Seguem valores...'" class="whitespace-nowrap bg-slate-800 px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase hover:bg-indigo-600">Valores</button>
+            <footer class="bg-slate-900 border-t border-slate-800 flex flex-col z-10 pb-safe shrink-0">
+                <div class="flex gap-2 overflow-x-auto p-3 no-scrollbar border-b border-slate-800/50">
+                    <button @click="msgInput = 'Olá! Tudo bem? Sou o Igor, como posso ajudar com suas campanhas ou energia solar?'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300">👋 Saudação</button>
+                    <button @click="msgInput = 'Vou te enviar os detalhes do tráfego pago para o seu negócio.'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300">📈 Tráfego</button>
+                    <button @click="msgInput = 'A energia solar é um investimento. Qual seu custo médio mensal?'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300">☀️ Solar</button>
                 </div>
-                <div class="flex gap-3 items-center">
-                    <input x-model="msgInput" @keydown.enter="sendMsg()" type="text" placeholder="Escreva aqui..." class="flex-1 bg-slate-800 border-none rounded-xl px-5 py-3.5 text-sm focus:ring-2 focus:ring-indigo-500 transition-all outline-none">
-                    <button @click="sendMsg()" class="bg-indigo-600 p-3.5 rounded-xl hover:bg-indigo-500 transition-all active:scale-95 shadow-lg shadow-indigo-500/20">
-                        <i data-lucide="send" class="w-5 h-5 text-white"></i>
+                <div class="flex items-center gap-2 p-3">
+                    <div class="flex-1 bg-slate-950 rounded-full flex items-center px-4 border border-slate-800 focus-within:border-indigo-500 transition-colors">
+                        <input x-model="msgInput" @keydown.enter="sendMsg()" type="text" placeholder="Escreva a mensagem..." class="w-full bg-transparent py-3.5 text-[15px] text-white outline-none">
+                    </div>
+                    <button @click="sendMsg()" class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white shrink-0 active:scale-90 transition-transform shadow-lg shadow-indigo-500/30">
+                        <i data-lucide="send" class="w-5 h-5 ml-1"></i>
                     </button>
                 </div>
             </footer>
@@ -165,74 +200,143 @@
     </div>
 
     <script>
-        function crmUltimate() {
+        function crmApp() {
             return {
-                screen: 'dash', isChatOpen: false, selectedLead: null, msgInput: '', leads: [], messages: [], myLibrary: [],
-                columns: [
-                    { id: 'novo_lead', name: 'Triagem / IA', color: 'bg-amber-500' },
-                    { id: 'atendimento', name: 'Em Conversa', color: 'bg-indigo-500' },
-                    { id: 'proposta', name: 'Proposta Enviada', color: 'bg-emerald-500' },
-                    { id: 'fechado', name: 'Venda Fechada', color: 'bg-slate-600' }
+                screen: 'dash',
+                isChatOpen: false,
+                selectedLead: null,
+                msgInput: '',
+                leads: [],
+                messages: [],
+                myLibrary: [],
+                botRules: [],
+                newRule: { trigger: '', response: '' },
+                navItems: [
+                    { id: 'dash', label: 'Dashboard', icon: 'pie-chart' },
+                    { id: 'kanban', label: 'Funil', icon: 'columns' },
+                    { id: 'biblioteca', label: 'Arquivos', icon: 'folder' },
+                    { id: 'bot', label: 'Chatbot', icon: 'bot' }
                 ],
+                columns: [
+                    { id: 'novo_lead', name: 'Triagem / IA' },
+                    { id: 'atendimento', name: 'Em Negociação' },
+                    { id: 'proposta', name: 'Proposta Enviada' },
+                    { id: 'fechado', name: 'Fechado' }
+                ],
+                
                 async init() {
+                    // Chaves de teste/estrutura fornecidas
                     const SB_URL = 'https://qhnbisjogpdoyszpsucs.supabase.co';
                     const SB_KEY = 'sb_publishable_3PAly_BCdvoldAzm1Y7SxQ_S3rp2QhQ';
                     this.client = supabase.createClient(SB_URL, SB_KEY);
+                    
                     await this.loadLeads();
+                    await this.loadBotRules();
                     this.setupRealtime();
-                    lucide.createIcons();
+                    
+                    setTimeout(() => lucide.createIcons(), 100);
                 },
+
+                // === LEADS & KANBAN ===
                 async loadLeads() {
                     const { data } = await this.client.from('leads').select('*').order('created_at', { ascending: false });
                     if (data) this.leads = data;
-                    setTimeout(() => lucide.createIcons(), 100);
+                    setTimeout(() => lucide.createIcons(), 50);
                 },
-                setupRealtime() {
-                    this.client.channel('any').on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => this.loadLeads()).subscribe();
-                    this.client.channel('msgs').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-                        if (this.isChatOpen && payload.new.lead_id === this.selectedLead.id) {
-                            this.messages.push(payload.new);
-                            this.scrollToBottom();
-                        }
-                    }).subscribe();
+                async updateStatus(id, status) {
+                    if (!id) return;
+                    await this.client.from('leads').update({ status }).eq('id', id);
+                    const lead = this.leads.find(l => l.id == id);
+                    if(lead) lead.status = status; // Update local otimista
                 },
-                addToLibrary(input) {
-                    const file = input.files[0]; if (!file) return;
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onload = () => {
-                        this.myLibrary.push({ name: file.name, type: file.type, base64: reader.result.split(',')[1] });
-                        setTimeout(() => lucide.createIcons(), 100);
-                    };
-                },
-                removeFromLibrary(index) { this.myLibrary.splice(index, 1); },
-                async sendFromLibrary(file) {
-                    if (!this.selectedLead) return alert("Selecione um lead no Kanban!");
-                    let endpoint = file.type.includes('image') ? 'sendImage' : file.type.includes('video') ? 'sendVideo' : 'sendDocument';
-                    await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, {
-                        method: 'POST',
-                        headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ "number": this.selectedLead.numero, "media": file.base64, "fileName": file.name })
-                    });
-                    alert("Arquivo disparado com sucesso!");
-                },
-                async updateStatus(id, status) { await this.client.from('leads').update({ status }).eq('id', id); },
+
+                // === CHAT & MENSAGENS ===
                 async openChat(lead) {
-                    this.selectedLead = lead; this.isChatOpen = true;
+                    this.selectedLead = lead;
+                    this.isChatOpen = true;
+                    this.messages = [];
                     const { data } = await this.client.from('messages').select('*').eq('lead_id', lead.id).order('timestamp', { ascending: true });
-                    this.messages = data || []; this.scrollToBottom();
-                    setTimeout(() => lucide.createIcons(), 100);
+                    this.messages = data || [];
+                    this.scrollToBottom();
+                    setTimeout(() => lucide.createIcons(), 50);
                 },
                 async sendMsg() {
                     if(!this.msgInput || !this.selectedLead) return;
-                    const text = this.msgInput; this.msgInput = '';
+                    const text = this.msgInput;
+                    this.msgInput = '';
+                    
+                    // Update otimista local para UX fluido
+                    this.messages.push({ id: Date.now(), content: text, from_me: true, timestamp: new Date().toISOString() });
+                    this.scrollToBottom();
+
                     await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', {
                         method: 'POST',
                         headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' },
                         body: JSON.stringify({ "number": this.selectedLead.numero, "text": text })
                     });
                 },
-                scrollToBottom() { setTimeout(() => { const b = document.getElementById('chat-box'); if(b) b.scrollTop = b.scrollHeight; }, 100); }
+
+                // === BIBLIOTECA ===
+                addToLibrary(input) {
+                    const file = input.files[0]; if (!file) return;
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => {
+                        this.myLibrary.push({ name: file.name, type: file.type, base64: reader.result.split(',')[1] });
+                        setTimeout(() => lucide.createIcons(), 50);
+                    };
+                },
+                removeFromLibrary(index) { this.myLibrary.splice(index, 1); },
+                async sendFromLibrary(file) {
+                    if (!this.selectedLead) {
+                        alert("Vá até o Funil e abra o chat de um cliente primeiro!");
+                        return;
+                    }
+                    let endpoint = file.type.includes('image') ? 'sendImage' : file.type.includes('video') ? 'sendVideo' : 'sendDocument';
+                    await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, {
+                        method: 'POST',
+                        headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ "number": this.selectedLead.numero, "media": file.base64, "fileName": file.name })
+                    });
+                    alert(`Arquivo enviado para ${this.selectedLead.nome}!`);
+                },
+
+                // === CHATBOT REGRAS ===
+                async loadBotRules() {
+                    const { data } = await this.client.from('chatbot_rules').select('*');
+                    this.botRules = data || [];
+                    setTimeout(() => lucide.createIcons(), 50);
+                },
+                async saveBotRule() {
+                    if(!this.newRule.trigger || !this.newRule.response) return;
+                    await this.client.from('chatbot_rules').insert({
+                        trigger_text: this.newRule.trigger.toLowerCase(),
+                        response_text: this.newRule.response
+                    });
+                    this.newRule = { trigger: '', response: '' };
+                    this.loadBotRules();
+                },
+                async deleteBotRule(id) {
+                    await this.client.from('chatbot_rules').delete().eq('id', id);
+                    this.loadBotRules();
+                },
+
+                // === UTILIDADES ===
+                setupRealtime() {
+                    this.client.channel('any').on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => this.loadLeads()).subscribe();
+                    this.client.channel('msgs').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+                        if (this.isChatOpen && payload.new.lead_id === this.selectedLead?.id) {
+                            // Evita duplicar se foi enviado por nós (update otimista)
+                            if(!this.messages.find(m => m.id === payload.new.id)) {
+                                this.messages.push(payload.new);
+                                this.scrollToBottom();
+                            }
+                        }
+                    }).subscribe();
+                },
+                scrollToBottom() { 
+                    setTimeout(() => { const b = document.getElementById('chat-box'); if(b) b.scrollTop = b.scrollHeight; }, 100); 
+                }
             }
         }
     </script>
