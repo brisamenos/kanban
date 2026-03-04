@@ -174,12 +174,12 @@
                 <template x-for="msg in messages" :key="msg.id">
                     <div :class="msg.from_me ? 'justify-end' : 'justify-start'" class="flex w-full">
                         <div :class="msg.from_me ? 'bg-indigo-600 text-white rounded-l-2xl rounded-tr-2xl' : 'bg-slate-800 text-slate-200 rounded-r-2xl rounded-tl-2xl'" class="p-3.5 max-w-[85%] shadow-md relative">
-                            <template x-if="msg.content.includes('http') && (msg.content.includes('chat_media') || msg.content.includes('[Áudio]') || msg.content.includes('[Imagem]') || msg.content.includes('[Documento]'))">
+                            <template x-if="msg.content && msg.content.includes('http') && (msg.content.includes('chat_media') || msg.content.includes('[Áudio]') || msg.content.includes('[Imagem]') || msg.content.includes('[Documento]'))">
                                 <a :href="msg.content.split(' ').pop()" target="_blank" class="text-indigo-200 underline break-all text-sm flex items-center gap-1">
                                     <i data-lucide="external-link" class="w-3 h-3"></i> Abrir Arquivo
                                 </a>
                             </template>
-                            <template x-if="!msg.content.includes('chat_media')">
+                            <template x-if="msg.content && !msg.content.includes('chat_media')">
                                 <p class="text-[15px] leading-relaxed break-words" x-text="msg.content"></p>
                             </template>
                             
@@ -255,9 +255,9 @@
                     setTimeout(() => lucide.createIcons(), 100);
                 },
 
-                // FUNÇÃO DE ÁUDIO PARA NOTIFICAÇÕES
+                // ATUALIZADO: SOM DE POP SUAVE E LEVE
                 playSound() {
-                    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+                    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
                     audio.play().catch(e => console.log("Áudio silenciado até primeira interação do usuário."));
                 },
 
@@ -285,7 +285,6 @@
                     setTimeout(() => lucide.createIcons(), 50);
                 },
 
-                // ATUALIZADO: ENVIA E SALVA A MENSAGEM NO BANCO DE DADOS
                 async sendMsg() {
                     if(!this.msgInput || !this.selectedLead) return;
                     const text = this.msgInput;
@@ -315,7 +314,6 @@
                     }
                 },
 
-                // FUNÇÃO DE UPLOAD COM TRATAMENTO DE ERROS
                 async uploadAndSend(event, type) {
                     const file = event.target.files[0];
                     if (!file) return;
@@ -392,7 +390,8 @@
                             lead_id: this.selectedLead.id,
                             content: `[${type.toUpperCase()}] ${publicMediaUrl}`,
                             from_me: true,
-                            type: type
+                            type: type,
+                            media_url: publicMediaUrl
                         });
 
                         event.target.value = '';
@@ -426,7 +425,6 @@
                     alert(`Arquivo disparado!`);
                 },
 
-                // FUNÇÃO DO ROBÔ COM TRATAMENTO DE ERROS
                 async saveBotRule() {
                     if(!this.newRule.trigger || !this.newRule.response) {
                         alert("⚠️ Preencha o gatilho e a resposta.");
@@ -460,22 +458,17 @@
                     this.loadBotRules();
                 },
 
-                // ATUALIZADO: REALTIME AGORA TOCA O SOM
                 setupRealtime() {
-                    // Escuta novos leads
                     this.client.channel('leads_channel').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'leads' }, payload => {
                         this.playSound();
                         this.loadLeads();
                     }).subscribe();
 
-                    // Escuta atualizações de leads
                     this.client.channel('leads_update').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'leads' }, payload => {
                         this.loadLeads();
                     }).subscribe();
 
-                    // Escuta novas mensagens
                     this.client.channel('msgs_channel').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-                        // Toca som se o cliente enviou
                         if (!payload.new.from_me) {
                             this.playSound();
                         }
