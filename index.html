@@ -131,34 +131,17 @@
                     <div class="bg-white dark:bg-slate-900 p-8 md:p-10 rounded-[3rem] shadow-xl border border-gray-100 dark:border-slate-800">
                         <h3 class="font-black text-2xl mb-8 dark:text-white tracking-tighter flex items-center gap-2"><i data-lucide="bot" class="text-indigo-500"></i> Automação do Robô</h3>
                         <div class="space-y-4">
-                            <input x-model="newRule.trigger" type="text" placeholder="Gatilho ex: tabela, audio..." class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-2xl p-5 outline-none focus:ring-2 focus:ring-indigo-500 transition-all dark:text-white">
-                            <textarea x-model="newRule.response" placeholder="Mensagem de texto automática..." rows="3" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-2xl p-5 outline-none focus:ring-2 focus:ring-indigo-500 transition-all dark:text-white"></textarea>
-                            
+                            <input x-model="newRule.trigger" type="text" placeholder="Gatilho ex: tabela, audio..." class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-2xl p-5 outline-none dark:text-white">
+                            <textarea x-model="newRule.response" placeholder="Mensagem automática..." rows="3" class="w-full bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-2xl p-5 outline-none dark:text-white"></textarea>
                             <div class="flex flex-col sm:flex-row sm:items-center gap-4 bg-gray-50 dark:bg-slate-800/30 p-5 rounded-2xl border border-dashed border-gray-300 dark:border-slate-700">
                                 <input type="file" x-ref="botMediaInput" class="hidden" @change="botMediaFile = $event.target.files[0]">
-                                <button @click="$refs.botMediaInput.click()" class="bg-white dark:bg-slate-800 px-6 py-3 rounded-xl text-xs font-bold shadow-sm border border-gray-200 dark:border-slate-700 hover:bg-indigo-600 hover:text-white transition-all">
+                                <button @click="$refs.botMediaInput.click()" class="bg-white dark:bg-slate-800 px-6 py-3 rounded-xl text-xs font-bold border border-gray-200 dark:border-slate-700 hover:bg-indigo-600 hover:text-white transition-all">
                                     <i data-lucide="paperclip" class="w-4 h-4 inline mr-1"></i> Anexar Mídia
                                 </button>
-                                <span x-show="botMediaFile" class="text-xs text-indigo-500 font-bold truncate" x-text="botMediaFile?.name"></span>
+                                <span x-show="botMediaFile" class="text-xs text-indigo-500 font-bold" x-text="botMediaFile?.name"></span>
                             </div>
-
-                            <button @click="saveBotRule()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-5 rounded-2xl shadow-lg shadow-indigo-500/30 transition-all active:scale-95">Salvar Regra</button>
+                            <button @click="saveBotRule()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-5 rounded-2xl shadow-lg shadow-indigo-500/30 active:scale-95">Salvar Regra</button>
                         </div>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <template x-for="rule in botRules" :key="rule.id">
-                            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl flex justify-between items-center shadow-md border dark:border-slate-800">
-                                <div class="flex-1 pr-4">
-                                    <div class="flex gap-2">
-                                        <span class="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-1 rounded-full font-black uppercase" x-text="rule.trigger_text"></span>
-                                        <span x-show="rule.media_url" class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-1 rounded-full font-black uppercase">Mídia Ativa</span>
-                                    </div>
-                                    <p class="text-sm text-slate-600 dark:text-slate-400 mt-2" x-text="rule.response_text || '(Apenas mídia)'"></p>
-                                </div>
-                                <button @click="deleteBotRule(rule.id)" class="text-red-400 hover:text-red-600 p-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                            </div>
-                        </template>
                     </div>
                 </div>
 
@@ -166,13 +149,13 @@
         </main>
 
         <div x-show="isChatOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" x-cloak 
-             class="fixed inset-0 md:left-auto md:right-0 w-full md:w-[480px] bg-bg-light border-l dark:bg-bg-dark dark:border-slate-800 z-[100] flex flex-col shadow-2xl">
+             class="fixed inset-0 md:left-auto md:right-0 w-full md:w-[500px] bg-white dark:bg-slate-950 z-[100] flex flex-col shadow-2xl">
             
             <header class="h-24 px-6 border-b border-gray-100 dark:border-slate-800 flex items-center bg-white dark:bg-slate-900 z-10 shrink-0 justify-between">
                 <div class="flex items-center overflow-hidden">
-                    <button @click="isChatOpen = false" class="p-3 -ml-2 mr-2 text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl transition-colors"><i data-lucide="arrow-left" class="w-7 h-7"></i></button>
+                    <button @click="isChatOpen = false" class="p-3 -ml-2 mr-2 text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl"><i data-lucide="arrow-left" class="w-7 h-7"></i></button>
                     <div class="relative mr-4">
-                        <img :src="selectedLead?.foto_url || 'https://api.dicebear.com/8.x/notionists/svg?seed=' + selectedLead?.nome" class="w-12 h-12 rounded-2xl border-2 border-white dark:border-slate-700 shadow-sm" @error="$el.src = 'https://api.dicebear.com/8.x/notionists/svg?seed=' + selectedLead?.nome">
+                        <img :src="selectedLead?.foto_url || 'https://api.dicebear.com/8.x/notionists/svg?seed=' + selectedLead?.nome" class="w-12 h-12 rounded-2xl border-2 border-white dark:border-slate-700 shadow-sm">
                         <div class="online-indicator"></div>
                     </div>
                     <div class="truncate">
@@ -180,21 +163,21 @@
                         <p class="text-xs text-emerald-500 font-bold" x-text="selectedLead?.numero"></p>
                     </div>
                 </div>
-                <select x-model="selectedLeadStatus" @change="updateStatus(selectedLead.id, $event.target.value)" class="bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase text-slate-700 dark:text-white px-4 py-3 rounded-2xl outline-none shadow-sm">
+                <select x-model="selectedLeadStatus" @change="updateStatus(selectedLead.id, $event.target.value)" class="bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase text-slate-700 dark:text-white px-4 py-3 rounded-2xl outline-none">
                     <template x-for="col in columns" :key="col.id">
-                        <option :value="col.id" x-text="col.name" :selected="selectedLead?.status === col.id"></option>
+                        <option :value="col.id" x-text="col.name"></option>
                     </template>
                 </select>
             </header>
 
-            <div class="absolute inset-0 top-24 bottom-[140px] bg-[#efeae2] dark:bg-[#0b141a] bg-chat-pattern opacity-40 dark:opacity-20 -z-0"></div>
+            <div class="absolute inset-0 top-24 bottom-[150px] bg-[#efeae2] dark:bg-[#0b141a] bg-chat-pattern opacity-40 dark:opacity-20 -z-0"></div>
             
             <div class="flex-1 overflow-y-auto p-6 space-y-4 z-10 scroll-smooth no-scrollbar" id="chat-box">
                 <template x-for="msg in messages" :key="msg.id">
                     <div :class="msg.from_me ? 'justify-end' : 'justify-start'" class="flex w-full">
                         <div :class="msg.from_me ? 'bg-indigo-600 text-white rounded-l-3xl rounded-tr-3xl shadow-lg' : 'bg-white dark:bg-slate-800 text-slate-950 dark:text-slate-200 rounded-r-3xl rounded-tl-3xl shadow-md'" class="p-5 max-w-[85%] relative">
-                            <template x-if="msg.content && msg.content.includes('http') && (msg.content.includes('chat_media') || msg.content.includes('[Áudio]') || msg.content.includes('[Imagem]') || msg.content.includes('[Documento]'))">
-                                <a :href="msg.content.split(' ').pop()" target="_blank" class="underline break-all text-sm flex items-center gap-1.5 font-bold" :class="msg.from_me ? 'text-indigo-100' : 'text-indigo-600 dark:text-indigo-400'"><i data-lucide="external-link" class="w-3.5 h-3.5"></i> Abrir Arquivo</a>
+                            <template x-if="msg.content && msg.content.includes('http') && (msg.content.includes('chat_media') || msg.content.includes('[Áudio]'))">
+                                <a :href="msg.content.split(' ').pop()" target="_blank" class="underline break-all text-sm font-bold" :class="msg.from_me ? 'text-indigo-100' : 'text-indigo-600 dark:text-indigo-400'"><i data-lucide="external-link" class="w-3.5 h-3.5 inline mr-1"></i> Ver Arquivo</a>
                             </template>
                             <template x-if="msg.content && !msg.content.includes('chat_media')"><p class="text-[15px] leading-relaxed break-words font-medium" x-text="msg.content"></p></template>
                             <div class="flex items-center justify-end gap-1.5 mt-2 opacity-50"><span class="text-[10px] font-black" x-text="new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></span></div>
@@ -204,26 +187,35 @@
             </div>
 
             <footer class="bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800 p-4 z-10 pb-safe shrink-0">
-                <div class="flex items-center gap-3">
-                    <div class="flex gap-1">
-                        <input type="file" x-ref="imgIn" accept="image/*" class="hidden" @change="uploadAndSend($event, 'image')">
-                        <input type="file" x-ref="audIn" accept="audio/*" class="hidden" @change="uploadAndSend($event, 'audio')">
-                        <input type="file" x-ref="docIn" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt" class="hidden" @change="uploadAndSend($event, 'document')">
-                        <button @click="$refs.imgIn.click()" class="p-3 text-slate-400 hover:text-indigo-500 rounded-xl"><i data-lucide="image" class="w-6 h-6"></i></button>
-                        <button @click="$refs.audIn.click()" class="p-3 text-slate-400 hover:text-indigo-500 rounded-xl"><i data-lucide="mic" class="w-6 h-6"></i></button>
-                        <button @click="$refs.docIn.click()" class="p-3 text-slate-400 hover:text-indigo-500 rounded-xl"><i data-lucide="file-text" class="w-6 h-6"></i></button>
+                <div class="flex gap-2 overflow-x-auto pb-3 no-scrollbar mb-2">
+                    <button @click="msgInput = 'Olá! Tudo bem? Como posso te ajudar hoje?'" class="shrink-0 bg-slate-100 dark:bg-slate-800 text-[10px] font-black px-4 py-2 rounded-full dark:text-white">👋 Saudação</button>
+                    <button @click="msgInput = 'O tráfego pago pode aumentar muito as suas vendas!'" class="shrink-0 bg-slate-100 dark:bg-slate-800 text-[10px] font-black px-4 py-2 rounded-full dark:text-white">📈 Tráfego</button>
+                    <button @click="msgInput = 'A energia solar é o melhor investimento hoje.'" class="shrink-0 bg-slate-100 dark:bg-slate-800 text-[10px] font-black px-4 py-2 rounded-full dark:text-white">☀️ Solar</button>
+                    <template x-for="rule in botRules" :key="rule.id">
+                        <button @click="triggerBotRuleManual(rule)" class="shrink-0 bg-indigo-50 dark:bg-indigo-900/40 text-[10px] font-black px-4 py-2 rounded-full text-indigo-600 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800">🤖 <span x-text="rule.trigger_text"></span></button>
+                    </template>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <div class="flex">
+                        <input type="file" x-ref="imgI" class="hidden" @change="uploadAndSend($event, 'image')">
+                        <input type="file" x-ref="audI" class="hidden" @change="uploadAndSend($event, 'audio')">
+                        <input type="file" x-ref="docI" class="hidden" @change="uploadAndSend($event, 'document')">
+                        <button @click="$refs.imgI.click()" class="p-2 text-slate-400 hover:text-indigo-500"><i data-lucide="image" class="w-6 h-6"></i></button>
+                        <button @click="$refs.audI.click()" class="p-2 text-slate-400 hover:text-indigo-500"><i data-lucide="mic" class="w-6 h-6"></i></button>
+                        <button @click="$refs.docI.click()" class="p-2 text-slate-400 hover:text-indigo-500"><i data-lucide="file-text" class="w-6 h-6"></i></button>
                     </div>
-                    <div class="flex-1 bg-slate-50 dark:bg-slate-950 rounded-2xl flex items-center px-5 border dark:border-slate-800 focus-within:ring-2 focus-within:ring-indigo-500">
-                        <input x-model="msgInput" @keydown.enter="sendMsg()" type="text" placeholder="Mensagem..." class="w-full bg-transparent py-5 text-[15px] dark:text-white outline-none">
+                    <div class="flex-1 bg-slate-50 dark:bg-slate-950 rounded-2xl flex items-center px-4 border dark:border-slate-800">
+                        <input x-model="msgInput" @keydown.enter="sendMsg()" type="text" placeholder="Mensagem..." class="w-full bg-transparent py-4 text-[15px] dark:text-white outline-none">
                     </div>
-                    <button @click="sendMsg()" class="w-16 h-16 rounded-2xl bg-indigo-600 flex items-center justify-center text-white active:scale-95 shadow-xl shadow-indigo-500/30 transition-all"><i data-lucide="send" class="w-7 h-7 ml-1"></i></button>
+                    <button @click="sendMsg()" class="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shrink-0 shadow-lg active:scale-90 transition-all"><i data-lucide="send" class="w-6 h-6 ml-1"></i></button>
                 </div>
             </footer>
         </div>
 
         <nav class="md:hidden fixed bottom-0 w-full glass pb-safe pt-2 px-6 flex justify-between items-center z-40 h-24 rounded-t-[3rem] border-t">
             <template x-for="item in navItems">
-                <button @click="screen = item.id" :class="screen === item.id ? 'text-indigo-600 dark:text-indigo-400 scale-110 font-black' : 'text-slate-400'" class="flex flex-col items-center gap-2 p-2 transition-all">
+                <button @click="screen = item.id" :class="screen === item.id ? 'text-indigo-600 dark:text-indigo-400 scale-110' : 'text-slate-400'" class="flex flex-col items-center gap-2 p-2 transition-all">
                     <i :data-lucide="item.icon" class="w-7 h-7"></i>
                     <span class="text-[11px]" x-text="item.label"></span>
                 </button>
@@ -250,16 +242,8 @@
                     setTimeout(() => lucide.createIcons(), 100);
                 },
 
-                toggleTheme() {
-                    this.isDarkMode = !this.isDarkMode;
-                    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
-                    setTimeout(() => lucide.createIcons(), 50);
-                },
-
-                playSound() {
-                    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
-                    audio.play().catch(e => console.log("Áudio silenciado."));
-                },
+                toggleTheme() { this.isDarkMode = !this.isDarkMode; localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light'); setTimeout(() => lucide.createIcons(), 50); },
+                playSound() { new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3').play().catch(() => {}); },
 
                 async loadLeads() {
                     const { data } = await this.client.from('leads').select('*').order('created_at', { ascending: false });
@@ -288,19 +272,32 @@
                 async uploadAndSend(event, type) {
                     const file = event.target.files[0];
                     if (!file || !this.selectedLead) return;
-                    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${file.name.split('.').pop()}`;
-                    const filePath = `${this.selectedLead.numero}/${fileName}`;
-                    await this.client.storage.from('chat_media').upload(filePath, file);
-                    const { data } = this.client.storage.from('chat_media').getPublicUrl(filePath);
-                    const url = data.publicUrl;
+                    const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9]/g, '')}.${file.name.split('.').pop()}`;
+                    await this.client.storage.from('chat_media').upload(`${this.selectedLead.numero}/${fileName}`, file);
+                    const { data } = this.client.storage.from('chat_media').getPublicUrl(`${this.selectedLead.numero}/${fileName}`);
                     let endpoint = 'sendMedia';
-                    let body = { number: this.selectedLead.numero, media: url };
-                    if (type === 'audio') { endpoint = 'sendWhatsAppAudio'; delete body.media; body.audio = url; }
+                    let body = { number: this.selectedLead.numero, media: data.publicUrl };
+                    if (type === 'audio') { endpoint = 'sendWhatsAppAudio'; delete body.media; body.audio = data.publicUrl; }
                     else { body.mediatype = type === 'image' ? 'image' : 'document'; body.fileName = file.name; }
                     await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, {
                         method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body)
                     });
-                    await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: `[${type.toUpperCase()}] ${url}`, from_me: true, type: type });
+                    await this.client.from('messages').insert({ lead_id: this.selectedLead.id, content: `[${type.toUpperCase()}] ${data.publicUrl}`, from_me: true, type: type });
+                },
+
+                // NOVO: Gatilho manual direto pelo chat
+                async triggerBotRuleManual(rule) {
+                    if(!this.selectedLead) return;
+                    if(rule.media_url) {
+                        let endpoint = 'sendMedia';
+                        let body = { number: this.selectedLead.numero, media: rule.media_url, mediatype: rule.media_type || 'document' };
+                        if(rule.media_type === 'audio') { endpoint = 'sendWhatsAppAudio'; delete body.media; body.audio = rule.media_url; }
+                        await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                    }
+                    if(rule.response_text) {
+                        await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', { method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify({ number: this.selectedLead.numero, text: rule.response_text }) });
+                    }
+                    alert('Disparo do robô realizado!');
                 },
 
                 async saveBotRule() {
@@ -312,23 +309,12 @@
                         mediaUrl = data.publicUrl;
                         mediaType = this.botMediaFile.type.includes('image') ? 'image' : this.botMediaFile.type.includes('audio') ? 'audio' : 'document';
                     }
-                    await this.client.from('chatbot_rules').insert({
-                        trigger_text: this.newRule.trigger.toLowerCase().trim(),
-                        response_text: this.newRule.response.trim(),
-                        media_url: mediaUrl, media_type: mediaType
-                    });
+                    await this.client.from('chatbot_rules').insert({ trigger_text: this.newRule.trigger.toLowerCase(), response_text: this.newRule.response, media_url: mediaUrl, media_type: mediaType });
                     this.newRule = { trigger: '', response: '' }; this.botMediaFile = null; this.loadBotRules();
                 },
 
-                async loadBotRules() {
-                    const { data } = await this.client.from('chatbot_rules').select('*').order('created_at', { ascending: false });
-                    if (data) this.botRules = data;
-                },
-
-                async deleteBotRule(id) {
-                    await this.client.from('chatbot_rules').delete().eq('id', id);
-                    this.loadBotRules();
-                },
+                async loadBotRules() { const { data } = await this.client.from('chatbot_rules').select('*'); if(data) this.botRules = data; },
+                async deleteBotRule(id) { await this.client.from('chatbot_rules').delete().eq('id', id); this.loadBotRules(); },
 
                 setupRealtime() {
                     this.client.channel('leads_channel').on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => this.loadLeads()).subscribe();
@@ -340,11 +326,7 @@
                     }).subscribe();
                 },
 
-                async updateStatus(id, status) {
-                    await this.client.from('leads').update({ status }).eq('id', id);
-                    this.loadLeads();
-                },
-
+                async updateStatus(id, status) { await this.client.from('leads').update({ status }).eq('id', id); this.loadLeads(); },
                 scrollToBottom() { setTimeout(() => { const b = document.getElementById('chat-box'); if(b) b.scrollTop = b.scrollHeight; }, 100); }
             }
         }
