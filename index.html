@@ -8,21 +8,25 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <script src="https://bernardo-castilho.github.io/DragDropTouch/DragDropTouch.js"></script>
+
     <style>
         [x-cloak] { display: none !important; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        /* Fundo do chat com padrão sutil */
         .bg-chat { 
             background-color: #0b141a; 
             background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); 
             background-blend-mode: overlay; 
             opacity: 0.2; 
         }
-        /* Ajuste do Kanban para Mobile */
         .kanban-col { min-width: 85vw; height: calc(100vh - 240px); scroll-snap-align: center; }
         @media (min-width: 768px) { .kanban-col { min-width: 320px; } }
         .kanban-container { scroll-snap-type: x mandatory; }
-        .glass-nav { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-top: 1px solid rgba(255,255,255,0.05); }
+        .glass-nav { background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(12px); border-top: 1px solid rgba(255,255,255,0.05); }
+        
+        /* Evita que a tela do celular dê zoom ao arrastar */
+        body { touch-action: pan-y; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-200 antialiased font-sans overflow-hidden selection:bg-indigo-500 selection:text-white">
@@ -48,27 +52,18 @@
         <main class="flex-1 flex flex-col relative w-full h-full pb-20 md:pb-0">
             <header class="h-16 px-4 md:px-8 flex items-center justify-between bg-slate-950/80 backdrop-blur-md sticky top-0 z-30 border-b border-slate-800/50">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center md:hidden">
-                        <i data-lucide="zap" class="text-white w-4 h-4"></i>
-                    </div>
                     <h2 class="font-black text-sm uppercase tracking-widest text-white" x-text="navItems.find(i => i.id === screen)?.label || 'CRM'"></h2>
-                </div>
-                <div class="flex items-center gap-2 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
-                    <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                    <span class="text-[9px] font-black text-emerald-400 uppercase hidden md:block">WhatsApp Ativo</span>
                 </div>
             </header>
 
             <section class="flex-1 overflow-y-auto p-4 md:p-8 no-scrollbar">
                 
-                <div x-show="screen === 'dash'" x-cloak class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl col-span-2 md:col-span-1 shadow-lg">
-                        <div class="w-10 h-10 bg-indigo-500/20 rounded-full flex items-center justify-center mb-3 text-indigo-400"><i data-lucide="users"></i></div>
+                <div x-show="screen === 'dash'" x-cloak class="grid grid-cols-2 gap-4">
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl shadow-lg">
                         <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Leads</p>
                         <h3 class="text-3xl font-black mt-1 text-white" x-text="leads.length">0</h3>
                     </div>
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl col-span-2 md:col-span-1 shadow-lg border-b-4 border-b-emerald-500">
-                        <div class="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center mb-3 text-emerald-400"><i data-lucide="check-circle"></i></div>
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl shadow-lg border-b-4 border-b-emerald-500">
                         <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Vendas Fechadas</p>
                         <h3 class="text-3xl font-black mt-1 text-white" x-text="leads.filter(l => l.status === 'fechado').length">0</h3>
                     </div>
@@ -84,14 +79,12 @@
                             <div class="flex-1 overflow-y-auto flex flex-col gap-3 no-scrollbar pb-2">
                                 <template x-for="lead in leads.filter(l => l.status === col.id)" :key="lead.id">
                                     <div draggable="true" @dragstart="$event.dataTransfer.setData('id', lead.id)" @click="openChat(lead)" 
-                                         class="bg-slate-900 border border-slate-700 p-4 rounded-3xl active:scale-95 transition-all cursor-pointer shadow-md">
-                                        <div class="flex justify-between items-start mb-2">
-                                            <h4 class="font-bold text-sm text-white truncate pr-2" x-text="lead.nome"></h4>
-                                            <i data-lucide="message-circle" class="w-4 h-4 text-indigo-400 shrink-0"></i>
-                                        </div>
+                                         class="bg-slate-900 border border-slate-700 p-4 rounded-3xl active:scale-95 transition-all cursor-pointer shadow-md relative">
+                                        <h4 class="font-bold text-sm text-white truncate pr-6 mb-2" x-text="lead.nome"></h4>
                                         <p class="text-[11px] text-slate-400 flex items-center gap-1.5">
                                             <i data-lucide="smartphone" class="w-3 h-3"></i> <span x-text="lead.numero"></span>
                                         </p>
+                                        <i data-lucide="grip-horizontal" class="absolute top-4 right-4 w-4 h-4 text-slate-600"></i>
                                     </div>
                                 </template>
                             </div>
@@ -99,46 +92,26 @@
                     </template>
                 </div>
 
-                <div x-show="screen === 'biblioteca'" x-cloak class="space-y-6 max-w-4xl mx-auto">
-                    <label class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-2xl flex items-center justify-center gap-2 font-black tracking-widest text-xs uppercase cursor-pointer shadow-lg active:scale-95 transition-all">
+                <div x-show="screen === 'biblioteca'" x-cloak class="space-y-6">
+                    <label class="w-full bg-indigo-600 text-white py-4 rounded-2xl flex items-center justify-center gap-2 font-black text-xs uppercase cursor-pointer">
                         <i data-lucide="upload-cloud" class="w-5 h-5"></i> Subir Novo Arquivo
                         <input type="file" class="hidden" @change="addToLibrary($el)">
                     </label>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 gap-4">
                         <template x-for="(file, index) in myLibrary" :key="index">
                             <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl relative">
-                                <button @click="removeFromLibrary(index)" class="absolute top-4 right-4 text-slate-600 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
-                                <div class="w-12 h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-400 mb-3">
-                                    <i :data-lucide="file.type.includes('image') ? 'image' : 'file-text'"></i>
-                                </div>
+                                <button @click="removeFromLibrary(index)" class="absolute top-4 right-4 text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
                                 <p class="font-bold text-sm text-white truncate" x-text="file.name"></p>
-                                <button @click="sendFromLibrary(file)" class="w-full mt-4 bg-slate-800 hover:bg-indigo-600 text-[10px] font-black text-white py-3 rounded-xl transition-all uppercase">Disparar p/ Lead Atual</button>
                             </div>
                         </template>
                     </div>
                 </div>
 
-                <div x-show="screen === 'bot'" x-cloak class="space-y-6 max-w-4xl mx-auto">
-                    <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-[2rem] shadow-lg">
-                        <h3 class="font-black text-white mb-4">Adicionar Resposta Automática</h3>
-                        <div class="space-y-4">
-                            <input x-model="newRule.trigger" type="text" placeholder="Se o cliente enviar (ex: solar, tráfego, preco)..." class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white focus:border-indigo-500 outline-none">
-                            <textarea x-model="newRule.response" placeholder="O bot responde automaticamente..." rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white focus:border-indigo-500 outline-none"></textarea>
-                            <button @click="saveBotRule()" class="w-full bg-indigo-600 text-white font-black text-xs py-4 rounded-2xl uppercase tracking-widest active:scale-95 transition-all">Ativar Regra</button>
-                        </div>
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <template x-for="rule in botRules" :key="rule.id">
-                            <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex justify-between items-center">
-                                <div class="flex-1 pr-4">
-                                    <span class="text-[9px] bg-indigo-500/20 text-indigo-400 px-2 py-1 rounded font-black uppercase" x-text="rule.trigger_text"></span>
-                                    <p class="text-sm text-slate-300 mt-2 line-clamp-2" x-text="rule.response_text"></p>
-                                </div>
-                                <button @click="deleteBotRule(rule.id)" class="text-slate-600 hover:text-red-500 p-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                            </div>
-                        </template>
+                <div x-show="screen === 'bot'" x-cloak class="space-y-6">
+                    <div class="bg-slate-900 p-6 rounded-[2rem]">
+                        <input x-model="newRule.trigger" type="text" placeholder="Gatilho (ex: preco)..." class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white mb-3">
+                        <textarea x-model="newRule.response" placeholder="Resposta..." rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white mb-3"></textarea>
+                        <button @click="saveBotRule()" class="w-full bg-indigo-600 text-white font-black text-xs py-4 rounded-2xl uppercase">Salvar Regra</button>
                     </div>
                 </div>
 
@@ -154,15 +127,22 @@
             </template>
         </nav>
 
-        <div x-show="isChatOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" x-cloak 
-             class="fixed inset-0 md:left-auto md:right-0 w-full md:w-[450px] bg-slate-950 md:border-l border-slate-800 z-[100] flex flex-col shadow-2xl">
+        <div x-show="isChatOpen" x-transition x-cloak class="fixed inset-0 md:left-auto md:right-0 w-full md:w-[450px] bg-slate-950 z-[100] flex flex-col">
             
-            <header class="h-[72px] px-4 border-b border-slate-800 flex items-center bg-slate-900 z-10 shrink-0">
-                <button @click="isChatOpen = false" class="p-2 -ml-2 mr-2 text-slate-400 hover:text-white rounded-full active:bg-slate-800"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
-                <div class="flex-1 overflow-hidden">
-                    <h3 class="font-bold text-base text-white truncate" x-text="selectedLead?.nome"></h3>
-                    <p class="text-[10px] text-emerald-500 font-bold" x-text="selectedLead?.numero"></p>
+            <header class="h-[72px] px-4 border-b border-slate-800 flex items-center bg-slate-900 z-10 shrink-0 justify-between">
+                <div class="flex items-center overflow-hidden">
+                    <button @click="isChatOpen = false" class="p-2 -ml-2 mr-1 text-slate-400"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
+                    <div class="truncate">
+                        <h3 class="font-bold text-base text-white truncate" x-text="selectedLead?.nome"></h3>
+                        <p class="text-[10px] text-emerald-500 font-bold" x-text="selectedLead?.numero"></p>
+                    </div>
                 </div>
+                
+                <select x-model="selectedLeadStatus" @change="updateStatus(selectedLead.id, $event.target.value)" class="bg-slate-800 text-[10px] font-bold uppercase text-white border border-slate-700 rounded-lg p-2 outline-none ml-2 shrink-0">
+                    <template x-for="col in columns" :key="col.id">
+                        <option :value="col.id" x-text="col.name" :selected="selectedLead?.status === col.id"></option>
+                    </template>
+                </select>
             </header>
 
             <div class="absolute inset-0 top-[72px] bottom-[140px] bg-chat -z-0"></div>
@@ -170,28 +150,19 @@
             <div class="flex-1 overflow-y-auto p-4 space-y-4 z-10 scroll-smooth" id="chat-box">
                 <template x-for="msg in messages" :key="msg.id">
                     <div :class="msg.from_me ? 'justify-end' : 'justify-start'" class="flex w-full">
-                        <div :class="msg.from_me ? 'bg-indigo-600 text-white rounded-l-2xl rounded-tr-2xl' : 'bg-slate-800 text-slate-200 rounded-r-2xl rounded-tl-2xl'" class="p-3.5 max-w-[85%] shadow-md relative">
+                        <div :class="msg.from_me ? 'bg-indigo-600 text-white rounded-l-2xl rounded-tr-2xl' : 'bg-slate-800 text-slate-200 rounded-r-2xl rounded-tl-2xl'" class="p-3.5 max-w-[85%] shadow-md">
                             <p class="text-[15px] leading-relaxed break-words" x-text="msg.content"></p>
-                            <div class="flex items-center justify-end gap-1 mt-1 opacity-50">
-                                <span class="text-[9px] font-bold" x-text="new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></span>
-                                <template x-if="msg.from_me"><i data-lucide="check-check" class="w-3 h-3"></i></template>
-                            </div>
                         </div>
                     </div>
                 </template>
             </div>
 
             <footer class="bg-slate-900 border-t border-slate-800 flex flex-col z-10 pb-safe shrink-0">
-                <div class="flex gap-2 overflow-x-auto p-3 no-scrollbar border-b border-slate-800/50">
-                    <button @click="msgInput = 'Olá! Tudo bem? Sou o Igor, como posso ajudar com suas campanhas ou energia solar?'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300">👋 Saudação</button>
-                    <button @click="msgInput = 'Vou te enviar os detalhes do tráfego pago para o seu negócio.'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300">📈 Tráfego</button>
-                    <button @click="msgInput = 'A energia solar é um investimento. Qual seu custo médio mensal?'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300">☀️ Solar</button>
-                </div>
                 <div class="flex items-center gap-2 p-3">
-                    <div class="flex-1 bg-slate-950 rounded-full flex items-center px-4 border border-slate-800 focus-within:border-indigo-500 transition-colors">
-                        <input x-model="msgInput" @keydown.enter="sendMsg()" type="text" placeholder="Escreva a mensagem..." class="w-full bg-transparent py-3.5 text-[15px] text-white outline-none">
+                    <div class="flex-1 bg-slate-950 rounded-full flex items-center px-4 border border-slate-800 focus-within:border-indigo-500">
+                        <input x-model="msgInput" @keydown.enter="sendMsg()" type="text" placeholder="Mensagem..." class="w-full bg-transparent py-3.5 text-[15px] text-white outline-none">
                     </div>
-                    <button @click="sendMsg()" class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white shrink-0 active:scale-90 transition-transform shadow-lg shadow-indigo-500/30">
+                    <button @click="sendMsg()" class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white shrink-0 active:scale-90">
                         <i data-lucide="send" class="w-5 h-5 ml-1"></i>
                     </button>
                 </div>
@@ -202,57 +173,45 @@
     <script>
         function crmApp() {
             return {
-                screen: 'dash',
-                isChatOpen: false,
-                selectedLead: null,
-                msgInput: '',
-                leads: [],
-                messages: [],
-                myLibrary: [],
-                botRules: [],
-                newRule: { trigger: '', response: '' },
+                screen: 'dash', isChatOpen: false, selectedLead: null, selectedLeadStatus: '', msgInput: '', leads: [], messages: [], myLibrary: [], botRules: [], newRule: { trigger: '', response: '' },
                 navItems: [
-                    { id: 'dash', label: 'Dashboard', icon: 'pie-chart' },
+                    { id: 'dash', label: 'Dash', icon: 'pie-chart' },
                     { id: 'kanban', label: 'Funil', icon: 'columns' },
-                    { id: 'biblioteca', label: 'Arquivos', icon: 'folder' },
-                    { id: 'bot', label: 'Chatbot', icon: 'bot' }
+                    { id: 'biblioteca', label: 'Mídias', icon: 'folder' },
+                    { id: 'bot', label: 'Robô', icon: 'bot' }
                 ],
                 columns: [
                     { id: 'novo_lead', name: 'Triagem / IA' },
-                    { id: 'atendimento', name: 'Em Negociação' },
-                    { id: 'proposta', name: 'Proposta Enviada' },
-                    { id: 'fechado', name: 'Fechado' }
+                    { id: 'atendimento', name: 'Negociação' },
+                    { id: 'proposta', name: 'Proposta' },
+                    { id: 'fechado', name: 'Venda' }
                 ],
                 
                 async init() {
-                    // Chaves de teste/estrutura fornecidas
                     const SB_URL = 'https://qhnbisjogpdoyszpsucs.supabase.co';
                     const SB_KEY = 'sb_publishable_3PAly_BCdvoldAzm1Y7SxQ_S3rp2QhQ';
                     this.client = supabase.createClient(SB_URL, SB_KEY);
-                    
                     await this.loadLeads();
-                    await this.loadBotRules();
                     this.setupRealtime();
-                    
                     setTimeout(() => lucide.createIcons(), 100);
                 },
 
-                // === LEADS & KANBAN ===
                 async loadLeads() {
                     const { data } = await this.client.from('leads').select('*').order('created_at', { ascending: false });
                     if (data) this.leads = data;
                     setTimeout(() => lucide.createIcons(), 50);
                 },
+                
                 async updateStatus(id, status) {
                     if (!id) return;
                     await this.client.from('leads').update({ status }).eq('id', id);
                     const lead = this.leads.find(l => l.id == id);
-                    if(lead) lead.status = status; // Update local otimista
+                    if(lead) lead.status = status; 
                 },
 
-                // === CHAT & MENSAGENS ===
                 async openChat(lead) {
                     this.selectedLead = lead;
+                    this.selectedLeadStatus = lead.status; // Sincroniza o seletor
                     this.isChatOpen = true;
                     this.messages = [];
                     const { data } = await this.client.from('messages').select('*').eq('lead_id', lead.id).order('timestamp', { ascending: true });
@@ -260,15 +219,13 @@
                     this.scrollToBottom();
                     setTimeout(() => lucide.createIcons(), 50);
                 },
+
                 async sendMsg() {
                     if(!this.msgInput || !this.selectedLead) return;
                     const text = this.msgInput;
                     this.msgInput = '';
-                    
-                    // Update otimista local para UX fluido
                     this.messages.push({ id: Date.now(), content: text, from_me: true, timestamp: new Date().toISOString() });
                     this.scrollToBottom();
-
                     await fetch('https://projeto-evolution-api.xtknqq.easypanel.host/message/sendText/igor', {
                         method: 'POST',
                         headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' },
@@ -276,57 +233,10 @@
                     });
                 },
 
-                // === BIBLIOTECA ===
-                addToLibrary(input) {
-                    const file = input.files[0]; if (!file) return;
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onload = () => {
-                        this.myLibrary.push({ name: file.name, type: file.type, base64: reader.result.split(',')[1] });
-                        setTimeout(() => lucide.createIcons(), 50);
-                    };
-                },
-                removeFromLibrary(index) { this.myLibrary.splice(index, 1); },
-                async sendFromLibrary(file) {
-                    if (!this.selectedLead) {
-                        alert("Vá até o Funil e abra o chat de um cliente primeiro!");
-                        return;
-                    }
-                    let endpoint = file.type.includes('image') ? 'sendImage' : file.type.includes('video') ? 'sendVideo' : 'sendDocument';
-                    await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, {
-                        method: 'POST',
-                        headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ "number": this.selectedLead.numero, "media": file.base64, "fileName": file.name })
-                    });
-                    alert(`Arquivo enviado para ${this.selectedLead.nome}!`);
-                },
-
-                // === CHATBOT REGRAS ===
-                async loadBotRules() {
-                    const { data } = await this.client.from('chatbot_rules').select('*');
-                    this.botRules = data || [];
-                    setTimeout(() => lucide.createIcons(), 50);
-                },
-                async saveBotRule() {
-                    if(!this.newRule.trigger || !this.newRule.response) return;
-                    await this.client.from('chatbot_rules').insert({
-                        trigger_text: this.newRule.trigger.toLowerCase(),
-                        response_text: this.newRule.response
-                    });
-                    this.newRule = { trigger: '', response: '' };
-                    this.loadBotRules();
-                },
-                async deleteBotRule(id) {
-                    await this.client.from('chatbot_rules').delete().eq('id', id);
-                    this.loadBotRules();
-                },
-
-                // === UTILIDADES ===
                 setupRealtime() {
                     this.client.channel('any').on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => this.loadLeads()).subscribe();
                     this.client.channel('msgs').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
                         if (this.isChatOpen && payload.new.lead_id === this.selectedLead?.id) {
-                            // Evita duplicar se foi enviado por nós (update otimista)
                             if(!this.messages.find(m => m.id === payload.new.id)) {
                                 this.messages.push(payload.new);
                                 this.scrollToBottom();
@@ -334,9 +244,7 @@
                         }
                     }).subscribe();
                 },
-                scrollToBottom() { 
-                    setTimeout(() => { const b = document.getElementById('chat-box'); if(b) b.scrollTop = b.scrollHeight; }, 100); 
-                }
+                scrollToBottom() { setTimeout(() => { const b = document.getElementById('chat-box'); if(b) b.scrollTop = b.scrollHeight; }, 100); }
             }
         }
     </script>
