@@ -88,6 +88,25 @@
                     </template>
                 </div>
 
+                <div x-show="screen === 'biblioteca'" x-cloak class="space-y-6">
+                    <label class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-2xl flex items-center justify-center gap-2 font-black text-xs uppercase cursor-pointer shadow-lg shadow-indigo-500/20 active:scale-95 transition-all">
+                        <i data-lucide="upload-cloud" class="w-5 h-5"></i> Subir Novo Arquivo Local
+                        <input type="file" class="hidden" @change="addToLibrary($el)">
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <template x-for="(file, index) in myLibrary" :key="index">
+                            <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl relative">
+                                <button @click="removeFromLibrary(index)" class="absolute top-4 right-4 text-slate-600 hover:text-red-500 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                                <div class="w-12 h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-400 mb-3">
+                                    <i :data-lucide="file.type.includes('image') ? 'image' : 'file-text'"></i>
+                                </div>
+                                <p class="font-bold text-sm text-white truncate" x-text="file.name"></p>
+                                <button @click="sendFromLibrary(file)" class="w-full mt-4 bg-slate-800 hover:bg-indigo-600 text-[10px] font-black text-white py-3 rounded-xl transition-all uppercase">Disparar p/ Lead Atual</button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
                 <div x-show="screen === 'bot'" x-cloak class="space-y-6 max-w-4xl mx-auto">
                     <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-[2rem] shadow-lg">
                         <input x-model="newRule.trigger" type="text" placeholder="Gatilho do cliente (ex: tabela, audio)..." class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-white mb-3 focus:border-indigo-500 outline-none">
@@ -181,9 +200,9 @@
 
             <footer class="bg-slate-900 border-t border-slate-800 flex flex-col z-10 pb-safe shrink-0">
                 <div class="flex gap-2 overflow-x-auto p-3 no-scrollbar border-b border-slate-800/50">
-                    <button @click="msgInput = 'Olá! Tudo bem? Sou o Igor, como posso ajudar?'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300">👋 Saudação</button>
-                    <button @click="msgInput = 'Vou enviar os detalhes das campanhas de tráfego pago para o seu negócio.'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300">📈 Tráfego</button>
-                    <button @click="msgInput = 'A energia solar reduz seus custos drasticamente.'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300">☀️ Solar</button>
+                    <button @click="msgInput = 'Olá! Tudo bem? Sou o Igor, como posso ajudar?'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300 transition-colors hover:bg-indigo-600">👋 Saudação</button>
+                    <button @click="msgInput = 'Vou enviar os detalhes das campanhas de tráfego pago para o seu negócio.'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300 transition-colors hover:bg-indigo-600">📈 Tráfego</button>
+                    <button @click="msgInput = 'A energia solar reduz seus custos drasticamente.'" class="shrink-0 bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-bold text-slate-300 transition-colors hover:bg-indigo-600">☀️ Solar</button>
                 </div>
                 
                 <input type="file" x-ref="imageInput" accept="image/*" class="hidden" @change="uploadAndSend($event, 'image')">
@@ -266,7 +285,7 @@
                     } catch (e) { console.error("Erro ao enviar:", e); }
                 },
 
-                // CORREÇÃO: NOME SEGURO PARA NÃO DAR ERRO NO UPLOAD
+                // ROTA sendMedia CORRIGIDA
                 async uploadAndSend(event, type) {
                     const file = event.target.files[0];
                     if (!file) return;
@@ -277,7 +296,6 @@
                     this.scrollToBottom();
 
                     try {
-                        // Nomenclatura 100% segura (sem os caracteres do nome original que davam erro)
                         const fileExt = file.name.split('.').pop();
                         const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
                         const filePath = `${this.selectedLead.numero}/${fileName}`;
@@ -290,12 +308,22 @@
 
                         this.messages.find(m => m.id === tempMsgId).content = `⏳ Disparando WhatsApp...`;
 
-                        let endpoint = 'sendDocument';
-                        let bodyData = { "number": this.selectedLead.numero };
+                        let endpoint = 'sendMedia';
+                        let bodyData = { 
+                            "number": this.selectedLead.numero,
+                            "media": publicMediaUrl
+                        };
 
-                        if (type === 'image') { endpoint = 'sendImage'; bodyData.media = publicMediaUrl; } 
-                        else if (type === 'audio') { endpoint = 'sendWhatsAppAudio'; bodyData.audio = publicMediaUrl; } 
-                        else { endpoint = 'sendDocument'; bodyData.media = publicMediaUrl; bodyData.fileName = "documento"; }
+                        if (type === 'image') { 
+                            bodyData.mediatype = 'image';
+                        } else if (type === 'audio') { 
+                            endpoint = 'sendWhatsAppAudio'; 
+                            delete bodyData.media;
+                            bodyData.audio = publicMediaUrl; 
+                        } else { 
+                            bodyData.mediatype = 'document'; 
+                            bodyData.fileName = file.name; 
+                        }
 
                         const evoResponse = await fetch(`https://projeto-evolution-api.xtknqq.easypanel.host/message/${endpoint}/igor`, {
                             method: 'POST', headers: { 'apikey': '773C15E29974-4BA2-B003-3F697EC279AE', 'Content-Type': 'application/json' }, body: JSON.stringify(bodyData)
@@ -313,7 +341,6 @@
                     }
                 },
 
-                // NOVO: SALVAR REGRA DO ROBÔ COM UPLOAD DE MÍDIA
                 async saveBotRule() {
                     if(!this.newRule.trigger) { alert("⚠️ O gatilho é obrigatório."); return; }
                     if(!this.newRule.response && !this.botMediaFile) { alert("⚠️ Adicione texto ou anexe uma mídia."); return; }
@@ -322,7 +349,6 @@
                         let mediaUrl = null;
                         let mediaType = null;
 
-                        // Se tiver arquivo selecionado no painel do robô, faz o upload para o Supabase
                         if (this.botMediaFile) {
                             const fileExt = this.botMediaFile.name.split('.').pop();
                             const fileName = `bot-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
